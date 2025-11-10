@@ -1,0 +1,10 @@
+// Example of C# code
+// This is a simple C# program that prints "Hello, World!" to the console.
+
+using System;
+
+class Program {
+    static void Main() {
+        Console.WriteLine("Hello, World!");
+    }
+}
