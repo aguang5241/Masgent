@@ -5,7 +5,7 @@ from pydantic_ai import Agent
 from dotenv import load_dotenv
 import tools
 
-load_dotenv()
+load_dotenv(dotenv_path='.env')
 model = OpenAIChatModel(model_name='gpt-5-nano')
 
 agent = Agent(
