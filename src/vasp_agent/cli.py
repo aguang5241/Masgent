@@ -1,81 +1,54 @@
-# src/vasp_agent/cli.py
 import sys
-from importlib.metadata import version, PackageNotFoundError
 
-import vasp_agent.hello_world as hello_world
-import vasp_agent.ai.ai_backend as ai_backend
+import vasp_agent.ai_mode.ai_backend as ai_backend
+import vasp_agent.cli_mode.cli_backend as cli_backend
+from vasp_agent.utils import print_title
 
-def print_title():
-    '''Print the VASP-Agent ASCII banner and metadata inside a box.'''
+def cli_mode():
+    print('Entering CLI mode. Type "ai" to AI mode or "exit" to quit. Type "help" to see available commands.\n')
+    mode = cli_backend.main()
+    return mode
 
-    # Retrieve installed version
-    try:
-        pkg_version = version('vasp-agent')
-    except PackageNotFoundError:
-        pkg_version = 'dev'
-
-    # ASCII banner
-    ascii_banner = rf'''
-+-------------------------------------------------------------------------------------+
-|                                                                                     |
-|  ██╗   ██╗ █████╗ ███████╗██████╗      █████╗  ██████╗ ███████╗███╗   ██╗████████╗  |
-|  ██║   ██║██╔══██╗██╔════╝██╔══██╗    ██╔══██╗██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝  |
-|  ██║   ██║███████║███████╗██████╔╝    ███████║██║  ███╗█████╗  ██╔██╗ ██║   ██║     |
-|  ╚██╗ ██╔╝██╔══██║╚════██║██╔═══╝     ██╔══██║██║   ██║██╔══╝  ██║╚██╗██║   ██║     |
-|   ╚████╔╝ ██║  ██║███████║██║         ██║  ██║╚██████╔╝███████╗██║ ╚████║   ██║     |
-|    ╚═══╝  ╚═╝  ╚═╝╚══════╝╚═╝         ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝     |
-|                                                          (c) 2025 Guangchen Liu     |
-|  VASP-Agent CLI:  {pkg_version:<64}  |
-|  Licensed:        MIT License                                                       |
-|  Citation:        Liu, G. et al. (2025), DOI:10.XXXX/XXXXX'                         |
-|  Repository:      https://github.com/aguang5241/VASP-Agent                          |
-|  Contact:         gliu4@wpi.edu                                                     |
-|                                                                                     |
-+-------------------------------------------------------------------------------------+
-    '''
-    print(ascii_banner)
-
-def print_help():
-    print('\nVASP-Agent CLI')
-    print('  Usage: vasp-agent <command>\n')
-    print('Available commands:')
-    print('  hello              → Print a hello message')
-    print('  goodbye            → Print a goodbye message')
-    print('  help               → Show this help message')
-    print('  exit               → Exit the program\n')
+def ai_mode():
+    print('Entering AI mode. Type "cli" to CLI mode or "exit" to quit. Type "help" to see available commands. Now ask anything...\n')
+    mode = ai_backend.main()
+    return mode
 
 def main():
+    '''Top-level control loop: mode selector + persistent switching.'''
     print_title()
 
-    commands = {
-        'hello': hello_world.say_hello,
-        'goodbye': hello_world.say_goodbye,
-        'ai': ai_backend.main,
-    }
+    mode = None
+    while True:
+        try:
+            if mode is None:
+                print('\nSelect Mode:')
+                print('  - ai:      AI  mode (chat with AI)')
+                print('  - cli:     CLI mode (manual commands)')
+                print('  - exit:    Exit\n')
 
-    try:
-        # Enter interactive loop
-        while True:
-            user_input = input('Ask anything > ').strip().lower()
+                choice = input('Enter mode [ai/cli/exit]: ').strip().lower()
+                if choice == 'cli':
+                    mode = 'cli-mode'
+                elif choice == 'ai':
+                    mode = 'ai-mode'
+                elif choice == 'exit':
+                    mode = 'exit-mode'
+                else:
+                    print('Invalid choice. Please type "ai" for AI or "cli" for CLI.\n')
+                    continue
 
-            if not user_input:
-                continue  # ignore empty input
-            if user_input in {'exit'}:
-                print('Exiting VASP-Agent. Goodbye!')
-                break
-            elif user_input in {'help', '-h', '--help'}:
-                print_help()
-            elif user_input in commands:
-                commands[user_input]()
-            elif user_input.startswith('ai'):
-                ai_backend.main()
-            else:
-                print(f'Unknown command: {user_input}')
-                print('Type "help" to see available commands.')
-
-    except (KeyboardInterrupt, EOFError):
-        print('\nExiting VASP-Agent. Goodbye!')
-        sys.exit(0)
+            if mode == 'cli-mode':
+                mode = cli_mode()
+            elif mode == 'ai-mode':
+                mode = ai_mode()
+            elif mode == 'exit-mode':
+                print('Exiting VASP-Agent. Goodbye!\n')
+                sys.exit(0)
+    
+        except (KeyboardInterrupt, EOFError):
+            print('\nExiting VASP-Agent. Goodbye!\n')
+            sys.exit(0)
 
 if __name__ == '__main__':
     main()
