@@ -5,14 +5,11 @@ from ase.io import write
 from pymatgen.core import Structure
 from pymatgen.io.vasp.sets import MPRelaxSet
 
-from pydantic_ai import Tool
-
 from vasp_agent.utils import os_path_setup
 
 # Do not show warnings
 warnings.filterwarnings('ignore')
 
-@Tool
 def generate_poscar(
         name: str = 'Cu',
         crystalstructure: str = 'fcc',
@@ -25,7 +22,7 @@ def generate_poscar(
 
     Before calling this tool, infer any missing or underspecified parameters from chemistry knowledge.
     
-    If this tool returns an error, analyze the message and call the tool again with corrected parameters.
+    If this tool return status "error", analyze the message and call the tool again with corrected parameters.
 
     name: str
         Chemical symbol or symbols as in 'MgO' or 'NaCl'.
@@ -72,7 +69,6 @@ def generate_poscar(
             'message': f'Error generating POSCAR: {e}'
         }
 
-@Tool
 def generate_vasp_inputs_from_poscar() -> str:
     '''Generate standard VASP input files using pymatgen's MPRelaxSet from an existing POSCAR file in the base directory.
     '''
