@@ -1,5 +1,5 @@
 # VASP-Agent
-AI agent for VASP
+AI agent for DFT
 
 ## Local Debugging and Testing
 ```bash
