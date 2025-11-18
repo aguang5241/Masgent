@@ -1,4 +1,4 @@
-# VASP-Agent
+# DFT-Agent
 AI agent for DFT
 
 ## Local Debugging and Testing
