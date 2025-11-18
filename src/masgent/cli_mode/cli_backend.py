@@ -1,9 +1,9 @@
 import sys
 
-import vasp_agent.cli_mode.cli_tools as cli_tools
+import masgent.cli_mode.cli_tools as cli_tools
 
 def print_help():
-    print('\nVASP-Agent CLI usage:')
+    print('\nMasgent CLI mode usage:')
     print('  Type one of the following commands:\n')
     print('Available commands:')
     print('  hello              → Print a hello message')
@@ -20,7 +20,7 @@ def main():
 
     try:
         while True:
-            user_input = input('VASP-Agent CLI > ').strip().lower()
+            user_input = input('Masgent CLI > ').strip().lower()
 
             if not user_input:
                 continue
@@ -38,7 +38,7 @@ def main():
                 print('Type "help" to see available commands.\n')
 
     except (KeyboardInterrupt, EOFError):
-        print('\nExiting VASP-Agent. Goodbye!\n')
+        print('\nExiting Masgent. Goodbye!\n')
         sys.exit(0)
 
 if __name__ == '__main__':

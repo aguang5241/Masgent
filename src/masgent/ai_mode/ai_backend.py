@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai import Agent
 
-import vasp_agent.ai_mode.ai_tools as ai_tools
+import masgent.ai_mode.ai_tools as ai_tools
 
 def ask_for_api_key():
     key = input('Enter your OpenAI API key: ').strip()
@@ -26,7 +26,7 @@ def ask_for_api_key():
     print('\nAPI key loaded. Ask anything...\n')
 
 def print_help():
-    print('\nVASP-Agent AI usage:')
+    print('\nMasgent AI Mode usage:')
     print('  Chat with the AI by typing your questions or using specific commands.\n')
     print('Available commands:')
     print('  cli                → Switch to CLI mode')
@@ -45,7 +45,7 @@ async def ai_mode(agent):
     
     try:
         while True:
-            user_input = input('VASP-Agent AI > ').strip().lower()
+            user_input = input('Masgent AI > ').strip().lower()
 
             if not user_input:
                 continue
@@ -63,7 +63,7 @@ async def ai_mode(agent):
                     print(f'[Error]: {e}')
 
     except (KeyboardInterrupt, EOFError):
-        print('\nExiting VASP-Agent. Goodbye!\n')
+        print('\nExiting MatSim-Agent. Goodbye!\n')
         sys.exit(0)
 
 def main():
@@ -77,7 +77,7 @@ def main():
     model = OpenAIChatModel(model_name='gpt-5-nano')
 
     system_prompt = '''
-You are a VASP expert assistant.
+You are a materials simulation expert assistant, proficient in DFT, MD, and related computational methods.
 
 Use a tool whenever the user requests something that one of your tools can produce or modify.
 Infer reasonable default values if the user leaves parameters unspecified.

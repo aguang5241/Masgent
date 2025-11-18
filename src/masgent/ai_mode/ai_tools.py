@@ -5,7 +5,7 @@ from ase.io import write
 from pymatgen.core import Structure
 from pymatgen.io.vasp.sets import MPRelaxSet
 
-from vasp_agent.utils import os_path_setup
+from masgent.utils import os_path_setup
 
 # Do not show warnings
 warnings.filterwarnings('ignore')

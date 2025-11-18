@@ -1,8 +1,8 @@
 import sys
 
-import vasp_agent.ai_mode.ai_backend as ai_backend
-import vasp_agent.cli_mode.cli_backend as cli_backend
-from vasp_agent.utils import print_title
+import masgent.ai_mode.ai_backend as ai_backend
+import masgent.cli_mode.cli_backend as cli_backend
+from masgent.utils import print_title
 
 def cli_mode():
     print('Entering CLI mode. Type "ai" to AI mode or "exit" to quit. Type "help" to see available commands.\n')
@@ -43,11 +43,11 @@ def main():
             elif mode == 'ai-mode':
                 mode = ai_mode()
             elif mode == 'exit-mode':
-                print('Exiting VASP-Agent. Goodbye!\n')
+                print('Exiting Masgent. Goodbye!\n')
                 sys.exit(0)
     
         except (KeyboardInterrupt, EOFError):
-            print('\nExiting VASP-Agent. Goodbye!\n')
+            print('\nExiting Masgent. Goodbye!\n')
             sys.exit(0)
 
 if __name__ == '__main__':

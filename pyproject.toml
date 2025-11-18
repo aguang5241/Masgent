@@ -3,9 +3,9 @@ requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "vasp-agent"
-version = "0.1.2"
-description = "An AI-assisted VASP calculation and data analysis framework"
+name = "masgent"
+version = "0.1.0"
+description = "Masgent: A Materials Simulation AI Agent Framework"
 readme = "README.md"
 authors = [{name = "Guangchen Liu", email = "gliu4@wpi.edu"}]
 license = { file = "LICENSE" }
@@ -21,5 +21,9 @@ dependencies = [
 dev = ["pytest", "black", "ruff", "build", "twine"]
 docs = ["mkdocs", "mkdocs-material"]
 
+[project.urls]
+Homepage = "https://github.com/aguang5241/masgent"
+Issues = "https://github.com/aguang5241/masgent/issues"
+
 [project.scripts]
-vasp-agent = "vasp_agent.cli:main"
+masgent = "masgent.cli:main"
