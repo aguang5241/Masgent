@@ -9,12 +9,13 @@ description = "Masgent: A Materials Simulation AI Agent Framework"
 readme = "README.md"
 authors = [{name = "Guangchen Liu", email = "gliu4@wpi.edu"}]
 license = { file = "LICENSE" }
-requires-python = ">=3.9"
+requires-python = ">=3.9, <3.13"
 dependencies = [
     "ase>=3.24.0",
     "numpy>=1.26.4",
     "pydantic_ai>=0.8.1",
     "pymatgen>=2024.10.3",
+    "dotenv>=0.9.9",
 ]
 
 [project.optional-dependencies]

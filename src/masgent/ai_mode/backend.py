@@ -1,3 +1,5 @@
+# masgent/ai_mode/backend.py
+
 import os, sys
 import asyncio
 from dotenv import load_dotenv
@@ -5,7 +7,7 @@ from dotenv import load_dotenv
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai import Agent
 
-import masgent.ai_mode.ai_tools as ai_tools
+import masgent.ai_mode.tools as tools
 
 def ask_for_api_key():
     key = input('Enter your OpenAI API key: ').strip()
@@ -23,7 +25,7 @@ def ask_for_api_key():
             f.write(f'OPENAI_API_KEY={key}\n')
         print('\nAPI key saved to .env file.')
         
-    print('\nAPI key loaded. Ask anything...\n')
+    print('\nAPI key loaded.\n')
 
 def print_help():
     print('\nMasgent AI Mode usage:')
@@ -33,11 +35,17 @@ def print_help():
     print('  help               → Show this help message')
     print('  exit               → Exit the program\n')
 
-async def chat_stream(agent, user_input, history):
-    async with agent.run_stream(user_prompt=user_input, message_history=history) as result:
-        async for message in result.stream_text(delta=True):
-            print(message)
+async def chat_stream(agent, user_input: str, history: list):
+    async with agent.run_stream(
+        user_prompt=user_input, 
+        message_history=history
+        ) as result:
+        fully_reply = ''
+        async for chunk in result.stream_text(delta=True):
+            fully_reply += chunk
+            print(chunk, end='', flush=True)
         print('\n')
+
         return list(result.all_messages())
 
 async def ai_mode(agent):
@@ -59,6 +67,7 @@ async def ai_mode(agent):
             else:
                 try:
                     history = await chat_stream(agent, user_input, history)
+                    history = history[-10:]  # Keep last 10 messages
                 except Exception as e:
                     print(f'[Error]: {e}')
 
@@ -72,32 +81,49 @@ def main():
     if 'OPENAI_API_KEY' not in os.environ:
         ask_for_api_key()
     else:
-        print('API key found in environment. Ask anything...\n')
+        print('API key found in environment.\n')
 
     model = OpenAIChatModel(model_name='gpt-5-nano')
 
     system_prompt = '''
-You are a materials simulation expert assistant, proficient in DFT, MD, and related computational methods.
+You are MASGENT, a concise materials-simulation agent.
 
-Use a tool whenever the user requests something that one of your tools can produce or modify.
-Infer reasonable default values if the user leaves parameters unspecified.
+GENERAL RULES:
+- Respond with ONE short sentence only.
+- When asking for missing parameters, ask ONE direct question only.
+- Never provide explanations unless the user asks.
 
-If a tool call produces an error, adjust the parameters and retry once.
+PARAMETER COMPLETION:
+- When parameters are missing, ask ONE short question describing the parameters in natural language.
+- Do not use internal parameter names; describe what the information represents.
+- Ask: "Do you want to provide <parameter information>, or should I infer it?"
+- Infer a parameter only if the user explicitly says "infer", "guess", or "you decide".
+- When inferring, use typical chemical and crystallographic defaults.
+- After inferring multiple parameters, confirm with ONE sentence: "Proceed with a = X and alpha = Y?"
 
-After a tool runs, output NOTHING if the return status is 'Success', output ONLY the error message if the return status is 'Error'.
-Do NOT output JSON, status fields, or any extra text.
-If the tool returns nothing, output: "Completed"
+TOOL CALL RULES:
+- Use a tool only when the user clearly requests an action the tool performs.
+- Do not call tools until all parameters are confirmed.
+- Never guess if the user does NOT explicitly give permission.
 
-If the user asks a question unrelated to available tools, respond normally.
-If the request is ambiguous, ask for clarification.
+TOOL RETURN RULES:
+- Tools return a string.
+- If the string is empty → tool succeeded → output NOTHING.
+- If the string is non-empty → output the string as the error.
+
+CLARITY:
+- No paragraphs.
+- No multi-sentence reasoning.
+- Only one short sentence for each reply.
+
     '''
 
     agent = Agent(
         model=model,
         system_prompt=system_prompt,
         tools=[
-            ai_tools.generate_simple_poscar,
-            ai_tools.generate_vasp_inputs_from_poscar,
+            tools.generate_simple_poscar,
+            # tools.generate_vasp_inputs_from_poscar,
         ],
         )
     

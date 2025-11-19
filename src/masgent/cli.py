@@ -1,6 +1,8 @@
+# masgent/cli.py
+
 import sys
 
-import masgent.ai_mode.ai_backend as ai_backend
+import masgent.ai_mode.backend as backend
 import masgent.cli_mode.cli_backend as cli_backend
 from masgent.utils import print_title
 
@@ -11,7 +13,7 @@ def cli_mode():
 
 def ai_mode():
     print('Entering AI mode. Type "cli" to CLI mode or "exit" to quit. Type "help" to see available commands. Now ask anything...\n')
-    mode = ai_backend.main()
+    mode = backend.main()
     return mode
 
 def main():

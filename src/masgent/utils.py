@@ -1,3 +1,4 @@
+# masgent/utils.py
 
 import os
 from importlib.metadata import version, PackageNotFoundError
