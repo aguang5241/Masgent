@@ -63,7 +63,7 @@ async def ai_mode(agent):
                     print(f'[Error]: {e}')
 
     except (KeyboardInterrupt, EOFError):
-        print('\nExiting MatSim-Agent. Goodbye!\n')
+        print('\nExiting Masgent. Goodbye!\n')
         sys.exit(0)
 
 def main():
@@ -84,9 +84,9 @@ Infer reasonable default values if the user leaves parameters unspecified.
 
 If a tool call produces an error, adjust the parameters and retry once.
 
-After a tool runs, output ONLY the tool's returned "message" string.
+After a tool runs, output NOTHING if the return status is 'Success', output ONLY the error message if the return status is 'Error'.
 Do NOT output JSON, status fields, or any extra text.
-If the tool returns nothing, output: "Completed."
+If the tool returns nothing, output: "Completed"
 
 If the user asks a question unrelated to available tools, respond normally.
 If the request is ambiguous, ask for clarification.
@@ -96,7 +96,7 @@ If the request is ambiguous, ask for clarification.
         model=model,
         system_prompt=system_prompt,
         tools=[
-            ai_tools.generate_poscar,
+            ai_tools.generate_simple_poscar,
             ai_tools.generate_vasp_inputs_from_poscar,
         ],
         )
