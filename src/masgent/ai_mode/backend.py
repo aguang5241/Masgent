@@ -53,7 +53,7 @@ async def ai_mode(agent):
     
     try:
         while True:
-            user_input = input('Masgent AI > ').strip().lower()
+            user_input = input('Masgent AI > ').strip()
 
             if not user_input:
                 continue
@@ -123,7 +123,7 @@ CLARITY:
         system_prompt=system_prompt,
         tools=[
             tools.generate_simple_poscar,
-            # tools.generate_vasp_inputs_from_poscar,
+            tools.generate_incar_from_poscar,
         ],
         )
     

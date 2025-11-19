@@ -1,24 +1,8 @@
 # masgent/ai_mode/schemas.py
 
-import re
+import os, re
 from pydantic import BaseModel, Field, model_validator
-from typing import Optional, Literal
-
-Generate_Simple_POSCAR_ATOM_COUNT = {
-    'sc': 1, 'fcc': 1, 'bcc': 1,
-    'tetragonal': 1,
-    'bct': 1,
-    'hcp': 1,
-    'rhombohedral': 1,
-    'orthorhombic': 1,
-    'mcl': 1,
-    'diamond': 1,
-    'zincblende': 2,
-    'rocksalt': 2,
-    'cesiumchloride': 2,
-    'fluorite': 3,
-    'wurtzite': 2,
-}
+from typing import Optional, Literal, ClassVar, Dict
 
 class GenerateSimplePOSCARSchema(BaseModel):
     '''
@@ -27,7 +11,7 @@ class GenerateSimplePOSCARSchema(BaseModel):
     AI must confirm missing parameters with the user.
     '''
 
-    name: str = Field(..., description="Chemical formula, e.g., Cu, NaCl, Al2O3.")
+    name: str = Field(..., description="Chemical formula, e.g., Cu, NaCl, MgO")
 
     crystalstructure: Literal[
         'sc', 'fcc', 'bcc',
@@ -37,32 +21,21 @@ class GenerateSimplePOSCARSchema(BaseModel):
         'diamond', 'zincblende',
         'rocksalt', 'cesiumchloride',
         'fluorite', 'wurtzite'
-    ]
+    ] = Field(
+        ...,
+        description="Crystal structure type."
+    )
 
     a: Optional[float] = None
     b: Optional[float] = None
     c: Optional[float] = None
     alpha: Optional[float] = None
 
-    generate_vasp_inputs: bool = Field(
-        ...,
-        description='Whether to generate INCAR/KPOINTS/POTCAR (must be explicitly provided by the user).'
-    )
-
-    ATOM_COUNT = {
-        'sc': 1, 'fcc': 1, 'bcc': 1,
-        'tetragonal': 1,
-        'bct': 1,
-        'hcp': 1,
-        'rhombohedral': 1,
-        'orthorhombic': 1,
-        'mcl': 1,
-        'diamond': 1,
-        'zincblende': 2,
-        'rocksalt': 2,
-        'cesiumchloride': 2,
+    ATOM_COUNT: ClassVar[Dict[str, int]] = {
+        'sc': 1, 'fcc': 1, 'bcc': 1, 'hcp': 1, 'bct': 1, 'mcl': 1,
+        'tetragonal': 1, 'rhombohedral': 1, 'orthorhombic': 1, 'diamond': 1,
+        'zincblende': 2, 'rocksalt': 2, 'cesiumchloride': 2, 'wurtzite': 2, 
         'fluorite': 3,
-        'wurtzite': 2,
     }
 
     @model_validator(mode="after")
@@ -128,7 +101,37 @@ class GenerateSimplePOSCARSchema(BaseModel):
         # --- mcl or others (if ASE supports them) ---
         self.alpha = self.alpha or 90.0
 
-        # Print debug info
-        print(f"[Debug] Structure '{cs}' with parameters: a={self.a}, b={self.b}, c={self.c}, alpha={self.alpha}")
+        return self
+    
+class GenerateIncarFromPoscar(BaseModel):
+    '''
+    Schema for generating VASP INCAR from POSCAR using pymatgen input sets.
+
+    AI must confirm missing parameters with the user.
+    '''
+    poscar_path: str = Field(
+        ...,
+        description='Path to POSCAR/CONTCAR file. Must exist.'
+    )
+
+    vasp_input_sets: Literal[
+        'MPRelaxSet', 'MPStaticSet', 'MPNonSCFSet',
+        'MPScanRelaxSet', 'MPScanStaticSet', 'MPMDSet'
+        ] = Field(
+            ...,
+            description='Type of Pymatgen VASP input set class to use. Must be one of the supported types.'
+        )
+    
+    user_incar_settings: Optional[dict] = Field(
+        None,
+        description='Optional INCAR overrides to pass into the pymatgen input set.'
+    )
+
+    @model_validator(mode='after')
+    def model_validator(self):
+        # ensure POSCAR exists
+        if not os.path.isfile(self.poscar_path):
+            raise ValueError(f'POSCAR file not found: {self.poscar_path}')
 
         return self
+
