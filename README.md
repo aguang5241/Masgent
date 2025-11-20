@@ -49,3 +49,38 @@ To publish a new version of the Masgent package to TestPyPI, follow these steps:
       ```bash
       pip3 install --index-url https://test.pypi.org/simple/ masgent
       ```
+
+
+## Progress
+- Generate simple POSCAR files
+  - Support crystal structures:
+    - `sc`: Simple Cubic
+    - `fcc`: Face-Centered Cubic
+    - `bcc`: Body-Centered Cubic
+    - `hcp`: Hexagonal Close-Packed
+    - `bct`: Body-Centered Tetragonal
+    - `mcl`: Monoclinic
+    - `tetragonal`: Tetragonal
+    - `rhombohedral`: Rhombohedral
+    - `orthorhombic`: Orthorhombic
+    - `diamond`: Diamond Structure
+    - `zincblende`: Zinc Blende Structure
+    - `rocksalt`: Rock Salt Structure
+    - `cesiumchloride`: Cesium Chloride Structure
+    - `wurtzite`: Wurtzite Structure
+    - `fluorite`: Fluorite Structure
+
+- Generate VASP input files for provided POSCAR
+  - Support calculations:
+    - `MPRelaxSet`: for relaxation calculations
+    - `MPStaticSet`: for static calculations
+    - `MPNonSCFSet`: for non-self-consistent field calculations
+    - `MPScanRelaxSet`: for r2scan relaxation calculations
+    - `MPScanStaticSet`: for r2scan static calculations
+    - `MPMDSet`: for molecular dynamics simulations
+
+- Customize KPOINTS file for provided POSCAR with specified accuracy level
+  - Support accuracy levels:
+    - `Low`
+    - `Medium`
+    - `High`

@@ -1,6 +1,8 @@
 # masgent/ai_mode/schemas.py
 
 import os, re
+from pymatgen.core import Structure
+
 from pydantic import BaseModel, Field, model_validator
 from typing import Optional, Literal, ClassVar, Dict
 
@@ -39,7 +41,7 @@ class GenerateSimplePOSCARSchema(BaseModel):
     }
 
     @model_validator(mode="after")
-    def validate_structure_params(self):
+    def validator(self):
         # Validate that the provided parameters are sufficient for the given crystal structure.
         formula = self.name
         parsed = re.findall(r"([A-Z][a-z]*)(\d*)", formula)
@@ -103,15 +105,15 @@ class GenerateSimplePOSCARSchema(BaseModel):
 
         return self
     
-class GenerateIncarFromPoscar(BaseModel):
+class GenerateVaspInputFromPoscar(BaseModel):
     '''
-    Schema for generating VASP INCAR from POSCAR using pymatgen input sets.
+    Schema for generating VASP input files (INCAR, KPOINTS, POTCAR) from POSCAR using pymatgen input sets.
 
     AI must confirm missing parameters with the user.
     '''
     poscar_path: str = Field(
         ...,
-        description='Path to POSCAR/CONTCAR file. Must exist.'
+        description='Path to POSCAR file. Must exist.'
     )
 
     vasp_input_sets: Literal[
@@ -123,10 +125,38 @@ class GenerateIncarFromPoscar(BaseModel):
         )
 
     @model_validator(mode='after')
-    def model_validator(self):
+    def validator(self):
         # ensure POSCAR exists
         if not os.path.isfile(self.poscar_path):
             raise ValueError(f'POSCAR file not found: {self.poscar_path}')
 
         return self
 
+class CustomizeKpointsWithAccuracy(BaseModel):
+    '''
+    Schema for customizing VASP KPOINTS from POSCAR with specified accuracy level.
+
+    AI must confirm missing parameters with the user.
+    '''
+    poscar_path: str = Field(
+        ...,
+        description='Path to POSCAR file. Must exist.'
+    )
+
+    accuracy_level: Literal[
+        'Low', 'Medium', 'High'
+        ] = Field(
+            ...,
+            description='Type of accuracy level for KPOINTS generation. Must be one of Low, Medium, or High.'
+        )
+
+    @model_validator(mode='after')
+    def validator(self):
+        # ensure POSCAR exists
+        if not os.path.isfile(self.poscar_path):
+            raise ValueError(f'POSCAR file not found: {self.poscar_path}')
+        # ensure accuracy_level is valid
+        if self.accuracy_level not in {'Low', 'Medium', 'High'}:
+            raise ValueError(f'Invalid accuracy_level: {self.accuracy_level}. Must be one of Low, Medium, or High.')
+
+        return self

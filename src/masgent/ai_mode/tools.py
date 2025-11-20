@@ -4,10 +4,10 @@ import os, warnings, datetime
 from ase.build import bulk
 from ase.io import write
 from pymatgen.core import Structure
-from pymatgen.io.vasp.sets import MPStaticSet, MPRelaxSet, MPNonSCFSet, MPScanRelaxSet, MPScanStaticSet, MPMDSet
+from pymatgen.io.vasp.sets import MPStaticSet, MPRelaxSet, MPNonSCFSet, MPScanRelaxSet, MPScanStaticSet, MPMDSet, Kpoints, Potcar
 
 from masgent.utils import os_path_setup
-from masgent.ai_mode.schemas import GenerateSimplePOSCARSchema, GenerateIncarFromPoscar
+from masgent.ai_mode.schemas import GenerateSimplePOSCARSchema, GenerateVaspInputFromPoscar, CustomizeKpointsWithAccuracy
 
 # Do not show warnings
 warnings.filterwarnings('ignore')
@@ -50,10 +50,10 @@ def generate_simple_poscar(input: GenerateSimplePOSCARSchema) -> str:
     except Exception as e:
         return f'\nPOSCAR generation failed: {str(e)}'
     
-def generate_incar_from_poscar(input: GenerateIncarFromPoscar) -> str:
-    '''Generate VASP INCAR (and optionally other inputs) using pymatgen input sets.
+def generate_vasp_input_from_poscar(input: GenerateVaspInputFromPoscar) -> str:
+    '''Generate VASP input files (INCAR, KPOINTS, POTCAR) using pymatgen input sets.
     '''
-    print(f'[Debug: Function Calling] generate_incar_from_poscar with input: {input}')
+    print(f'[Debug: Function Calling] generate_vasp_input_from_poscar with input: {input}')
     
     poscar_path = input.poscar_path
     vasp_input_sets = input.vasp_input_sets
@@ -84,10 +84,45 @@ def generate_incar_from_poscar(input: GenerateIncarFromPoscar) -> str:
         # Also write to the main target directory for easy access
         vis.incar.write_file(os.path.join(output_dir, 'INCAR'))
         vis.poscar.write_file(os.path.join(output_dir, 'POSCAR'), direct=True)
+        vis.kpoints.write_file(os.path.join(output_dir, 'KPOINTS'))
+        vis.potcar.write_file(os.path.join(output_dir, 'POTCAR'))
         
-        return f'\nUpdated INCAR based on {vasp_input_sets} in {output_dir}.'
+        return f'\nUpdated VASP input files based on {vasp_input_sets} in {output_dir}.'
     
     except Exception as e:
-        return f'\nVASP INCAR generation failed: {str(e)}'
+        return f'\nVASP input files generation failed: {str(e)}'
+    
+def customize_kpoints_with_accuracy(input: CustomizeKpointsWithAccuracy) -> str:
+    '''Customize VASP KPOINTS from POSCAR with specified accuracy level.
+    '''
+    print(f'[Debug: Function Calling] customize_kpoints_with_accuracy with input: {input}')
+    
+    poscar_path = input.poscar_path
+    accuracy_level = input.accuracy_level
+    
+    DENSITY_MAP = {
+        'Low': 1000,
+        'Medium': 3000,
+        'High': 5000,
+    }
+    kppa = DENSITY_MAP[accuracy_level]
 
+    try:
+        base_dir, runs_dir, output_dir = os_path_setup()
+        timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        runs_timestamp_dir = os.path.join(runs_dir, f'runs_{timestamp}')
+        os.makedirs(runs_timestamp_dir, exist_ok=True)
+        os.makedirs(output_dir, exist_ok=True)
+        
+        structure = Structure.from_file(poscar_path)
+        kpoints = Kpoints.automatic_density(structure, kppa=kppa)
 
+        # Write KPOINTS to the timestamped run directory
+        kpoints.write_file(os.path.join(runs_timestamp_dir, 'KPOINTS'))
+        # Also write to the main target directory for easy access
+        kpoints.write_file(os.path.join(output_dir, 'KPOINTS'))
+        
+        return f'\nUpdated KPOINTS with {accuracy_level} accuracy in {output_dir}.'
+
+    except Exception as e:
+        return f'\nVASP KPOINTS generation failed: {str(e)}'

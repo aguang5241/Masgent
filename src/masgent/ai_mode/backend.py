@@ -128,7 +128,8 @@ CLARITY:
         system_prompt=system_prompt,
         tools=[
             tools.generate_simple_poscar,
-            tools.generate_incar_from_poscar,
+            tools.generate_vasp_input_from_poscar,
+            tools.customize_kpoints_with_accuracy,
         ],
         )
     
