@@ -50,7 +50,6 @@ To publish a new version of the Masgent package to TestPyPI, follow these steps:
       pip3 install --index-url https://test.pypi.org/simple/ masgent
       ```
 
-
 ## Progress
 - Generate VASP POSCAR file from chemical formula
   - Validate chemical formula input

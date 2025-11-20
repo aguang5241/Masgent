@@ -46,16 +46,16 @@ def ask_for_openai_api_key():
     os.environ['OPENAI_API_KEY'] = key
 
     # Optional: write to .env so user never needs to type again
-    save = input('\nSave this key to .env file for future? (y/n): ').strip().lower()
+    save = color_input('\nSave this key to .env file for future? (y/n): ', 'yellow').strip().lower()
     if save == 'y':
         with open('.env', 'w') as f:
             f.write(f'OPENAI_API_KEY={key}\n')
-        color_print('\nOpenAI API key saved to .env file.\n', 'green')
+        color_print('\nOpenAI API key saved to .env file.', 'green')
         
     color_print('\nOpenAI API key loaded.\n', 'green')
     
 def ask_for_mp_api_key():
-    key = input('Enter your Materials Project API key: ').strip()
+    key = color_input('Enter your Materials Project API key: ', 'yellow').strip()
     if not key:
         color_print('\nMaterials Project API key cannot be empty. Exiting...\n', 'green')
         sys.exit(1)
@@ -68,7 +68,7 @@ def ask_for_mp_api_key():
     if save == 'y':
         with open('.env', 'a') as f:
             f.write(f'MP_API_KEY={key}\n')
-        color_print('\nMaterials Project API key saved to .env file.\n', 'green')
+        color_print('\nMaterials Project API key saved to .env file.', 'green')
         
     color_print('\nMaterials Project API key loaded.\n', 'green')
 
