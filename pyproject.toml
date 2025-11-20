@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "masgent"
-version = "0.1.1"
+version = "0.1.2"
 description = "Masgent: A Materials Simulation AI Agent Framework"
 readme = "README.md"
 authors = [{name = "Guangchen Liu", email = "gliu4@wpi.edu"}]
@@ -19,6 +19,9 @@ dependencies = [
     "dotenv>=0.9.9",
     "colorama>=0.4.6"
 ]
+
+[tool.setuptools.package-data]
+"masgent" = ["ai_mode/system_prompt.txt"]
 
 [project.optional-dependencies]
 dev = ["pytest", "black", "ruff", "build", "twine"]

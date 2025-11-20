@@ -3,16 +3,17 @@
 import sys
 
 from masgent.cli_mode import cli_tools
+from masgent.utils import color_print, color_input
 
 def print_help():
-    print('\nMasgent CLI mode usage:')
-    print('  Type one of the following commands:\n')
-    print('Available commands:')
-    print('  hello              → Print a hello message')
-    print('  goodbye            → Print a goodbye message\n')
-    print('  ai                 → Switch to AI mode')
-    print('  help               → Show this help message')
-    print('  exit               → Exit the program\n')
+    color_print('\nMasgent CLI mode usage:', 'green')
+    color_print('  Type one of the following commands:\n', 'green')
+    color_print('Available commands:', 'green')
+    color_print('  hello              → Print a hello message', 'green')
+    color_print('  goodbye            → Print a goodbye message\n', 'green')
+    color_print('  ai                 → Switch to AI mode', 'green')
+    color_print('  help               → Show this help message', 'green')
+    color_print('  exit               → Exit the program\n', 'green')
 
 def main():
     commands = {
@@ -22,7 +23,7 @@ def main():
 
     try:
         while True:
-            user_input = input('Masgent CLI > ').strip().lower()
+            user_input = color_input('Masgent CLI > ', 'yellow').strip().lower()
 
             if not user_input:
                 continue
@@ -36,11 +37,11 @@ def main():
             elif user_input in commands:
                 commands[user_input]()
             else:
-                print(f'Unknown command: {user_input}')
-                print('Type "help" to see available commands.\n')
+                color_print(f'Unknown command: {user_input}', 'green')
+                color_print('Type "help" to see available commands.\n', 'green')
 
     except (KeyboardInterrupt, EOFError):
-        print('\nExiting Masgent. Goodbye!\n')
+        color_print('\nExiting Masgent. Goodbye!\n', 'green')
         sys.exit(0)
 
 if __name__ == '__main__':
