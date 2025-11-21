@@ -14,7 +14,7 @@ Masgent: Materials Simulation Agent
 - Color-coded terminal outputs for better user experience
 - Implemented logical workflow to switch between console and AI modes
 - Call AI assistant anytime during console mode for help or suggestions
-- Message history management to keep recent interactions to optimize performance
+- Optimized the history management (only short-term memory) to optimise performance
 
 ### Features Planned
 - Expand toolset for more materials science tasks
