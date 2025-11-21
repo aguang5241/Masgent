@@ -79,3 +79,27 @@ To publish a new version of the Masgent package to TestPyPI, follow these steps:
 - Convert POSCAR between direct and cartesian coordinates
   - Support conversions:
     - `Direct` <-> `Cartesian`
+
+- Generate defects in crystal structures
+  - Support defect types:
+    - `Vacancies`: remove specified fraction or number of atoms of a given element
+    - `Interstitials`: add specified fraction or number of atoms of a given element
+    - `Substitutions`: replace specified fraction or number of atoms of a given element with another element
+
+- Generate SQS structures using icet
+  - Support input parameters:
+    - Supercell size
+    - Correlation functions
+    - Number of iterations
+
+- Generate surface slabs from bulk structures
+  - Support input parameters:
+    - Miller indices
+    - Slab thickness
+    - Vacuum size
+
+- Generate interfaces between two materials
+  - Support input parameters:
+    - Lattice matching criteria
+    - Interface orientation
+    - Separation distance

@@ -1,9 +1,22 @@
 # masgent/utils.py
 
-import os, sys
+import os, sys, datetime
 from pathlib import Path
 from colorama import Fore, Style
 from importlib.metadata import version, PackageNotFoundError
+
+def write_comments(file, file_type, comments):
+    with open(file, 'r') as f:
+        lines = f.readlines()
+
+    if file_type.lower() in {'poscar', 'kpoints'}:
+        lines[0] = comments + '\n'
+    
+    elif file_type.lower() in {'incar'}:
+        lines.insert(0, f'{comments}\n')
+    
+    with open(file, 'w') as f:
+        f.writelines(lines)
 
 def get_color_map():
     return {
@@ -77,7 +90,11 @@ def os_path_setup():
     base_dir = os.getcwd()
     runs_dir = os.path.join(base_dir, 'masgent_runs')
     output_dir = os.path.join(base_dir, 'masgent_outputs')
-    return base_dir, runs_dir, output_dir
+    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+    runs_timestamp_dir = os.path.join(runs_dir, f'runs_{timestamp}')
+    os.makedirs(runs_timestamp_dir, exist_ok=True)
+    os.makedirs(output_dir, exist_ok=True)
+    return base_dir, runs_dir, runs_timestamp_dir, output_dir
 
 def print_title():
     '''Print the Masgent ASCII banner and metadata inside a box.'''

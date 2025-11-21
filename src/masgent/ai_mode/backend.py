@@ -87,6 +87,7 @@ def main():
             tools.customize_vasp_kpoints_with_accuracy,
             tools.convert_structure_format,
             tools.convert_poscar_coordinates,
+            tools.generate_vasp_poscar_with_defects,
         ],
         )
     
