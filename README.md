@@ -131,3 +131,19 @@ To publish a new version of the Masgent package to TestPyPI, follow these steps:
       ```bash
       pip3 install --index-url https://test.pypi.org/simple/ masgent
       ```
+6. **Testing in a New Environment**:
+    - It is recommended to test the installation in a new virtual environment to ensure that all dependencies are correctly specified and installed.
+      ```
+      python3 -m venv test_env
+      source test_env/bin/activate
+      pip install \
+      --index-url https://test.pypi.org/simple \
+      --extra-index-url https://pypi.org/simple \
+      masgent==0.1.6
+
+      ```
+    - Reset the virtual environment by uninstalling all packages
+      ```bash
+      pip freeze | xargs pip uninstall -y
+      ```
+
