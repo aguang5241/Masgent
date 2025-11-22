@@ -1,4 +1,4 @@
-# masgent/cli.py
+# !/usr/bin/env python3
 
 import sys
 
@@ -18,16 +18,14 @@ def main():
     # Print ascii banner
     cli_backend.print_banner()
 
-    # Print entry message
-    cli_backend.print_entry_message()
-
     # Hybrid mode: default to CLI mode, allow switching to AI mode anytime
-    mode = cli_mode()
+    mode = 'cli-mode'
     while True:
         try:
             if mode == 'ai-mode':
                 mode = ai_mode()
             elif mode == 'cli-mode':
+                cli_backend.print_entry_message()
                 mode = cli_mode()
             elif mode == 'exit-mode':
                 color_print('Exiting Masgent. Goodbye!\n', 'green')

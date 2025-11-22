@@ -1,4 +1,4 @@
-# masgent/utils.py
+# !/usr/bin/env python3
 
 import os, sys, datetime
 from pathlib import Path

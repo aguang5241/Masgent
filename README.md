@@ -12,13 +12,13 @@ Masgent: Materials Simulation Agent
 - Comprehensive error handling and user prompts
 - API key management and validation for OpenAI and Materials Project
 - Color-coded terminal outputs for better user experience
+- Console mode functions for direct user interaction
 - Implemented logical workflow to switch between console and AI modes
 - Call AI assistant anytime during console mode for help or suggestions
 - Optimized the history management (only short-term memory) to optimise performance
 
 ### Features Planned
 - Expand toolset for more materials science tasks
-- Console mode functions for direct user interaction
 
 ### Functions Implemented
 - Generate VASP POSCAR file from chemical formula

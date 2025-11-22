@@ -1,4 +1,4 @@
-# masgent/ai_mode/schemas.py
+# !/usr/bin/env python3
 
 import os, re
 
@@ -18,6 +18,13 @@ class GenerateVaspPoscarSchema(BaseModel):
     def validator(self):
         # ensure formula is valid
         matches = re.findall(r'([A-Z][a-z]?)(\d*)', self.formula)
+        
+        # validate characters
+        reconstructed = ''.join(elem + num for elem, num in matches)
+        if reconstructed != self.formula:
+            raise ValueError(f"Invalid characters in formula: {self.formula}")
+        
+        # validate elements
         valid = True
         for elem, num in matches:
             try:
@@ -110,6 +117,14 @@ class GenerateVaspInputsFromPoscar(BaseModel):
         # ensure POSCAR exists
         if not os.path.isfile(self.poscar_path):
             raise ValueError(f'POSCAR file not found: {self.poscar_path}')
+        
+        # ensure vasp_input_sets is valid
+        valid_sets = {
+            'MPRelaxSet', 'MPStaticSet', 'MPNonSCFSet',
+            'MPScanRelaxSet', 'MPScanStaticSet', 'MPMDSet'
+        }
+        if self.vasp_input_sets not in valid_sets:
+            raise ValueError(f'Invalid vasp_input_sets: {self.vasp_input_sets}. Must be one of {valid_sets}.')
 
         return self
 

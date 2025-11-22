@@ -1,6 +1,7 @@
-# masgent/ai_mode/tools.py
+# !/usr/bin/env python3
 
 import os, warnings, random
+from dotenv import load_dotenv
 from ase.io import read, write
 from mp_api.client import MPRester
 from pymatgen.core import Structure
@@ -33,14 +34,16 @@ def generate_vasp_poscar(input: schemas.GenerateVaspPoscarSchema) -> str:
     '''
     Generate VASP POSCAR file from user inputs or from Materials Project database.
     '''
-    print(f'[Debug: Function Calling] generate_vasp_poscar with input: {input}')
+    color_print(f'[Debug: Function Calling] generate_vasp_poscar with input: {input}', 'green')
     
     formula = input.formula
 
     try:
         base_dir, runs_dir, runs_timestamp_dir, output_dir = os_path_setup()
 
-        # Ensure OpenAI API key exists and validate it only once per process
+        # Ensure Materials Project API key exists and validate it only once per process
+        load_dotenv(dotenv_path='.env')
+
         global _mp_key_checked
         if not _mp_key_checked:
             if 'MP_API_KEY' not in os.environ:
@@ -76,7 +79,7 @@ def generate_vasp_inputs_from_poscar(input: schemas.GenerateVaspInputsFromPoscar
     '''
     Generate VASP input files (INCAR, KPOINTS, POTCAR) using pymatgen input sets.
     '''
-    print(f'[Debug: Function Calling] generate_vasp_inputs_from_poscar with input: {input}')
+    color_print(f'[Debug: Function Calling] generate_vasp_inputs_from_poscar with input: {input}', 'green')
     
     poscar_path = input.poscar_path
     vasp_input_sets = input.vasp_input_sets
@@ -122,7 +125,7 @@ def convert_structure_format(input: schemas.ConvertStructureFormatSchema) -> str
     '''
     Convert structure files between different formats (CIF, POSCAR, XYZ).
     '''
-    print(f'[Debug: Function Calling] convert_structure_format with input: {input}')
+    color_print(f'[Debug: Function Calling] convert_structure_format with input: {input}', 'green')
     
     input_path = input.input_path
     input_format = input.input_format
@@ -151,7 +154,7 @@ def convert_poscar_coordinates(input: schemas.ConvertPoscarCoordinatesSchema) ->
     '''
     Convert POSCAR between direct and cartesian coordinates.
     '''
-    print(f'[Debug: Function Calling] convert_poscar_coordinates with input: {input}')
+    color_print(f'[Debug: Function Calling] convert_poscar_coordinates with input: {input}', 'green')
     
     poscar_path = input.poscar_path
     to_cartesian = input.to_cartesian
@@ -181,7 +184,7 @@ def customize_vasp_kpoints_with_accuracy(input: schemas.CustomizeVaspKpointsWith
     '''
     Customize VASP KPOINTS from POSCAR with specified accuracy level.
     '''
-    print(f'[Debug: Function Calling] customize_vasp_kpoints_with_accuracy with input: {input}')
+    color_print(f'[Debug: Function Calling] customize_vasp_kpoints_with_accuracy with input: {input}', 'green')
     
     poscar_path = input.poscar_path
     accuracy_level = input.accuracy_level
@@ -216,7 +219,7 @@ def generate_vasp_poscar_with_defects(input: schemas.GenerateVaspPoscarWithDefec
     '''
     Generate VASP POSCAR with defects: vacancies, interstitials, substitutions.
     '''
-    print(f'[Debug: Function Calling] generate_vasp_poscar_with_defects with input: {input}')
+    color_print(f'[Debug: Function Calling] generate_vasp_poscar_with_defects with input: {input}', 'green')
 
     poscar_path = input.poscar_path
     defect_type = input.defect_type

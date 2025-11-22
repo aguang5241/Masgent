@@ -1,4 +1,4 @@
-# masgent/ai_mode/ai_backend.py
+# !/usr/bin/env python3
 
 import os, sys
 import asyncio
@@ -41,7 +41,7 @@ Try asking:
 
 Global Commands:
   ai    —>  Chat with the AI assistant
-  back  —>  Switch back to console mode
+  back  —>  Switch back to main menu
   help  —>  List all available functions
   exit  —>  Quit the program
     '''
@@ -50,7 +50,7 @@ Global Commands:
 def print_entry_message():
     msg = '''
 Welcome to Masgent AI — Your AI Assistant for Materials Simulations.
-
+--------------------------------------------------------------------
 In AI mode, you can interact naturally with the assistant to help with a wide
 range of materials simulation tasks. Ask questions, generate input files, diagnose
 errors, or get guidance on using different tools.
@@ -176,9 +176,10 @@ async def ai_mode(agent):
 def main():
     print_entry_message()
 
-    load_dotenv(dotenv_path='.env')
 
     # Ensure OpenAI API key exists and validate it only once per process
+    load_dotenv(dotenv_path='.env')
+
     global _openai_key_checked
     if not _openai_key_checked:
         if 'OPENAI_API_KEY' not in os.environ:

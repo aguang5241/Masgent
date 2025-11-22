@@ -1,18 +1,13 @@
-# masgent/cli_mode/cli_backend.py
+# !/usr/bin/env python3
 
 import sys
 import tabulate
-
-from masgent.cli_mode import functions
-from masgent import tools, schemas
-from masgent.utils import color_print, color_input
 from importlib.metadata import version, PackageNotFoundError
 
-input = schemas.GenerateVaspPoscarSchema(
-    formula='NaCl'
-)
-tools.generate_vasp_poscar(input=input)
-exit()
+from masgent.utils import color_input, color_print
+from masgent.cli_mode import cli_run
+
+COMMANDS = cli_run.COMMANDS
 
 def print_banner():
     '''Print the Masgent ASCII banner and metadata inside a box.'''
@@ -50,7 +45,7 @@ def print_banner():
 def print_entry_message():
     msg = '''
 Welcome to Masgent — Your Materials Simulation Agent.
-
+-----------------------------------------------------
 Please select a mode code to proceed:
   0. Density Functional Theory (DFT) Simulations
   1. Machine Learning Potentials (MLP)
@@ -59,7 +54,7 @@ Please select a mode code to proceed:
 
 Global commands:
   ai    —>  Chat with the AI assistant
-  back  —>  Switch back to console mode
+  back  —>  Switch back to main menu
   help  —>  List all available functions
   exit  —>  Quit the program
     '''
@@ -71,42 +66,49 @@ def print_help():
     headers = ['Code', 'Description']
     rows = [
         ['0', 'Density Functional Theory (DFT) Simulations'],
-        ['00', 'Generate VASP POSCAR from chemical formula'],
-        ['01', 'Prepare VASP input files (INCAR, KPOINTS, POTCAR)'],
-        ['02', 'Prepare HPC job submission script for VASP'],
-        ['03', 'Analyze VASP output files'],
+        ['00', 'Prepare VASP input files'],
+        ['000', 'Generate VASP POSCAR from chemical formula'],
+        ['001', 'Generate VASP KPOINTS with specified accuracy'],
+        ['002', 'Prepare VASP input files (INCAR, KPOINTS, POTCAR)'],
+        ['003', 'Convert POSCAR coordinates (direct <-> cartesian)'],
+        ['004', 'Convert structure file formats (CIF, POSCAR, XYZ)'],
+        ['005', 'Generate VASP POSCAR with defects (vacancies, interstitials, substitutions)'],
+        
+        ['01', 'Analyze VASP output files'],
 
         ['1', 'Machine Learning Potentials (MLP)'],
-        ['10', 'MACE'],
-        ['11', 'CHGNet'],
-        ['12', 'SevenNet'],
-        ['13', 'Orb-v3'],
-        ['14', 'MatterSim'],
-        ['15', 'Nequix'],
-        ['16', 'PET-MAD'],
+        # ['10', 'MACE'],
+        # ['11', 'CHGNet'],
+        # ['12', 'SevenNet'],
+        # ['13', 'Orb-v3'],
+        # ['14', 'MatterSim'],
+        # ['15', 'Nequix'],
+        # ['16', 'PET-MAD'],
 
         ['2', 'Machine Learning Model Training & Evaluation'],
-        ['20', 'Prepare training dataset'],
-        ['21', 'Train ML model'],
-        ['22', 'Evaluate ML model'],
+        # ['20', 'Prepare training dataset'],
+        # ['21', 'Train ML model'],
+        # ['22', 'Evaluate ML model'],
 
-        ['3', 'Data Analysis & Visualization'],
-        ['30', 'Plot material properties'],
-        ['31', 'Visualize atomic structures'],
-        ['32', 'Statistical analysis'],
+        # ['3', 'Data Analysis & Visualization'],
+        # ['30', 'Plot material properties'],
+        # ['31', 'Visualize atomic structures'],
+        # ['32', 'Statistical analysis'],
     ]
     table = tabulate.tabulate(rows, headers, tablefmt='fancy_grid')
     color_print(table, "green")
 
-def main():
-    commands = {
-        '0': functions.command_0,
-        '1': functions.command_1,
-        '2': functions.command_2,
-        '3': functions.command_3,
-        '5241': tools.generate_vasp_poscar,
-    }
+def run_command(code):
+    cmd = COMMANDS.get(code)
+    if not cmd:
+        color_print(f'Unknown command: {code}', 'green')
+        color_print('Type "help" to see available commands.\n', 'green')
+        return
+    
+    # Execute the registered
+    cmd['function']()
 
+def main():
     try:
         while True:
             user_input = color_input('\nMasgent > ', 'yellow').strip().lower()
@@ -122,8 +124,8 @@ def main():
                 print_help()
             elif user_input in {'exit'}:
                 return 'exit-mode'
-            elif user_input in commands:
-                commands[user_input]()
+            elif user_input in COMMANDS:
+                run_command(user_input)
             else:
                 color_print(f'Unknown command: {user_input}', 'green')
                 color_print('Type "help" to see available commands.\n', 'green')
