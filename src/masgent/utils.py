@@ -1,10 +1,12 @@
 # !/usr/bin/env python3
 
 import os, sys, datetime
+import tabulate
 from pathlib import Path
 from colorama import Fore, Style
 from mp_api.client import MPRester
 from openai import OpenAI
+from importlib.metadata import version, PackageNotFoundError
 
 def write_comments(file, file_type, comments):
     with open(file, 'r') as f:
@@ -117,3 +119,56 @@ def os_path_setup():
     os.makedirs(runs_timestamp_dir, exist_ok=True)
     os.makedirs(output_dir, exist_ok=True)
     return base_dir, runs_dir, runs_timestamp_dir, output_dir
+
+def print_banner():
+    try:
+        pkg_version = version('masgent')
+    except PackageNotFoundError:
+        pkg_version = 'dev'
+    
+    ascii_banner = rf'''
+╔═════════════════════════════════════════════════════════════════════════╗
+║                                                                         ║
+║  ███╗   ███╗  █████╗  ███████╗  ██████╗  ███████╗ ███╗   ██╗ ████████╗  ║
+║  ████╗ ████║ ██╔══██╗ ██╔════╝ ██╔════╝  ██╔════╝ ████╗  ██║ ╚══██╔══╝  ║
+║  ██╔████╔██║ ███████║ ███████╗ ██║  ███╗ █████╗   ██╔██╗ ██║    ██║     ║
+║  ██║╚██╔╝██║ ██╔══██║ ╚════██║ ██║   ██║ ██╔══╝   ██║╚██╗██║    ██║     ║
+║  ██║ ╚═╝ ██║ ██║  ██║ ███████║ ╚██████╔╝ ███████╗ ██║ ╚████║    ██║     ║
+║  ╚═╝     ╚═╝ ╚═╝  ╚═╝ ╚══════╝  ╚═════╝  ╚══════╝ ╚═╝  ╚═══╝    ╚═╝     ║
+║                                                                         ║
+║                                   MASGENT: Materials Simulation Agent   ║
+║                                      Copyright (c) 2025 Guangchen Liu   ║
+║                                                                         ║
+║  Version:         {pkg_version:<52}  ║
+║  Licensed:        MIT License                                           ║
+║  Repository:      https://github.com/aguang5241/masgent                 ║
+║  Citation:        Liu, G. et al. (2025), DOI:10.XXXX/XXXXX'             ║
+║  Contact:         gliu4@wpi.edu                                         ║
+║                                                                         ║
+╚═════════════════════════════════════════════════════════════════════════╝
+    '''
+    color_print(ascii_banner, 'yellow')
+
+def print_help():
+    title = '\n Masgent - Available Commands and Functions '
+    color_print(title, "green")
+
+    headers = ['Code', 'Description']
+    rows = [
+        ['1', 'Density Functional Theory (DFT) Simulations'],
+        ['1.1', 'Prepare VASP input files'],
+        ['1.1.1', 'Generate VASP POSCAR from chemical formula'],
+        ['1.1.2', 'Generate VASP KPOINTS with specified accuracy'],
+        ['1.1.3', 'Prepare VASP input files (INCAR, KPOINTS, POTCAR)'],
+        ['1.1.4', 'Convert POSCAR coordinates (direct <-> cartesian)'],
+        ['1.1.5', 'Convert structure file formats (CIF, POSCAR, XYZ)'],
+        ['1.1.6', 'Generate VASP POSCAR with defects (vacancies, interstitials, substitutions)'],
+        ['1.2', 'Analyze VASP output files'],
+
+        ['2', 'Machine Learning Potentials (MLP)'],
+
+        ['3', 'Machine Learning Model Training & Evaluation'],
+    ]
+    
+    table = tabulate.tabulate(rows, headers, tablefmt='fancy_grid')
+    color_print(table, "green")

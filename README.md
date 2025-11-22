@@ -15,7 +15,9 @@ Masgent: Materials Simulation Agent
 - Console mode functions for direct user interaction
 - Implemented logical workflow to switch between console and AI modes
 - Call AI assistant anytime during console mode for help or suggestions
-- Optimized the history management (only short-term memory) to optimise performance
+- Optimized the history management (trimming old messages) for better performance
+- Detailed navigation instructions and help messages for users
+- Interactive command selection menu using Bullet library
 
 ### Features Planned
 - Expand toolset for more materials science tasks

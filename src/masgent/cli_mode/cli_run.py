@@ -1,17 +1,12 @@
 # !/usr/bin/env python3
+import sys
+from bullet import Bullet, Input, colors
 
 from masgent import tools, schemas
-from masgent.utils import color_print, color_input
+from masgent.ai_mode import ai_backend
+from masgent.utils import color_print, color_input, print_banner, print_help
 
 COMMANDS = {}
-
-def global_commands(user_input):
-    if user_input in {'ai'}:
-        return 'ai-mode'
-    elif user_input in {'back'}:
-        return 'cli-mode'
-    elif user_input in {'exit'}:
-        return 'exit-mode'
 
 def register(code, func):
     def decorator(func):
@@ -22,420 +17,609 @@ def register(code, func):
         return func
     return decorator
 
-@register('0', 'Entry point for Density Functional Theory (DFT) Simulations.')
+def run_command(code):
+    cmd = COMMANDS.get(code)
+    if cmd:
+        cmd['function']()
+    else:
+        color_print(f'[Error] Invalid command code: {code}\n', 'red')
+
+def check_poscar():
+    try:
+        while True:
+            poscar_path = color_input('\nEnter path to input structure file: ', 'yellow').strip()
+
+            if not poscar_path:
+                continue
+            
+            try:
+                schemas.CheckPoscar(poscar_path=poscar_path)
+                return poscar_path
+            except Exception:
+                color_print(f'[Error] Invalid POSCAR: {poscar_path}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+
+@register('0', 'Entry point for Masgent CLI.')
 def command_0():
-    msg = '''
-Density Functional Theory (DFT) Simulations.
---------------------------------------------
-Please select a mode code to proceed:
-  00  —>  Prepare VASP input files
-  01  —>  Analyze VASP output files
+    print_banner()
+    
+    try:
+        while True:
+            prompt = '''
+Welcome to Masgent — Your Materials Simulation Agent.
+-----------------------------------------------------
+Please select from the following options:
+'''
+            choices = [
+                '1. Density Functional Theory (DFT) Simulations',
+                '2. Machine Learning Potentials (MLP)',
+                '3. Machine Learning Model Training & Evaluation',
+                '',
+                '--- Global Commands ---',
+                'AI',
+                'Help',
+                'Exit',
+            ]
+            cli = Bullet(prompt=prompt, choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+            user_input = cli.launch()
 
-Global commands:
-  ai    —>  Chat with the AI assistant
-  back  —>  Switch back to main menu
-  help  —>  List all available functions
-  exit  —>  Quit the program
-    '''
-    color_print(msg, 'green')
+            if user_input.strip() == '' or user_input.startswith('---'):
+                continue
+            
+            if user_input == 'AI':
+                ai_backend.main()
+            elif user_input == 'Help':
+                print_help()
+            elif user_input == 'Exit':
+                color_print('\nExiting Masgent... Goodbye!\n', 'green')
+                sys.exit(0)
+            elif user_input == '1. Density Functional Theory (DFT) Simulations':
+                run_command('1')
+            elif user_input == '2. Machine Learning Potentials (MLP)':
+                run_command('2')
+            elif user_input == '3. Machine Learning Model Training & Evaluation':
+                run_command('3')
+            else:
+                pass
+    
+    except (KeyboardInterrupt, EOFError):
+        color_print('\nExiting Masgent... Goodbye!\n', 'green')
+        sys.exit(0)
 
-@register('00', 'Prepare VASP input files')
-def command_00():
-    msg = '''
-Prepare VASP Input Files.
--------------------------
-Please select a function code to proceed:
-  000  —>  Generate VASP POSCAR file from chemical formula
-  001  —>  Generate VASP KPOINTS with specified accuracy
-  002  —>  Prepare VASP input files (INCAR, KPOINTS, POTCAR)
-  003  —>  Convert POSCAR coordinates (direct <-> cartesian)
-  004  —>  Convert structure file formats (CIF, POSCAR, XYZ)
-  005  —>  Generate VASP POSCAR with defects (vacancies, interstitials, substitutions)
+@register('1', 'Entry point for Density Functional Theory (DFT) Simulations.')
+def command_1():
+    try:
+        while True:
+            choices = [
+                '1.1 Prepare VASP input files',
+                '1.2 Analyze VASP output files',
+                '',
+                '--- Global Commands ---',
+                'AI',
+                'Back',
+                'Main',
+                'Help',
+                'Exit',
+            ]
+            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+            user_input = cli.launch()
 
-Global commands:
-  ai    —>  Chat with the AI assistant
-  back  —>  Switch back to main menu
-  help  —>  List all available functions
-  exit  —>  Quit the program
-    '''
-    color_print(msg, 'green')
+            if user_input.strip() == '' or user_input.startswith('---'):
+                continue
 
-@register('01', 'Analyze VASP output files')
-def command_01():
-    msg = '''
-Analyze VASP Output Files.
---------------------------
-Please select a function code to proceed:
-  (To be implemented)
-    '''
-    color_print(msg, 'green')
+            if user_input == 'AI':
+                ai_backend.main()
+            elif user_input == 'Back':
+                return
+            elif user_input == 'Main':
+                run_command('0')
+            elif user_input == 'Help':
+                print_help()
+            elif user_input == 'Exit':
+                color_print('\nExiting Masgent... Goodbye!\n', 'green')
+                sys.exit(0)
+            elif user_input == '1.1 Prepare VASP input files':
+                run_command('1.1')
+            elif user_input == '1.2 Analyze VASP output files':
+                run_command('1.2')
+            else:
+                pass
 
-@register('000', 'Generate VASP POSCAR file from user inputs or from Materials Project database.')
-def command_000():
-    while True:
-        formula = color_input('\nEnter chemical formula (e.g., NaCl): ', 'yellow').strip()
+    except (KeyboardInterrupt, EOFError):
+        color_print('\nExiting Masgent... Goodbye!\n', 'green')
+        sys.exit(0)
 
-        if not formula:
-            continue
 
-        if formula.lower() in {'ai', 'back', 'help','exit'}:
-            color_print('[Info] Input cancelled...\n', 'green')
-            return
+@register('1.1', 'Prepare VASP input files')
+def command_1_1():
+    try:
+        while True:
+            choices = [
+                '1.1.1 Generate VASP POSCAR file from chemical formula',
+                '1.1.2 Generate VASP KPOINTS with specified accuracy',
+                '1.1.3 Prepare VASP input files (INCAR, KPOINTS, POTCAR)',
+                '1.1.4 Convert POSCAR coordinates (Direct <-> Cartesian)',
+                '1.1.5 Convert structure file formats (CIF, POSCAR, XYZ)',
+                '1.1.6 Generate VASP POSCAR with defects (Vacancies, Interstitials, Substitutions)',
+                '',
+                '--- Global Commands ---',
+                'AI',
+                'Back',
+                'Main',
+                'Help',
+                'Exit',
+            ]
+            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+            user_input = cli.launch()
 
-        try:
-            schemas.GenerateVaspPoscarSchema(formula=formula)
-            break
-        except Exception:
-            color_print(f'[Error] Invalid input formula: {formula}, please try again.\n', 'green')
+            if user_input.strip() == '' or user_input.startswith('---'):
+                continue
+
+            if user_input == 'AI':
+                ai_backend.main()
+            elif user_input == 'Back':
+                return
+            elif user_input == 'Main':
+                run_command('0')
+            elif user_input == 'Help':
+                print_help()
+            elif user_input == 'Exit':
+                color_print('\nExiting Masgent... Goodbye!\n', 'green')
+                sys.exit(0)
+            elif user_input == '1.1.1 Generate VASP POSCAR file from chemical formula':
+                run_command('1.1.1')
+            elif user_input == '1.1.2 Generate VASP KPOINTS with specified accuracy':
+                run_command('1.1.2')
+            elif user_input == '1.1.3 Prepare VASP input files (INCAR, KPOINTS, POTCAR)':
+                run_command('1.1.3')
+            elif user_input == '1.1.4 Convert POSCAR coordinates (Direct <-> Cartesian)':
+                run_command('1.1.4')
+            elif user_input == '1.1.5 Convert structure file formats (CIF, POSCAR, XYZ)':
+                run_command('1.1.5')
+            elif user_input == '1.1.6 Generate VASP POSCAR with defects (Vacancies, Interstitials, Substitutions)':
+                run_command('1.1.6')
+            else:
+                pass
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\nExiting Masgent... Goodbye!\n', 'green')
+        sys.exit(0)
+
+@register('1.2', 'Analyze VASP output files')
+def command_1_2():
+    try:
+        while True:
+            choices = [
+                '(To be implemented)',
+                '',
+                '--- Global Commands ---',
+                'AI',
+                'Back',
+                'Main',
+                'Help',
+                'Exit',
+            ]
+            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+            user_input = cli.launch()
+
+            if user_input.strip() == '' or user_input.startswith('---'):
+                continue
+
+            if user_input == 'AI':
+                ai_backend.main()
+            elif user_input == 'Back':
+                return
+            elif user_input == 'Main':
+                run_command('0')
+            elif user_input == 'Help':
+                print_help()
+            elif user_input == 'Exit':
+                color_print('\nExiting Masgent... Goodbye!\n', 'green')
+                sys.exit(0)
+            elif user_input == '(To be implemented)':
+                print('This feature is under development. Stay tuned!')
+            else:
+                pass
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\nExiting Masgent... Goodbye!\n', 'green')
+        sys.exit(0)
+
+@register('1.1.1', 'Generate VASP POSCAR file from user inputs or from Materials Project database.')
+def command_1_1_1():
+    try: 
+        while True:
+            formula = color_input('\nEnter chemical formula (e.g., NaCl): ', 'yellow').strip()
+
+            if not formula:
+                continue
+
+            try:
+                schemas.GenerateVaspPoscarSchema(formula=formula)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid formula: {formula}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
 
     input = schemas.GenerateVaspPoscarSchema(formula=formula)
     result = tools.generate_vasp_poscar(input=input)
     color_print(result, 'green')
 
-@register('001', 'Generate VASP KPOINTS with specified accuracy.')
+
+@register('1.1.2', 'Generate VASP KPOINTS with specified accuracy.')
 def command_001():
-    while True:
-        msg = '''
-Available accuracy levels for KPOINTS generation:
--------------------------------------------------
-  0. Low     —>  Suitable for preliminary calculations, grid density = 1000 / number of atoms
-  1. Medium  —>  Balanced accuracy and computational cost, grid density = 3000 / number of atoms
-  2. High    —>  High accuracy for production runs, grid density = 5000 / number of atoms
-    '''
-        color_print(msg, 'green')
-        
-        code = color_input('\nEnter the code for accuracy level (0/1/2): ', 'yellow').strip()
-        
-        if not code:
-            continue
+    try:
+        while True:
+            choices = [
+                'Low     ->  Suitable for preliminary calculations, grid density = 1000 / number of atoms',
+                'Medium  ->  Balanced accuracy and computational cost, grid density = 3000 / number of atoms',
+                'High    ->  High accuracy for production runs, grid density = 5000 / number of atoms',
+                '',
+                '--- Global Commands ---',
+                'AI',
+                'Back',
+                'Main',
+                'Help',
+                'Exit',
+            ]
+            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+            user_input = cli.launch()
 
-        if code.lower() in {'ai', 'back', 'help','exit'}:
-            color_print('[Info] Input cancelled...\n', 'green')
-            return
-        
-        if code not in {'0', '1', '2'}:
-            color_print(f'[Error] Invalid accuracy level code: {code}, please try again.\n', 'green')
-            continue
+            if user_input.strip() == '' or user_input.startswith('---'):
+                continue
 
-        accuracy_level = {'0': 'Low', '1': 'Medium', '2': 'High'}[code]
-        break
+            if user_input == 'AI':
+                ai_backend.main()
+            elif user_input == 'Back':
+                return
+            elif user_input == 'Main':
+                run_command('0')
+            elif user_input == 'Help':
+                print_help()
+            elif user_input == 'Exit':
+                color_print('\nExiting Masgent... Goodbye!\n', 'green')
+                sys.exit(0)
+            elif user_input.startswith('Low'):
+                accuracy_level = 'Low'
+                break
+            elif user_input.startswith('Medium'):
+                accuracy_level = 'Medium'
+                break
+            elif user_input.startswith('High'):
+                accuracy_level = 'High'
+                break
+            else:
+                pass
+    
+    except (KeyboardInterrupt, EOFError):
+        color_print('\nExiting Masgent... Goodbye!\n', 'green')
+        sys.exit(0)
 
-    while True:
-        poscar_path = color_input('\nEnter path to POSCAR file: ', 'yellow').strip()
-
-        if not poscar_path:
-            continue
-
-        if poscar_path.lower() in {'ai', 'back', 'help','exit'}:
-            color_print('[Info] Input cancelled...\n', 'green')
-            return
-        
-        try:
-            schemas.CustomizeVaspKpointsWithAccuracy(poscar_path=poscar_path, accuracy_level=accuracy_level)
-            break
-        except Exception:
-            color_print(f'[Error] Invalid POSCAR path: {poscar_path}, please try again.\n', 'green')
+    poscar_path = check_poscar()
 
     input = schemas.CustomizeVaspKpointsWithAccuracy(poscar_path=poscar_path, accuracy_level=accuracy_level)
     result = tools.customize_vasp_kpoints_with_accuracy(input=input)
     color_print(result, 'green')
 
-@register('002', 'Generate VASP input files (INCAR, KPOINTS, POTCAR) using pymatgen input sets.')
-def command_002():
-    while True:
-        sets_map = {
-            '0': 'MPRelaxSet',
-            '1': 'MPStaticSet',
-            '2': 'MPNonSCFSet',
-            '3': 'MPScanRelaxSet',
-            '4': 'MPScanStaticSet',
-            '5': 'MPMDSet'
-        }
-        descriptions_map = {
-            '0': 'MPRelaxSet: suggested for structure relaxation',
-            '1': 'MPStaticSet: suggested for static calculations',
-            '2': 'MPNonSCFSet: suggested for non-self-consistent field calculations',
-            '3': 'MPScanRelaxSet: suggested for structure relaxation with r2SCAN functional',
-            '4': 'MPScanStaticSet: suggested for static calculations with r2SCAN functional',
-            '5': 'MPMDSet: suggested for molecular dynamics simulations'
-        }
+@register('1.1.3', 'Generate VASP input files (INCAR, KPOINTS, POTCAR) using pymatgen input sets.')
+def command_1_1_3():
+    try:
+        while True:
+            choices = [
+                'MPRelaxSet       ->   suggested for structure relaxation',
+                'MPStaticSet      ->   suggested for static calculations',
+                'MPNonSCFSet      ->   suggested for non-self-consistent field calculations',
+                'MPScanRelaxSet   ->   suggested for structure relaxation with r2SCAN functional',
+                'MPScanStaticSet  ->   suggested for static calculations with r2SCAN functional',
+                'MPMDSet          ->   suggested for molecular dynamics simulations',
+                '',
+                '--- Global Commands ---',
+                'AI',
+                'Back',
+                'Main',
+                'Help',
+                'Exit',
+            ]
+            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+            user_input = cli.launch()
 
-        msg = '''
-Available VASP input set types:
--------------------------------
-'''
-        for key, val in descriptions_map.items():
-            msg += f'  {key}. {val}\n'
-        color_print(msg, 'green')
-        
-        code = color_input('\nEnter the code for VASP input set type: ', 'yellow').strip()
+            if user_input.strip() == '' or user_input.startswith('---'):
+                continue
 
-        if not code:
-            continue
-
-        if code.lower() in {'ai', 'back', 'help','exit'}:
-            color_print('[Info] Input cancelled...\n', 'green')
-            return
-
-        if code not in sets_map:
-            color_print(f'[Error] Invalid VASP input set code: {code}, please try again.\n', 'green')
-            continue
-
-        vasp_input_sets = sets_map[code]
-        break
-
-    while True:
-        poscar_path = color_input('\nEnter path to POSCAR file: ', 'yellow').strip()
-
-        if not poscar_path:
-            continue
-
-        if poscar_path.lower() in {'ai', 'back', 'help','exit'}:
-            color_print('[Info] Input cancelled...\n', 'green')
-            return
-
-        try:
-            schemas.GenerateVaspInputsFromPoscar(poscar_path=poscar_path, vasp_input_sets=vasp_input_sets)
-            break
-        except Exception:
-            color_print(f'[Error] Invalid POSCAR path: {poscar_path}, please try again.\n', 'green')
+            if user_input == 'AI':
+                ai_backend.main()
+            elif user_input == 'Back':
+                return
+            elif user_input == 'Main':
+                run_command('0')
+            elif user_input == 'Help':
+                print_help()
+            elif user_input == 'Exit':
+                color_print('\nExiting Masgent... Goodbye!\n', 'green')
+                sys.exit(0)
+            elif user_input.startswith('MPRelaxSet'):
+                vasp_input_sets = 'MPRelaxSet'
+                break
+            elif user_input.startswith('MPStaticSet'):
+                vasp_input_sets = 'MPStaticSet'
+                break
+            elif user_input.startswith('MPNonSCFSet'):
+                vasp_input_sets = 'MPNonSCFSet'
+                break
+            elif user_input.startswith('MPScanRelaxSet'):
+                vasp_input_sets = 'MPScanRelaxSet'
+                break
+            elif user_input.startswith('MPScanStaticSet'):
+                vasp_input_sets = 'MPScanStaticSet'
+                break
+            elif user_input.startswith('MPMDSet'):
+                vasp_input_sets = 'MPMDSet'
+                break
+            else:
+                pass
+    
+    except (KeyboardInterrupt, EOFError):
+        color_print('\nExiting Masgent... Goodbye!\n', 'green')
+        sys.exit(0)
+    
+    poscar_path = check_poscar()
 
     input = schemas.GenerateVaspInputsFromPoscar(poscar_path=poscar_path, vasp_input_sets=vasp_input_sets)
     result = tools.generate_vasp_inputs_from_poscar(input=input)
     color_print(result, 'green')
 
-@register('003', 'Convert POSCAR between direct and cartesian coordinates.')
-def command_003():
-    while True:
-        msg = '''
-Conversion options:
--------------------
-  0  —>  Convert to Cartesian coordinates
-  1  —>  Convert to Direct coordinates
-    '''
-        color_print(msg, 'green')
+@register('1.1.4', 'Convert POSCAR between direct and cartesian coordinates.')
+def command_1_1_4():
+    try:
+        while True:
+            choices = [
+                'Direct coordinates     —>  Cartesian coordinates',
+                'Cartesian coordinates  —>  Direct coordinates',
+                '',
+                '--- Global Commands ---',
+                'AI',
+                'Back',
+                'Main',
+                'Help',
+                'Exit',
+            ]
+            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+            user_input = cli.launch()
 
-        code = color_input('\nEnter the code for conversion option (0/1): ', 'yellow').strip()
+            if user_input.strip() == '' or user_input.startswith('---'):
+                continue
 
-        if not code:
-            continue
+            if user_input == 'AI':
+                ai_backend.main()
+            elif user_input == 'Back':
+                return
+            elif user_input == 'Main':
+                run_command('0')
+            elif user_input == 'Help':
+                print_help()
+            elif user_input == 'Exit':
+                color_print('\nExiting Masgent... Goodbye!\n', 'green')
+                sys.exit(0)
+            elif user_input.startswith('Direct coordinates'):
+                to_cartesian = True
+                break
+            elif user_input.startswith('Cartesian coordinates'):
+                to_cartesian = False
+                break
+            else:
+                pass
+    
+    except (KeyboardInterrupt, EOFError):
+        color_print('\nExiting Masgent... Goodbye!\n', 'green')
+        sys.exit(0)
 
-        if code.lower() in {'ai', 'back', 'help','exit'}:
-            color_print('[Info] Input cancelled...\n', 'green')
-            return
-        
-        if code not in {'0', '1'}:
-            color_print(f'[Error] Invalid conversion option code: {code}, please try again.\n', 'green')
-            continue
-
-        to_cartesian = True if code == '0' else False
-        break
-
-    while True:
-        poscar_path = color_input('\nEnter path to POSCAR file: ', 'yellow').strip()
-
-        if not poscar_path:
-            continue
-
-        if poscar_path.lower() in {'ai', 'back', 'help','exit'}:
-            color_print('[Info] Input cancelled...\n', 'green')
-            return
-
-        try:
-            schemas.ConvertPoscarCoordinatesSchema(poscar_path=poscar_path, to_cartesian=to_cartesian)
-            break
-        except Exception:
-            color_print(f'[Error] Invalid POSCAR path: {poscar_path}, please try again.\n', 'green')
+    poscar_path = check_poscar()
 
     input = schemas.ConvertPoscarCoordinatesSchema(poscar_path=poscar_path, to_cartesian=to_cartesian)
     result = tools.convert_poscar_coordinates(input=input)
     color_print(result, 'green')
 
-@register('004', 'Convert structure file formats (CIF, POSCAR, XYZ).')
-def command_004():
-    while True:
-        msg = '''
-Available format conversions:
------------------------------
-  0. POSCAR  ->  CIF
-  1. POSCAR  ->  XYZ
-  2. CIF     ->  POSCAR
-  3. CIF     ->  XYZ
-  4. XYZ     ->  POSCAR
-  5. XYZ     ->  CIF
-    '''
-        color_print(msg, 'green')
+@register('1.1.5', 'Convert structure file formats (CIF, POSCAR, XYZ).')
+def command_1_1_5():
+    try:
+        while True:
+            choices = [
+                'POSCAR  ->  CIF',
+                'POSCAR  ->  XYZ',
+                'CIF     ->  POSCAR',
+                'CIF     ->  XYZ',
+                'XYZ     ->  POSCAR',
+                'XYZ     ->  CIF',
+                '',
+                '--- Global Commands ---',
+                'AI',
+                'Back',
+                'Main',
+                'Help',
+                'Exit',
+            ]
+            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+            user_input = cli.launch()
 
-        code = color_input('\nEnter the code for structure conversion: ', 'yellow').strip()
+            if user_input.strip() == '' or user_input.startswith('---'):
+                continue
 
-        if not code:
-            continue
+            if user_input == 'AI':
+                ai_backend.main()
+            elif user_input == 'Back':
+                return
+            elif user_input == 'Main':
+                run_command('0')
+            elif user_input == 'Help':
+                print_help()
+            elif user_input == 'Exit':
+                color_print('\nExiting Masgent... Goodbye!\n', 'green')
+                sys.exit(0)
+            elif user_input.startswith('POSCAR') and input_path.endswith('CIF'):
+                input_format, output_format = 'POSCAR', 'CIF'
+                break
+            elif user_input.startswith('POSCAR') and input_path.endswith('XYZ'):
+                input_format, output_format = 'POSCAR', 'XYZ'
+                break
+            elif user_input.startswith('CIF') and input_path.endswith('POSCAR'):
+                input_format, output_format = 'CIF', 'POSCAR'
+                break
+            elif user_input.startswith('CIF') and input_path.endswith('XYZ'):
+                input_format, output_format = 'CIF', 'XYZ'
+                break
+            elif user_input.startswith('XYZ') and input_path.endswith('POSCAR'):
+                input_format, output_format = 'XYZ', 'POSCAR'
+                break
+            elif user_input.startswith('XYZ') and input_path.endswith('CIF'):
+                input_format, output_format = 'XYZ', 'CIF'
+                break
+            else:
+                pass
+    
+    except (KeyboardInterrupt, EOFError):
+        color_print('\nExiting Masgent... Goodbye!\n', 'green')
+        sys.exit(0)
 
-        if code.lower() in {'ai', 'back', 'help','exit'}:
-            color_print('[Info] Input cancelled...\n', 'green')
-            return
-        
-        conversions_map = {
-            '0': ('POSCAR', 'CIF'),
-            '1': ('POSCAR', 'XYZ'),
-            '2': ('CIF', 'POSCAR'),
-            '3': ('CIF', 'XYZ'),
-            '4': ('XYZ', 'POSCAR'),
-            '5': ('XYZ', 'CIF')
-        }
+    try:
+        while True:
+            input_path = color_input('\nEnter path to input structure file: ', 'yellow').strip()
 
-        if code not in conversions_map:
-            color_print(f'[Error] Invalid structure conversion code: {code}, please try again.\n', 'green')
-            continue
+            if not input_path:
+                continue
+            
+            try:
+                schemas.ConvertStructureFormatSchema(input_path=input_path, input_format=input_format, output_format=output_format)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid input: {input_path}, please double check and try again.\n', 'red')
 
-        input_format, output_format = conversions_map[code]
-        break
-
-    while True:
-        input_path = color_input('\nEnter path to input structure file: ', 'yellow').strip()
-
-        if not input_path:
-            continue
-
-        if input_path.lower() in {'ai', 'back', 'help','exit'}:
-            color_print('[Info] Input cancelled...\n', 'green')
-            return
-
-        try:
-            schemas.ConvertStructureFormatSchema(input_path=input_path, input_format=input_format, output_format=output_format)
-            break
-        except Exception:
-            color_print(f'[Error] Invalid input structure file path or formats, please try again.\n', 'green')
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
 
     input = schemas.ConvertStructureFormatSchema(input_path=input_path, input_format=input_format, output_format=output_format)
     result = tools.convert_structure_format(input=input)
     color_print(result, 'green')
 
-@register('005', 'Generate VASP POSCAR with defects (vacancies, interstitials, substitutions).')
-def command_005():
-    while True:
-        msg = '''
-Available defect types:
------------------------
-  0. vacancy       —>  Remove atoms of a specified element
-  1. interstitial  —>  Add atoms of a specified element
-  2. substitution  —>  Replace atoms of one element with another element
-    '''
-        color_print(msg, 'green')
+@register('1.1.6', 'Generate VASP POSCAR with defects (vacancies, interstitials, substitutions).')
+def command_1_1_6():
+    try:
+        while True:
+            choices = [
+                'Vacancy       ->  Remove atoms of a selected element',
+                'Interstitial  ->  Add atoms to interstitial positions',
+                'Substitution  ->  Replace atoms with another element',
+                '',
+                '--- Global Commands ---',
+                'AI',
+                'Back',
+                'Main',
+                'Help',
+                'Exit',
+            ]
+            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+            user_input = cli.launch()
 
-        code = color_input('\nEnter the code for defect type (0/1/2): ', 'yellow').strip()
-
-        if not code:
-            continue
-
-        if code.lower() in {'ai', 'back', 'help','exit'}:
-            color_print('[Info] Input cancelled...\n', 'green')
-            return
-        
-        defect_types_map = {
-            '0': 'vacancy',
-            '1': 'interstitial',
-            '2': 'substitution'
-        }
-
-        if code not in defect_types_map:
-            color_print(f'[Error] Invalid defect type code: {code}, please try again.\n', 'green')
-            continue
-
-        defect_type = defect_types_map[code]
-        break
-    
-    while True:
-        poscar_path = color_input('\nEnter path to POSCAR file: ', 'yellow').strip()
-
-        if not poscar_path:
-            continue
-
-        if poscar_path.lower() in {'ai', 'back', 'help','exit'}:
-            color_print('[Info] Input cancelled...\n', 'green')
-            return
-        break
-    
-    while True:
-        if defect_type == 'vacancy':
-            original_element = color_input('\nEnter the element to remove (e.g., Na): ', 'yellow').strip()
-            defect_element = None
-
-            if not original_element:
+            if user_input.strip() == '' or user_input.startswith('---'):
                 continue
 
-            if original_element.lower() in {'ai', 'back', 'help','exit'}:
-                color_print('[Info] Input cancelled...\n', 'green')
+            if user_input == 'AI':
+                ai_backend.main()
+            elif user_input == 'Back':
                 return
-            
-        elif defect_type == 'interstitial':
-            original_element = None
-            defect_element = color_input('\nEnter the defect element to add (e.g., Na): ', 'yellow').strip()
-
-            if not defect_element:
-                continue
-
-            if defect_element.lower() in {'ai', 'back', 'help','exit'}:
-                color_print('[Info] Input cancelled...\n', 'green')
-                return
-        else:
-            original_element = color_input('\nEnter the target element to be substituted (e.g., Na): ', 'yellow').strip()
-
-            if not original_element:
-                continue
-
-            if original_element.lower() in {'ai', 'back', 'help','exit'}:
-                color_print('[Info] Input cancelled...\n', 'green')
-                return
-            
-            defect_element = color_input('\nEnter the defect element to substitute in (e.g., K): ', 'yellow').strip()
-
-            if not defect_element:
-                continue
-
-            if defect_element.lower() in {'ai', 'back', 'help','exit'}:
-                color_print('[Info] Input cancelled...\n', 'green')
-                return
-        try:
-            schemas.GenerateVaspPoscarWithDefects(
-                poscar_path=poscar_path,
-                defect_type=defect_type,
-                original_element=original_element,
-                defect_amount=1,
-                defect_element=defect_element,
-            )
-            break
-        
-        except Exception:
-            color_print(f'[Error] Invalid element(s), please try again.\n', 'green')
-
-    while True:
-        defect_amount_str = color_input('\nEnter the defect amount (fraction between 0 and 1, or atom count >=1): ', 'yellow').strip()
-
-        if not defect_amount_str:
-            continue
-
-        if defect_amount_str.lower() in {'ai', 'back', 'help','exit'}:
-            color_print('[Info] Input cancelled...\n', 'green')
-            return
-        
-        try:
-            if '.' in defect_amount_str:
-                defect_amount = float(defect_amount_str)
+            elif user_input == 'Main':
+                run_command('0')
+            elif user_input == 'Help':
+                print_help()
+            elif user_input == 'Exit':
+                color_print('\nExiting Masgent... Goodbye!\n', 'green')
+                sys.exit(0)
+            elif user_input.startswith('Vacancy'):
+                defect_type = 'vacancy'
+                break
+            elif user_input.startswith('Interstitial'):
+                defect_type = 'interstitial'
+                break
+            elif user_input.startswith('Substitution'):
+                defect_type = 'substitution'
+                break
             else:
-                defect_amount = int(defect_amount_str)
-            
-            schemas.GenerateVaspPoscarWithDefects(
-                poscar_path=poscar_path,
-                defect_type=defect_type,
-                original_element=original_element,
-                defect_amount=defect_amount,
-                defect_element=defect_element,
-            )
-            break
+                pass
+    
+    except (KeyboardInterrupt, EOFError):
+        color_print('\nExiting Masgent... Goodbye!\n', 'green')
+        sys.exit(0)
+    
+    poscar_path = check_poscar()
+    
+    try:
+        while True:
+            if defect_type == 'vacancy':
+                original_element = color_input('\nEnter the element to remove (e.g., Na): ', 'yellow').strip()
+                defect_element = None
+                if not original_element:
+                    continue
+            elif defect_type == 'interstitial':
+                original_element = None
+                defect_element = color_input('\nEnter the defect element to add (e.g., Na): ', 'yellow').strip()
+                if not defect_element:
+                    continue
+            else:
+                original_element = color_input('\nEnter the target element to be substituted (e.g., Na): ', 'yellow').strip()
+                if not original_element:
+                    continue
+                defect_element = color_input('\nEnter the defect element to substitute in (e.g., K): ', 'yellow').strip()
+                if not defect_element:
+                    continue
 
-        except Exception:
-            color_print(f'[Error] Invalid defect amount: {defect_amount_str}, please try again.\n', 'green')
+            try:
+                if original_element:
+                    schemas.CheckElement(element_symbol=original_element)
+                    schemas.CheckElementExistence(poscar_path=poscar_path, element_symbol=original_element)
+                if defect_element:
+                    schemas.CheckElement(element_symbol=defect_element)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid element {original_element or defect_element}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+
+    try:
+        while True:
+            defect_amount_str = color_input('\nEnter the defect amount (fraction between 0 and 1, or atom count >=1): ', 'yellow').strip()
+
+            if not defect_amount_str:
+                continue
+            
+            try:
+                if '.' in defect_amount_str:
+                    defect_amount = float(defect_amount_str)
+                else:
+                    defect_amount = int(defect_amount_str)
+                
+                schemas.GenerateVaspPoscarWithDefects(
+                    poscar_path=poscar_path,
+                    defect_type=defect_type,
+                    original_element=original_element,
+                    defect_amount=defect_amount,
+                    defect_element=defect_element,
+                )
+                break
+
+            except Exception:
+                color_print(f'[Error] Invalid defect amount: {defect_amount_str}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
 
     input = schemas.GenerateVaspPoscarWithDefects(
         poscar_path=poscar_path, 

@@ -157,11 +157,7 @@ async def ai_mode(agent):
             if user_input in {'ai'}:
                 color_print('[Info] You are already in AI mode. \n', 'green')
             elif user_input in {'back'}:
-                return 'cli-mode'
-            elif user_input in {'help'}:
-                print_help()
-            elif user_input in {'exit'}:
-                return 'exit-mode'
+                return
             else:
                 try:
                     history = await chat_stream(agent, user_input, history)
@@ -170,7 +166,7 @@ async def ai_mode(agent):
                     color_print(f'[Error]: {e}', 'red')
 
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent. Goodbye!\n', 'green')
+        color_print('\nExiting Masgent... Goodbye!\n', 'green')
         sys.exit(0)
 
 def main():

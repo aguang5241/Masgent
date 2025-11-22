@@ -2,10 +2,93 @@
 
 import os, re
 
+from ase.io import read, write
+from pymatgen.core import Structure
 from pymatgen.core.periodic_table import Element
 
 from pydantic import BaseModel, Field, model_validator
 from typing import Literal, Optional
+
+class CheckPoscar(BaseModel):
+    '''
+    Schema for checking validity of a VASP POSCAR file.
+    '''
+    poscar_path: str = Field(
+        ...,
+        description='Path to the POSCAR file. Must exist.'
+    )
+
+    @model_validator(mode='after')
+    def validator(self):
+        # ensure POSCAR exists
+        if not os.path.isfile(self.poscar_path):
+            raise ValueError(f'POSCAR file not found: {self.poscar_path}')
+        
+        # ensure the poscar file is valid POSCAR
+        try:
+            _ = Structure.from_file(self.poscar_path)
+        except Exception as e:
+            raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
+
+        return self
+    
+class CheckElement(BaseModel):
+    '''
+    Schema for checking validity of a chemical element symbol.
+    '''
+    element_symbol: str = Field(
+        ...,
+        description='Chemical element symbol, e.g., H, He, Li, Be, B, C, N, O, F, Ne'
+    )
+
+    @model_validator(mode='after')
+    def validator(self):
+        # ensure element symbol is valid
+        try:
+            Element(self.element_symbol)
+        except:
+            raise ValueError(f'Invalid chemical element symbol: {self.element_symbol}')
+
+        return self
+    
+class CheckElementExistence(BaseModel):
+    '''
+    Schema for checking existence of a chemical element symbol in the POSCAR file.
+    '''
+    poscar_path: str = Field(
+        ...,
+        description='Path to the POSCAR file. Must exist.'
+    )
+
+    element_symbol: str = Field(
+        ...,
+        description='Chemical element symbol to check for existence in the POSCAR file.'
+    )
+
+    @model_validator(mode='after')
+    def validator(self):
+        # ensure POSCAR exists
+        if not os.path.isfile(self.poscar_path):
+            raise ValueError(f'POSCAR file not found: {self.poscar_path}')
+        
+        # ensure the poscar file is valid POSCAR
+        try:
+            structure = Structure.from_file(self.poscar_path)
+        except Exception as e:
+            raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
+        
+        # ensure element symbol is valid
+        try:
+            Element(self.element_symbol)
+        except:
+            raise ValueError(f'Invalid chemical element symbol: {self.element_symbol}')
+        
+        # check existence of element in structure
+        elements_in_structure = {str(site.specie) for site in structure.sites}
+        if self.element_symbol not in elements_in_structure:
+            raise ValueError(f'Element {self.element_symbol} does not exist in POSCAR structure.')
+
+        return self
 
 class GenerateVaspPoscarSchema(BaseModel):
     '''
@@ -67,6 +150,12 @@ class ConvertStructureFormatSchema(BaseModel):
         if not os.path.isfile(self.input_path):
             raise ValueError(f'Input structure file not found: {self.input_path}')
         
+        # ensure the input file is valid structure file
+        try:
+            _ = read(self.input_path)
+        except Exception as e:
+            raise ValueError(f'Invalid structure file: {self.input_path}')
+        
         # ensure input_format and output_format are not the same
         if self.input_format == self.output_format:
             raise ValueError('Input format and output format must be different.')
@@ -92,6 +181,12 @@ class ConvertPoscarCoordinatesSchema(BaseModel):
         # ensure POSCAR exists
         if not os.path.isfile(self.poscar_path):
             raise ValueError(f'POSCAR file not found: {self.poscar_path}')
+        
+        # ensure the poscar file is valid POSCAR
+        try:
+            _ = Structure.from_file(self.poscar_path)
+        except Exception as e:
+            raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
 
         return self
     
@@ -117,6 +212,12 @@ class GenerateVaspInputsFromPoscar(BaseModel):
         # ensure POSCAR exists
         if not os.path.isfile(self.poscar_path):
             raise ValueError(f'POSCAR file not found: {self.poscar_path}')
+        
+        # ensure the poscar file is valid POSCAR
+        try:
+            _ = Structure.from_file(self.poscar_path)
+        except Exception as e:
+            raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
         
         # ensure vasp_input_sets is valid
         valid_sets = {
@@ -153,6 +254,12 @@ class CustomizeVaspKpointsWithAccuracy(BaseModel):
         # ensure accuracy_level is valid
         if self.accuracy_level not in {'Low', 'Medium', 'High'}:
             raise ValueError(f'Invalid accuracy_level: {self.accuracy_level}. Must be one of Low, Medium, or High.')
+        
+        # ensure the poscar file is valid POSCAR
+        try:
+            _ = Structure.from_file(self.poscar_path)
+        except Exception as e:
+            raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
 
         return self
     
@@ -192,6 +299,12 @@ class GenerateVaspPoscarWithDefects(BaseModel):
         # ensure POSCAR exists
         if not os.path.isfile(self.poscar_path):
             raise ValueError(f'POSCAR file not found: {self.poscar_path}')
+        
+        # ensure the poscar file is valid POSCAR
+        try:
+            _ = Structure.from_file(self.poscar_path)
+        except Exception as e:
+            raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
         
         # ensure original_element is provided for vacancy and substitution
         if self.defect_type in {'vacancy', 'substitution'} and not self.original_element:
