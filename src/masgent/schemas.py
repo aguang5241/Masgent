@@ -302,7 +302,7 @@ class GenerateVaspPoscarWithDefects(BaseModel):
         
         # ensure the poscar file is valid POSCAR
         try:
-            _ = Structure.from_file(self.poscar_path)
+            structure = Structure.from_file(self.poscar_path)
         except Exception as e:
             raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
         
@@ -335,6 +335,11 @@ class GenerateVaspPoscarWithDefects(BaseModel):
                 Element(self.original_element)
             except:
                 raise ValueError(f'Invalid original element symbol: {self.original_element}')
+            
+            # ensure original_element exists in the POSCAR structure
+            if self.original_element not in {str(site.specie) for site in structure.sites}:
+                raise ValueError(f'Original element {self.original_element} does not exist in POSCAR structure.')
+            
         if self.defect_element:
             try:
                 Element(self.defect_element)

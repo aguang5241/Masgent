@@ -1,28 +1,12 @@
-# !/usr/bin/env python3
+#!/usr/bin/env python3
+
 import sys
-from bullet import Bullet, Input, colors
+from bullet import Bullet, colors
 
 from masgent import tools, schemas
 from masgent.ai_mode import ai_backend
-from masgent.utils import color_print, color_input, print_banner, print_help
-
-COMMANDS = {}
-
-def register(code, func):
-    def decorator(func):
-        COMMANDS[code] = {
-            'function': func,
-            'description': func.__doc__ or ''
-        }
-        return func
-    return decorator
-
-def run_command(code):
-    cmd = COMMANDS.get(code)
-    if cmd:
-        cmd['function']()
-    else:
-        color_print(f'[Error] Invalid command code: {code}\n', 'red')
+from masgent.utils import color_print, color_input, print_help
+from masgent.cli_mode.cli_entries import register, run_command
 
 def check_poscar():
     try:
@@ -42,191 +26,11 @@ def check_poscar():
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
         return
 
-@register('0', 'Entry point for Masgent CLI.')
-def command_0():
-    print_banner()
-    
-    try:
-        while True:
-            prompt = '''
-Welcome to Masgent — Your Materials Simulation Agent.
------------------------------------------------------
-Please select from the following options:
-'''
-            choices = [
-                '1. Density Functional Theory (DFT) Simulations',
-                '2. Machine Learning Potentials (MLP)',
-                '3. Machine Learning Model Training & Evaluation',
-                '',
-                '--- Global Commands ---',
-                'AI',
-                'Help',
-                'Exit',
-            ]
-            cli = Bullet(prompt=prompt, choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
-            user_input = cli.launch()
-
-            if user_input.strip() == '' or user_input.startswith('---'):
-                continue
-            
-            if user_input == 'AI':
-                ai_backend.main()
-            elif user_input == 'Help':
-                print_help()
-            elif user_input == 'Exit':
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
-            elif user_input == '1. Density Functional Theory (DFT) Simulations':
-                run_command('1')
-            elif user_input == '2. Machine Learning Potentials (MLP)':
-                run_command('2')
-            elif user_input == '3. Machine Learning Model Training & Evaluation':
-                run_command('3')
-            else:
-                pass
-    
-    except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
-
-@register('1', 'Entry point for Density Functional Theory (DFT) Simulations.')
-def command_1():
-    try:
-        while True:
-            choices = [
-                '1.1 Prepare VASP input files',
-                '1.2 Analyze VASP output files',
-                '',
-                '--- Global Commands ---',
-                'AI',
-                'Back',
-                'Main',
-                'Help',
-                'Exit',
-            ]
-            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
-            user_input = cli.launch()
-
-            if user_input.strip() == '' or user_input.startswith('---'):
-                continue
-
-            if user_input == 'AI':
-                ai_backend.main()
-            elif user_input == 'Back':
-                return
-            elif user_input == 'Main':
-                run_command('0')
-            elif user_input == 'Help':
-                print_help()
-            elif user_input == 'Exit':
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
-            elif user_input == '1.1 Prepare VASP input files':
-                run_command('1.1')
-            elif user_input == '1.2 Analyze VASP output files':
-                run_command('1.2')
-            else:
-                pass
-
-    except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
-
-
-@register('1.1', 'Prepare VASP input files')
-def command_1_1():
-    try:
-        while True:
-            choices = [
-                '1.1.1 Generate VASP POSCAR file from chemical formula',
-                '1.1.2 Generate VASP KPOINTS with specified accuracy',
-                '1.1.3 Prepare VASP input files (INCAR, KPOINTS, POTCAR)',
-                '1.1.4 Convert POSCAR coordinates (Direct <-> Cartesian)',
-                '1.1.5 Convert structure file formats (CIF, POSCAR, XYZ)',
-                '1.1.6 Generate VASP POSCAR with defects (Vacancies, Interstitials, Substitutions)',
-                '',
-                '--- Global Commands ---',
-                'AI',
-                'Back',
-                'Main',
-                'Help',
-                'Exit',
-            ]
-            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
-            user_input = cli.launch()
-
-            if user_input.strip() == '' or user_input.startswith('---'):
-                continue
-
-            if user_input == 'AI':
-                ai_backend.main()
-            elif user_input == 'Back':
-                return
-            elif user_input == 'Main':
-                run_command('0')
-            elif user_input == 'Help':
-                print_help()
-            elif user_input == 'Exit':
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
-            elif user_input == '1.1.1 Generate VASP POSCAR file from chemical formula':
-                run_command('1.1.1')
-            elif user_input == '1.1.2 Generate VASP KPOINTS with specified accuracy':
-                run_command('1.1.2')
-            elif user_input == '1.1.3 Prepare VASP input files (INCAR, KPOINTS, POTCAR)':
-                run_command('1.1.3')
-            elif user_input == '1.1.4 Convert POSCAR coordinates (Direct <-> Cartesian)':
-                run_command('1.1.4')
-            elif user_input == '1.1.5 Convert structure file formats (CIF, POSCAR, XYZ)':
-                run_command('1.1.5')
-            elif user_input == '1.1.6 Generate VASP POSCAR with defects (Vacancies, Interstitials, Substitutions)':
-                run_command('1.1.6')
-            else:
-                pass
-
-    except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
-
-@register('1.2', 'Analyze VASP output files')
-def command_1_2():
-    try:
-        while True:
-            choices = [
-                '(To be implemented)',
-                '',
-                '--- Global Commands ---',
-                'AI',
-                'Back',
-                'Main',
-                'Help',
-                'Exit',
-            ]
-            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
-            user_input = cli.launch()
-
-            if user_input.strip() == '' or user_input.startswith('---'):
-                continue
-
-            if user_input == 'AI':
-                ai_backend.main()
-            elif user_input == 'Back':
-                return
-            elif user_input == 'Main':
-                run_command('0')
-            elif user_input == 'Help':
-                print_help()
-            elif user_input == 'Exit':
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
-            elif user_input == '(To be implemented)':
-                print('This feature is under development. Stay tuned!')
-            else:
-                pass
-
-    except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+#############################################
+#                                           #
+# Below are implementations of sub-commands #
+#                                           #
+#############################################
 
 @register('1.1.1', 'Generate VASP POSCAR file from user inputs or from Materials Project database.')
 def command_1_1_1():

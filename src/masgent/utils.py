@@ -156,14 +156,28 @@ def print_help():
     headers = ['Code', 'Description']
     rows = [
         ['1', 'Density Functional Theory (DFT) Simulations'],
-        ['1.1', 'Prepare VASP input files'],
-        ['1.1.1', 'Generate VASP POSCAR from chemical formula'],
-        ['1.1.2', 'Generate VASP KPOINTS with specified accuracy'],
-        ['1.1.3', 'Prepare VASP input files (INCAR, KPOINTS, POTCAR)'],
-        ['1.1.4', 'Convert POSCAR coordinates (direct <-> cartesian)'],
-        ['1.1.5', 'Convert structure file formats (CIF, POSCAR, XYZ)'],
-        ['1.1.6', 'Generate VASP POSCAR with defects (vacancies, interstitials, substitutions)'],
-        ['1.2', 'Analyze VASP output files'],
+        
+        ['1.1', 'Structure Preparation & Manipulation'],
+        ['1.1.1', 'Generate POSCAR from chemical formula'],
+        ['1.1.2', 'Convert POSCAR coordinates (Direct <-> Cartesian)'],
+        ['1.1.3', 'Convert structure file formats (CIF, POSCAR, XYZ)'],
+        ['1.1.4', 'Generate supercells'],
+        ['1.1.5', 'Generate structures with defects (Vacancies, Interstitials, Substitutions)'],
+        ['1.1.6', 'Generate special quasirandom structures (SQS)'],
+        ['1.1.7', 'Generate surface slabs'],
+        ['1.1.8', 'Generate interface structures'],
+
+        ['1.2', 'VASP Input File Preparation'],
+        ['1.2.1', 'Generate INCAR templates (relaxation, static, MD, etc.)'],
+        ['1.2.2', 'Generate KPOINTS with specified accuracy'],
+        ['1.2.3', 'Prepare full VASP input files (INCAR, KPOINTS, POTCAR, POSCAR)'],
+        ['1.2.4', 'Generate HPC job submission script'],
+        ['1.2.5', 'Generate standard VASP calculation workflows'],
+        ['1.2.5.1', 'Convergence testing (ENCUT, KPOINTS)'],
+        ['1.2.5.2', 'Equation of State (EOS)'],
+        ['1.2.5.3', 'Elastic constants'],
+
+        ['1.3', 'VASP Output Analysis'],
 
         ['2', 'Machine Learning Potentials (MLP)'],
 

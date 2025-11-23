@@ -5,7 +5,7 @@ from bullet import Bullet, colors
 
 from masgent.ai_mode import ai_backend
 from masgent.utils import color_print, print_banner, print_help
-from masgent.cli_mode.cli_run import run_command
+from masgent.cli_mode.cli_entries import run_command
 
 
 def main():
@@ -41,11 +41,11 @@ Please select from the following options:
             elif user_input == 'Exit':
                 color_print('\nExiting Masgent... Goodbye!\n', 'green')
                 sys.exit(0)
-            elif user_input == '1. Density Functional Theory (DFT) Simulations':
+            elif user_input.startswith('1'):
                 run_command('1')
-            elif user_input == '2. Machine Learning Potentials (MLP)':
+            elif user_input.startswith('2'):
                 run_command('2')
-            elif user_input == '3. Machine Learning Model Training & Evaluation':
+            elif user_input.startswith('3'):
                 run_command('3')
             else:
                 pass
