@@ -15,7 +15,7 @@ Masgent: Materials Simulation Agent
 - Detailed user guidance
 
 ## Progress Record
-- 1. Density Functional Theory (DFT) Simulations
+1. Density Functional Theory (DFT) Simulations
   - 1.1 Structure Preparation & Manipulation
     - 1.1.1 Generate POSCAR from chemical formula
     - 1.1.2 Convert POSCAR coordinates (Direct <-> Cartesian)
@@ -38,9 +38,9 @@ Masgent: Materials Simulation Agent
   
   - 1.3 VASP Output Analysis
 
-- 2. Machine Learning Potentials (MLP)
+2. (Planned) Machine Learning Potentials (MLP)
 
-- 3. Machine Learning Model Training & Evaluation
+3. (Planned) Machine Learning Model Training & Evaluation
 
 ## Local Debugging and Testing
 ```bash
