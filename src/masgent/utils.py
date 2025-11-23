@@ -8,6 +8,16 @@ from mp_api.client import MPRester
 from openai import OpenAI
 from importlib.metadata import version, PackageNotFoundError
 
+def global_commands():
+    return [
+        '',
+        'AI    ->  Chat with the Masgent AI',
+        'Back  ->  Return to previous menu',
+        'Main  ->  Return to main menu',
+        'Help  ->  Show available functions',
+        'Exit  ->  Quit the Masgent',
+    ]
+
 def write_comments(file, file_type, comments):
     with open(file, 'r') as f:
         lines = f.readlines()
@@ -168,7 +178,7 @@ def print_help():
         ['1.1.2', 'Convert POSCAR coordinates (Direct <-> Cartesian)'],
         ['1.1.3', 'Convert structure file formats (CIF, POSCAR, XYZ)'],
         ['1.1.4', 'Generate structures with defects (Vacancies, Interstitials, Substitutions)'],
-        # ['1.1.5', 'Generate supercells'],
+        ['1.1.5', 'Generate supercells'],
         # ['1.1.6', 'Generate special quasirandom structures (SQS)'],
         # ['1.1.7', 'Generate surface slabs'],
         # ['1.1.8', 'Generate interface structures'],

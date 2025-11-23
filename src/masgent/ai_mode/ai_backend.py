@@ -48,26 +48,21 @@ Global Commands:
     color_print(msg, 'green')
 
 def print_entry_message():
-    msg = '''
-Welcome to Masgent AI — Your AI Assistant for Materials Simulations.
---------------------------------------------------------------------
-In AI mode, you can interact naturally with the assistant to help with a wide
-range of materials simulation tasks. Ask questions, generate input files, diagnose
-errors, or get guidance on using different tools.
-
+    msg_1 = '''
+Welcome to Masgent AI — Your Materials Simulations Agent.
+---------------------------------------------------------
+Ask Masgent AI for help with any simulation tasks.
+'''
+    msg_2 = '''
 Try asking:
   • "Generate a POSCAR file for NaCl."
   • "Prepare VASP input files for a graphene structure."
   • "Add defects to a silicon crystal POSCAR."
+  • "Generate a supercell from a POSCAR file."
   • ...
-
-Global Commands:
-  ai    —>  Chat with the AI assistant
-  back  —>  Switch back to console mode
-  help  —>  List all available functions
-  exit  —>  Quit the program
-    '''
-    color_print(msg, 'green')
+'''
+    color_print(msg_1, 'white')
+    color_print(msg_2, 'green')
 
 async def keep_recent_messages(messages: list[ModelMessage]) -> list[ModelMessage]:
     '''

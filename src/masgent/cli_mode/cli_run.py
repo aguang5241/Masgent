@@ -5,7 +5,7 @@ from bullet import Bullet, colors
 
 from masgent import tools, schemas
 from masgent.ai_mode import ai_backend
-from masgent.utils import color_print, color_input, print_help
+from masgent.utils import color_print, color_input, print_help, global_commands
 
 COMMANDS = {}
 
@@ -74,29 +74,19 @@ def command_1_1_2():
             choices = [
                 'Direct coordinates     —>  Cartesian coordinates',
                 'Cartesian coordinates  —>  Direct coordinates',
-                '',
-                '--- Global Commands ---',
-                'AI',
-                'Back',
-                'Main',
-                'Help',
-                'Exit',
-            ]
+            ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
 
-            if user_input.strip() == '' or user_input.startswith('---'):
-                continue
-
-            if user_input == 'AI':
+            if user_input.startswith('AI'):
                 ai_backend.main()
-            elif user_input == 'Back':
+            elif user_input.startswith('Back'):
                 return
-            elif user_input == 'Main':
+            elif user_input.startswith('Main'):
                 run_command('0')
-            elif user_input == 'Help':
+            elif user_input.startswith('Help'):
                 print_help()
-            elif user_input == 'Exit':
+            elif user_input.startswith('Exit'):
                 color_print('\nExiting Masgent... Goodbye!\n', 'green')
                 sys.exit(0)
             elif user_input.startswith('Direct coordinates'):
@@ -106,7 +96,7 @@ def command_1_1_2():
                 to_cartesian = False
                 break
             else:
-                pass
+                continue
     
     except (KeyboardInterrupt, EOFError):
         color_print('\nExiting Masgent... Goodbye!\n', 'green')
@@ -133,29 +123,19 @@ def command_1_1_3():
                 'CIF     ->  XYZ',
                 'XYZ     ->  POSCAR',
                 'XYZ     ->  CIF',
-                '',
-                '--- Global Commands ---',
-                'AI',
-                'Back',
-                'Main',
-                'Help',
-                'Exit',
-            ]
+            ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
 
-            if user_input.strip() == '' or user_input.startswith('---'):
-                continue
-
-            if user_input == 'AI':
+            if user_input.startswith('AI'):
                 ai_backend.main()
-            elif user_input == 'Back':
+            elif user_input.startswith('Back'):
                 return
-            elif user_input == 'Main':
+            elif user_input.startswith('Main'):
                 run_command('0')
-            elif user_input == 'Help':
+            elif user_input.startswith('Help'):
                 print_help()
-            elif user_input == 'Exit':
+            elif user_input.startswith('Exit'):
                 color_print('\nExiting Masgent... Goodbye!\n', 'green')
                 sys.exit(0)
             elif user_input.startswith('POSCAR') and user_input.endswith('CIF'):
@@ -177,7 +157,7 @@ def command_1_1_3():
                 input_format, output_format = 'XYZ', 'CIF'
                 break
             else:
-                pass
+                continue
     
     except (KeyboardInterrupt, EOFError):
         color_print('\nExiting Masgent... Goodbye!\n', 'green')
@@ -212,29 +192,19 @@ def command_1_1_4():
                 'Vacancy       ->  Remove atoms of a selected element',
                 'Interstitial  ->  Add atoms to interstitial positions',
                 'Substitution  ->  Replace atoms with another element',
-                '',
-                '--- Global Commands ---',
-                'AI',
-                'Back',
-                'Main',
-                'Help',
-                'Exit',
-            ]
+            ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
 
-            if user_input.strip() == '' or user_input.startswith('---'):
-                continue
-
-            if user_input == 'AI':
+            if user_input.startswith('AI'):
                 ai_backend.main()
-            elif user_input == 'Back':
+            elif user_input.startswith('Back'):
                 return
-            elif user_input == 'Main':
+            elif user_input.startswith('Main'):
                 run_command('0')
-            elif user_input == 'Help':
+            elif user_input.startswith('Help'):
                 print_help()
-            elif user_input == 'Exit':
+            elif user_input.startswith('Exit'):
                 color_print('\nExiting Masgent... Goodbye!\n', 'green')
                 sys.exit(0)
             elif user_input.startswith('Vacancy'):
@@ -247,7 +217,7 @@ def command_1_1_4():
                 defect_type = 'substitution'
                 break
             else:
-                pass
+                continue
     
     except (KeyboardInterrupt, EOFError):
         color_print('\nExiting Masgent... Goodbye!\n', 'green')
@@ -370,29 +340,19 @@ def command_1_2_2():
                 'Low     ->  Suitable for preliminary calculations, grid density = 1000 / number of atoms',
                 'Medium  ->  Balanced accuracy and computational cost, grid density = 3000 / number of atoms',
                 'High    ->  High accuracy for production runs, grid density = 5000 / number of atoms',
-                '',
-                '--- Global Commands ---',
-                'AI',
-                'Back',
-                'Main',
-                'Help',
-                'Exit',
-            ]
+            ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
 
-            if user_input.strip() == '' or user_input.startswith('---'):
-                continue
-
-            if user_input == 'AI':
+            if user_input.startswith('AI'):
                 ai_backend.main()
-            elif user_input == 'Back':
+            elif user_input.startswith('Back'):
                 return
-            elif user_input == 'Main':
+            elif user_input.startswith('Main'):
                 run_command('0')
-            elif user_input == 'Help':
+            elif user_input.startswith('Help'):
                 print_help()
-            elif user_input == 'Exit':
+            elif user_input.startswith('Exit'):
                 color_print('\nExiting Masgent... Goodbye!\n', 'green')
                 sys.exit(0)
             elif user_input.startswith('Low'):
@@ -405,7 +365,7 @@ def command_1_2_2():
                 accuracy_level = 'High'
                 break
             else:
-                pass
+                continue
     
     except (KeyboardInterrupt, EOFError):
         color_print('\nExiting Masgent... Goodbye!\n', 'green')
@@ -432,29 +392,19 @@ def command_1_2_3():
                 'MPScanRelaxSet   ->   suggested for structure relaxation with r2SCAN functional',
                 'MPScanStaticSet  ->   suggested for static calculations with r2SCAN functional',
                 'MPMDSet          ->   suggested for molecular dynamics simulations',
-                '',
-                '--- Global Commands ---',
-                'AI',
-                'Back',
-                'Main',
-                'Help',
-                'Exit',
-            ]
+            ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
 
-            if user_input.strip() == '' or user_input.startswith('---'):
-                continue
-
-            if user_input == 'AI':
+            if user_input.startswith('AI'):
                 ai_backend.main()
-            elif user_input == 'Back':
+            elif user_input.startswith('Back'):
                 return
-            elif user_input == 'Main':
+            elif user_input.startswith('Main'):
                 run_command('0')
-            elif user_input == 'Help':
+            elif user_input.startswith('Help'):
                 print_help()
-            elif user_input == 'Exit':
+            elif user_input.startswith('Exit'):
                 color_print('\nExiting Masgent... Goodbye!\n', 'green')
                 sys.exit(0)
             elif user_input.startswith('MPRelaxSet'):
@@ -476,7 +426,7 @@ def command_1_2_3():
                 vasp_input_sets = 'MPMDSet'
                 break
             else:
-                pass
+                continue
     
     except (KeyboardInterrupt, EOFError):
         color_print('\nExiting Masgent... Goodbye!\n', 'green')

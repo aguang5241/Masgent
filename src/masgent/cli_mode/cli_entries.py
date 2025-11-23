@@ -4,7 +4,7 @@ import sys
 from bullet import Bullet, colors
 
 from masgent.ai_mode import ai_backend
-from masgent.utils import color_print, print_banner, print_help
+from masgent.utils import color_print, print_banner, print_help, global_commands
 from masgent.cli_mode.cli_run import register, run_command
 
 
@@ -30,22 +30,18 @@ Please select from the following options:
                 '2. Machine Learning Potentials (MLP)',
                 '3. Machine Learning Model Training & Evaluation',
                 '',
-                '--- Global Commands ---',
-                'AI',
-                'Help',
-                'Exit',
+                'AI    ->  Chat with the Masgent AI',
+                'Help  ->  Show available functions',
+                'Exit  ->  Quit the Masgent',
             ]
             cli = Bullet(prompt=prompt, choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
-
-            if user_input.strip() == '' or user_input.startswith('---'):
-                continue
             
-            if user_input == 'AI':
+            if user_input.startswith('AI'):
                 ai_backend.main()
-            elif user_input == 'Help':
+            elif user_input.startswith('Help'):
                 print_help()
-            elif user_input == 'Exit':
+            elif user_input.startswith('Exit'):
                 color_print('\nExiting Masgent... Goodbye!\n', 'green')
                 sys.exit(0)
             elif user_input.startswith('1'):
@@ -55,7 +51,7 @@ Please select from the following options:
             elif user_input.startswith('3'):
                 run_command('3')
             else:
-                pass
+                continue
     
     except (KeyboardInterrupt, EOFError):
         color_print('\nExiting Masgent... Goodbye!\n', 'green')
@@ -69,29 +65,19 @@ def command_1():
                 '1.1 Structure Preparation & Manipulation',
                 '1.2 VASP Input File Preparation',
                 '1.3 VASP Output Analysis',
-                '',
-                '--- Global Commands ---',
-                'AI',
-                'Back',
-                'Main',
-                'Help',
-                'Exit',
-            ]
+            ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
 
-            if user_input.strip() == '' or user_input.startswith('---'):
-                continue
-
-            if user_input == 'AI':
+            if user_input.startswith('AI'):
                 ai_backend.main()
-            elif user_input == 'Back':
+            elif user_input.startswith('Back'):
                 return
-            elif user_input == 'Main':
+            elif user_input.startswith('Main'):
                 run_command('0')
-            elif user_input == 'Help':
+            elif user_input.startswith('Help'):
                 print_help()
-            elif user_input == 'Exit':
+            elif user_input.startswith('Exit'):
                 color_print('\nExiting Masgent... Goodbye!\n', 'green')
                 sys.exit(0)
             elif user_input.startswith('1.1'):
@@ -101,7 +87,7 @@ def command_1():
             elif user_input.startswith('1.3'):
                 run_command('1.3')
             else:
-                pass
+                continue
 
     except (KeyboardInterrupt, EOFError):
         color_print('\nExiting Masgent... Goodbye!\n', 'green')
@@ -121,29 +107,19 @@ def command_1_1():
                 '1.1.6 Generate special quasirandom structures (SQS)',
                 '1.1.7 Generate surface slabs',
                 '1.1.8 Generate interface structures',
-                '',
-                '--- Global Commands ---',
-                'AI',
-                'Back',
-                'Main',
-                'Help',
-                'Exit',
-            ]
+            ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
 
-            if user_input.strip() == '' or user_input.startswith('---'):
-                continue
-
-            if user_input == 'AI':
+            if user_input.startswith('AI'):
                 ai_backend.main()
-            elif user_input == 'Back':
+            elif user_input.startswith('Back'):
                 return
-            elif user_input == 'Main':
+            elif user_input.startswith('Main'):
                 run_command('0')
-            elif user_input == 'Help':
+            elif user_input.startswith('Help'):
                 print_help()
-            elif user_input == 'Exit':
+            elif user_input.startswith('Exit'):
                 color_print('\nExiting Masgent... Goodbye!\n', 'green')
                 sys.exit(0)
             elif user_input.startswith('1.1.1'):
@@ -163,7 +139,7 @@ def command_1_1():
             elif user_input.startswith('1.1.8'):
                 run_command('1.1.8')
             else:
-                pass
+                continue
 
     except (KeyboardInterrupt, EOFError):
         color_print('\nExiting Masgent... Goodbye!\n', 'green')
@@ -179,29 +155,19 @@ def command_1_2():
                 '1.2.3 Prepare full VASP input files (INCAR, KPOINTS, POTCAR, POSCAR)',
                 '1.2.4 Generate HPC job submission script',
                 '1.2.5 Generate standard VASP calculation workflows',
-                '',
-                '--- Global Commands ---',
-                'AI',
-                'Back',
-                'Main',
-                'Help',
-                'Exit',
-            ]
+            ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
 
-            if user_input.strip() == '' or user_input.startswith('---'):
-                continue
-
-            if user_input == 'AI':
+            if user_input.startswith('AI'):
                 ai_backend.main()
-            elif user_input == 'Back':
+            elif user_input.startswith('Back'):
                 return
-            elif user_input == 'Main':
+            elif user_input.startswith('Main'):
                 run_command('0')
-            elif user_input == 'Help':
+            elif user_input.startswith('Help'):
                 print_help()
-            elif user_input == 'Exit':
+            elif user_input.startswith('Exit'):
                 color_print('\nExiting Masgent... Goodbye!\n', 'green')
                 sys.exit(0)
             elif user_input.startswith('1.2.1'):
@@ -215,7 +181,7 @@ def command_1_2():
             elif user_input.startswith('1.2.5'):
                 run_command('1.2.5')
             else:
-                pass
+                continue
 
     except (KeyboardInterrupt, EOFError):
         color_print('\nExiting Masgent... Goodbye!\n', 'green')
@@ -229,29 +195,19 @@ def command_1_2_5():
                 '1.2.5.1 Convergence testing (ENCUT, KPOINTS)',
                 '1.2.5.2 Equation of State (EOS)',
                 '1.2.5.3 Elastic constants',
-                '',
-                '--- Global Commands ---',
-                'AI',
-                'Back',
-                'Main',
-                'Help',
-                'Exit',
-            ]
+            ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
 
-            if user_input.strip() == '' or user_input.startswith('---'):
-                continue
-
-            if user_input == 'AI':
+            if user_input.startswith('AI'):
                 ai_backend.main()
-            elif user_input == 'Back':
+            elif user_input.startswith('Back'):
                 return
-            elif user_input == 'Main':
+            elif user_input.startswith('Main'):
                 run_command('0')
-            elif user_input == 'Help':
+            elif user_input.startswith('Help'):
                 print_help()
-            elif user_input == 'Exit':
+            elif user_input.startswith('Exit'):
                 color_print('\nExiting Masgent... Goodbye!\n', 'green')
                 sys.exit(0)
             elif user_input.startswith('1.2.5.1'):
@@ -261,7 +217,7 @@ def command_1_2_5():
             elif user_input.startswith('1.2.5.3'):
                 run_command('1.2.5.3')
             else:
-                pass
+                continue
 
     except (KeyboardInterrupt, EOFError):
         color_print('\nExiting Masgent... Goodbye!\n', 'green')
@@ -273,35 +229,25 @@ def command_1_3():
         while True:
             choices = [
                 '(To be implemented)',
-                '',
-                '--- Global Commands ---',
-                'AI',
-                'Back',
-                'Main',
-                'Help',
-                'Exit',
-            ]
+            ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
 
-            if user_input.strip() == '' or user_input.startswith('---'):
-                continue
-
-            if user_input == 'AI':
+            if user_input.startswith('AI'):
                 ai_backend.main()
-            elif user_input == 'Back':
+            elif user_input.startswith('Back'):
                 return
-            elif user_input == 'Main':
+            elif user_input.startswith('Main'):
                 run_command('0')
-            elif user_input == 'Help':
+            elif user_input.startswith('Help'):
                 print_help()
-            elif user_input == 'Exit':
+            elif user_input.startswith('Exit'):
                 color_print('\nExiting Masgent... Goodbye!\n', 'green')
                 sys.exit(0)
             elif user_input == '(To be implemented)':
                 print('This feature is under development. Stay tuned!')
             else:
-                pass
+                continue
 
     except (KeyboardInterrupt, EOFError):
         color_print('\nExiting Masgent... Goodbye!\n', 'green')

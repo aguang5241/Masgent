@@ -21,7 +21,7 @@ Masgent: Materials Simulation Agent
     - 1.1.2 Convert POSCAR coordinates (Direct <-> Cartesian)
     - 1.1.3 Convert structure file formats (CIF, POSCAR, XYZ)
     - 1.1.4 Generate structures with defects (Vacancies, Interstitials, Substitutions)
-    - 1.1.5 (Planned) Generate supercells
+    - 1.1.5 Generate supercells
     - 1.1.6 (Planned) Generate special quasirandom structures (SQS)
     - 1.1.7 (Planned) Generate surface slabs
     - 1.1.8 (Planned) Generate interface structures

@@ -23,22 +23,18 @@ Please select from the following options:
                 '2. Machine Learning Potentials (MLP)',
                 '3. Machine Learning Model Training & Evaluation',
                 '',
-                '--- Global Commands ---',
-                'AI',
-                'Help',
-                'Exit',
+                'AI    ->  Chat with the Masgent AI',
+                'Help  ->  Show available functions',
+                'Exit  ->  Quit the Masgent',
             ]
             cli = Bullet(prompt=prompt, choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
-
-            if user_input.strip() == '' or user_input.startswith('---'):
-                continue
             
-            if user_input == 'AI':
+            if user_input.startswith('AI'):
                 ai_backend.main()
-            elif user_input == 'Help':
+            elif user_input.startswith('Help'):
                 print_help()
-            elif user_input == 'Exit':
+            elif user_input.startswith('Exit'):
                 color_print('\nExiting Masgent... Goodbye!\n', 'green')
                 sys.exit(0)
             elif user_input.startswith('1'):
@@ -48,7 +44,7 @@ Please select from the following options:
             elif user_input.startswith('3'):
                 run_command('3')
             else:
-                pass
+                continue
     
     except (KeyboardInterrupt, EOFError):
         color_print('\nExiting Masgent... Goodbye!\n', 'green')
