@@ -191,7 +191,7 @@ def command_1_1_4():
             choices = [
                 'Vacancy                 ->  Randomly remove atoms of a selected element',
                 'Substitution            ->  Randomly substitute atoms of a selected element with defect element',
-                'Interstitial (Voronoi)  ->  Add atoms at interstitial sites using Voronoi method',
+                'Interstitial (Voronoi)  ->  Add atom at interstitial sites using Voronoi method',
             ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
