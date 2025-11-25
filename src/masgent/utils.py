@@ -1,6 +1,6 @@
 # !/usr/bin/env python3
 
-import os, sys, datetime, shutil
+import os, sys, datetime, time
 import tabulate
 from pathlib import Path
 from colorama import Fore, Style
@@ -122,19 +122,20 @@ def ask_for_mp_api_key():
 def os_path_setup():
     '''Set up base and target directories for VASP input files.'''
     base_dir = os.getcwd()
-    output_dir = os.path.join(base_dir, 'masgent_outputs')
-    os.makedirs(output_dir, exist_ok=True)
+    main_dir = os.path.join(base_dir, 'masgent_projects')
 
-    # If there are files in the output directory, archive them with a timestamp (copy rather than delete)
     timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-    if os.listdir(output_dir):
-        archive_dir = os.path.join(base_dir, f'masgent_archive/archive_{timestamp}')
-        os.makedirs(archive_dir, exist_ok=True)
-        for file_name in os.listdir(output_dir):
-            src_file = os.path.join(output_dir, file_name)
-            dst_file = os.path.join(archive_dir, file_name)
-            shutil.copy2(src_file, dst_file)
-    return base_dir, output_dir
+    runs_dir = os.path.join(main_dir, f'runs_{timestamp}')
+    if not os.path.exists(runs_dir):
+        os.makedirs(runs_dir)
+    else:
+        # In the rare case of collision, wait a second and try again
+        time.sleep(1)
+        timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+        runs_dir = os.path.join(main_dir, f'runs_{timestamp}')
+        os.makedirs(runs_dir)
+
+    return base_dir, main_dir, runs_dir
 
 def print_banner():
     try:

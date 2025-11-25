@@ -54,7 +54,7 @@ def command_1_1_1():
                 continue
 
             try:
-                schemas.GenerateVaspPoscarSchema(formula=formula)
+                schemas.GenerateVaspPoscarSchema(formula_list=[formula])
                 break
             except Exception:
                 color_print(f'[Error] Invalid formula: {formula}, please double check and try again.\n', 'red')
@@ -63,7 +63,7 @@ def command_1_1_1():
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
         return
 
-    input = schemas.GenerateVaspPoscarSchema(formula=formula)
+    input = schemas.GenerateVaspPoscarSchema(formula_list=[formula])
     result = tools.generate_vasp_poscar(input=input)
     color_print(result, 'green')
 
@@ -208,13 +208,13 @@ def command_1_1_4():
                 color_print('\nExiting Masgent... Goodbye!\n', 'green')
                 sys.exit(0)
             elif user_input.startswith('Vacancy'):
-                defect_type = 'vacancy'
+                run_command('vacancy')
                 break
             elif user_input.startswith('Interstitial (Voronoi)'):
-                defect_type = 'interstitial (Voronoi)'
+                run_command('interstitial')
                 break
             elif user_input.startswith('Substitution'):
-                defect_type = 'substitution'
+                run_command('substitution')
                 break
             else:
                 continue
@@ -222,42 +222,28 @@ def command_1_1_4():
     except (KeyboardInterrupt, EOFError):
         color_print('\nExiting Masgent... Goodbye!\n', 'green')
         sys.exit(0)
-    
+
+@register('vacancy', 'Generate structure with vacancy defects.')
+def command_vacancy():
     try:
         poscar_path = check_poscar()
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
         return
-    
+
     try:
         while True:
-            if defect_type == 'vacancy':
-                original_element = color_input('\nEnter the element to remove (e.g., Na): ', 'yellow').strip()
-                defect_element = None
-                if not original_element:
-                    continue
-            elif defect_type == 'interstitial (Voronoi)':
-                original_element = None
-                defect_element = color_input('\nEnter the defect element to add (e.g., Na): ', 'yellow').strip()
-                if not defect_element:
-                    continue
-            else:
-                original_element = color_input('\nEnter the target element to be substituted (e.g., Na): ', 'yellow').strip()
-                if not original_element:
-                    continue
-                defect_element = color_input('\nEnter the defect element to substitute in (e.g., K): ', 'yellow').strip()
-                if not defect_element:
-                    continue
-
+            original_element = color_input('\nEnter the element to remove (e.g., Na): ', 'yellow').strip()
+            if not original_element:
+                continue
+            
             try:
-                if original_element:
-                    schemas.CheckElement(element_symbol=original_element)
-                    schemas.CheckElementExistence(poscar_path=poscar_path, element_symbol=original_element)
-                if defect_element:
-                    schemas.CheckElement(element_symbol=defect_element)
+                schemas.CheckElement(element_symbol=original_element)
+                schemas.CheckElementExistence(poscar_path=poscar_path, element_symbol=original_element)
                 break
             except Exception:
-                color_print(f'[Error] Invalid element {original_element or defect_element}, please double check and try again.\n', 'red')
+                color_print(f'[Error] Invalid element {original_element}, please double check and try again.\n', 'red')
+                continue
 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
@@ -265,36 +251,17 @@ def command_1_1_4():
 
     try:
         while True:
-            if defect_type == 'interstitial (Voronoi)':
-                defect_amount = None
-
-                schemas.GenerateVaspPoscarWithDefects(
-                    poscar_path=poscar_path,
-                    defect_type=defect_type,
-                    original_element=original_element,
-                    defect_amount=defect_amount,
-                    defect_element=defect_element,
-                )
-                break
-
             defect_amount_str = color_input('\nEnter the defect amount (fraction between 0 and 1, or atom count >=1): ', 'yellow').strip()
-
             if not defect_amount_str:
                 continue
-            
+
             try:
                 if '.' in defect_amount_str:
                     defect_amount = float(defect_amount_str)
                 else:
                     defect_amount = int(defect_amount_str)
                 
-                schemas.GenerateVaspPoscarWithDefects(
-                    poscar_path=poscar_path,
-                    defect_type=defect_type,
-                    original_element=original_element,
-                    defect_amount=defect_amount,
-                    defect_element=defect_element,
-                )
+                schemas.GenerateVaspPoscarWithVacancyDefects(poscar_path=poscar_path, original_element=original_element, defect_amount=defect_amount)
                 break
 
             except Exception:
@@ -304,14 +271,103 @@ def command_1_1_4():
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
         return
 
-    input = schemas.GenerateVaspPoscarWithDefects(
-        poscar_path=poscar_path, 
-        defect_type=defect_type, 
-        original_element=original_element, 
-        defect_amount=defect_amount, 
-        defect_element=defect_element
-        )
-    result = tools.generate_vasp_poscar_with_defects(input=input)
+    input = schemas.GenerateVaspPoscarWithVacancyDefects(poscar_path=poscar_path, original_element=original_element, defect_amount=defect_amount)
+    result = tools.generate_vasp_poscar_with_vacancy_defects(input=input)
+    color_print(result, 'green')
+
+@register('substitution', 'Generate structure with substitution defects.')
+def command_substitution():
+    try:
+        poscar_path = check_poscar()
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+    
+    try:
+        while True:
+            original_element = color_input('\nEnter the target element to be substituted (e.g., Na): ', 'yellow').strip()
+            if not original_element:
+                continue
+            
+            try:
+                schemas.CheckElement(element_symbol=original_element)
+                schemas.CheckElementExistence(poscar_path=poscar_path, element_symbol=original_element)
+                break
+            
+            except Exception:
+                color_print(f'[Error] Invalid element {original_element}, please double check and try again.\n', 'red')
+                
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+    
+    try:
+        while True:
+            defect_element = color_input('\nEnter the defect element to substitute in (e.g., K): ', 'yellow').strip()
+            if not defect_element:
+                continue
+
+            try:
+                schemas.CheckElement(element_symbol=defect_element)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid element {defect_element}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+
+    try:
+        while True:
+            defect_amount_str = color_input('\nEnter the defect amount (fraction between 0 and 1, or atom count >=1): ', 'yellow').strip()
+            if not defect_amount_str:
+                continue
+            
+            try:
+                if '.' in defect_amount_str:
+                    defect_amount = float(defect_amount_str)
+                else:
+                    defect_amount = int(defect_amount_str)
+                schemas.GenerateVaspPoscarWithSubstitutionDefects(poscar_path=poscar_path, original_element=original_element, defect_element=defect_element, defect_amount=defect_amount)
+                break
+
+            except Exception:
+                color_print(f'[Error] Invalid defect amount: {defect_amount_str}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+
+    input = schemas.GenerateVaspPoscarWithSubstitutionDefects(poscar_path=poscar_path, original_element=original_element, defect_element=defect_element, defect_amount=defect_amount)
+    result = tools.generate_vasp_poscar_with_substitution_defects(input=input)
+    color_print(result, 'green')
+
+@register('interstitial', 'Generate structure with interstitial (Voronoi) defects.')
+def command_interstitial():
+    try:
+        poscar_path = check_poscar()
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+    
+    try:
+        while True:
+            defect_element = color_input('\nEnter the defect element to add (e.g., Na): ', 'yellow').strip()
+            if not defect_element:
+                continue
+
+            try:
+                schemas.GenerateVaspPoscarWithInterstitialDefects(poscar_path=poscar_path, defect_element=defect_element)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid element {defect_element}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+
+    input = schemas.GenerateVaspPoscarWithInterstitialDefects(poscar_path=poscar_path, defect_element=defect_element)
+    result = tools.generate_vasp_poscar_with_interstitial_defects(input=input)
     color_print(result, 'green')
 
 @register('1.1.5', 'Generate supercell from POSCAR with specified scaling matrix.')

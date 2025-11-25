@@ -7,7 +7,18 @@ from pymatgen.core import Structure
 from pymatgen.core.periodic_table import Element
 
 from pydantic import BaseModel, Field, model_validator
-from typing import Literal, Optional
+from typing import Literal, Optional, List, Dict, Any
+
+class ToolMetadata(BaseModel):
+    '''
+    Schema for tool metadata information.
+    '''
+    name: str = Field(..., description='Name of the tool.')
+    description: Optional[str] = Field(None, description='Description of the tool.')
+    requires: List[str] = Field(..., description='List of required input parameters for the tool.')
+    optional: List[str] = Field([], description='List of optional input parameters for the tool.')
+    defaults: Dict[str, Any] = Field({}, description='Dictionary of default values for optional parameters.')
+    prereqs: List[str] = Field([], description='List of prerequisite tools that must be run before this tool.')
 
 class CheckPoscar(BaseModel):
     '''
@@ -94,30 +105,33 @@ class GenerateVaspPoscarSchema(BaseModel):
     '''
     Schema for generating VASP POSCAR file from user inputs or from Materials Project database.
     '''
-
-    formula: str = Field(..., description='Chemical formula, e.g., Cu, NaCl, MgO')
+    formula_list: List[str] = Field(
+        ...,
+        description='List of chemical formulas to generate POSCAR files for, e.g., ["Cu", "NaCl", "MgO"]'
+    )
 
     @model_validator(mode="after")
     def validator(self):
-        # ensure formula is valid
-        matches = re.findall(r'([A-Z][a-z]?)(\d*)', self.formula)
-        
-        # validate characters
-        reconstructed = ''.join(elem + num for elem, num in matches)
-        if reconstructed != self.formula:
-            raise ValueError(f"Invalid characters in formula: {self.formula}")
-        
-        # validate elements
-        valid = True
-        for elem, num in matches:
-            try:
-                Element(elem)  # will fail for invalid elements
-            except:
-                valid = False
-                break
+        for formula in self.formula_list:
+            # ensure formula is valid
+            matches = re.findall(r'([A-Z][a-z]?)(\d*)', formula)
+            
+            # validate characters
+            reconstructed = ''.join(elem + num for elem, num in matches)
+            if reconstructed != formula:
+                raise ValueError(f"Invalid characters in formula: {formula}")
+            
+            # validate elements
+            valid = True
+            for elem, num in matches:
+                try:
+                    Element(elem)  # will fail for invalid elements
+                except:
+                    valid = False
+                    break
 
-        if not valid:
-            raise ValueError(f'Invalid chemical formula: {self.formula}')
+            if not valid:
+                raise ValueError(f'Invalid chemical formula: {self.formula}')
 
         return self
     
@@ -218,14 +232,6 @@ class GenerateVaspInputsFromPoscar(BaseModel):
             _ = Structure.from_file(self.poscar_path)
         except Exception as e:
             raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
-        
-        # ensure vasp_input_sets is valid
-        valid_sets = {
-            'MPRelaxSet', 'MPStaticSet', 'MPNonSCFSet',
-            'MPScanRelaxSet', 'MPScanStaticSet', 'MPMDSet'
-        }
-        if self.vasp_input_sets not in valid_sets:
-            raise ValueError(f'Invalid vasp_input_sets: {self.vasp_input_sets}. Must be one of {valid_sets}.')
 
         return self
 
@@ -251,10 +257,6 @@ class CustomizeVaspKpointsWithAccuracy(BaseModel):
         if not os.path.isfile(self.poscar_path):
             raise ValueError(f'POSCAR file not found: {self.poscar_path}')
         
-        # ensure accuracy_level is valid
-        if self.accuracy_level not in {'Low', 'Medium', 'High'}:
-            raise ValueError(f'Invalid accuracy_level: {self.accuracy_level}. Must be one of Low, Medium, or High.')
-        
         # ensure the poscar file is valid POSCAR
         try:
             _ = Structure.from_file(self.poscar_path)
@@ -262,36 +264,24 @@ class CustomizeVaspKpointsWithAccuracy(BaseModel):
             raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
 
         return self
-    
-class GenerateVaspPoscarWithDefects(BaseModel):
+
+class GenerateVaspPoscarWithVacancyDefects(BaseModel):
     '''
-    Schema for generating VASP POSCAR with defects: vacancies, substitutions, and interstitials with Voronoi method.
+    Schema for generating VASP POSCAR with vacancy defects.
     '''
     poscar_path: str = Field(
         ...,
         description='Path to the original POSCAR file. Must exist.'
     )
-
-    defect_type: Literal[
-        'vacancy', 'substitution', 'interstitial (Voronoi)'
-        ] = Field(
-            ...,
-            description='Type of defect to introduce. Must be one of vacancy, substitution or interstitial (Voronoi).'
-        )
     
-    original_element: Optional[str] = Field(
-        None,
-        description='Element symbol of the atom to be operated on. Must provide for defect types vacancy and substitution. Must be None for interstitial (Voronoi).'
-    )
-
-    defect_amount: Optional[float | int] = Field(
+    original_element: str = Field(
         ...,
-        description='Amount of defect to introduce. Either a fraction (0 < x < 1) of the total number of original_element atoms, or an integer count (>= 1). Must provide for defect types vacancy and substitution. Must be None for interstitial (Voronoi).'
+        description='Element symbol of the atom to be operated on.'
     )
 
-    defect_element: Optional[str] = Field(
-        None,
-        description='Element symbol of the defect atom. Must provide for defect types interstitial (Voronoi) and substitution.'
+    defect_amount: float | int = Field(
+        ...,
+        description='Amount of defect to introduce. Either a fraction (0 < x < 1) of the total number of original_element atoms, or an integer count (>= 1).'
     )
 
     @model_validator(mode='after')
@@ -306,43 +296,27 @@ class GenerateVaspPoscarWithDefects(BaseModel):
         except Exception as e:
             raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
         
-        # ensure original_element is provided for vacancy and substitution
-        if self.defect_type in {'vacancy', 'substitution'} and not self.original_element:
-            raise ValueError(f'Original element must be provided for vacancy/substitution defect types.')
-
-        # ensure original_element is None for interstitial (Voronoi)
-        if self.defect_type == 'interstitial (Voronoi)' and self.original_element is not None:
-            raise ValueError('Original element must be None for interstitial (Voronoi) defect type.')
+        # ensure defect_amount is valid
+        df = self.defect_amount
+        if isinstance(df, float):
+            if not (0 < df < 1):
+                raise ValueError('Defect amount as a fraction must be between 0 and 1.')
+        elif isinstance(df, int):
+            if not (df >= 1):
+                raise ValueError('Defect amount as an integer must be at least 1.')
+        else:
+            raise ValueError('Defect amount must be either a float (fraction) or an integer (count).')
         
-        # for interstitials (Voronoi) and substitutions, defect_element must be provided
-        if self.defect_type in {'interstitial (Voronoi)', 'substitution'} and not self.defect_element:
-            raise ValueError(f'Defect element must be provided for interstitial/substitution defect types.')
+        # ensure there are enough original_element atoms to remove
+        total_original_atoms = sum(1 for site in structure.sites if str(site.specie) == self.original_element)
+        if isinstance(df, float):
+            num_defects = max(1, int(self.defect_amount * total_original_atoms))
+        else:
+            num_defects = self.defect_amount
+        if num_defects > total_original_atoms:
+            raise ValueError(f'Defect amount {num_defects} exceeds total number of {self.original_element} atoms ({total_original_atoms}).')
         
-        # for vacancies, defect_element must be None
-        if self.defect_type == 'vacancy' and self.defect_element is not None:
-            raise ValueError('Defect element must be None for vacancy defect type.')
-        
-        # ensure defect_amount is provided for vacancy and substitution
-        if self.defect_type in {'vacancy', 'substitution'} and self.defect_amount is None:
-            raise ValueError('Defect amount must be provided for vacancy and substitution defect types.')
-        
-        # ensure defect_amount is None for interstitial (Voronoi)
-        if self.defect_type == 'interstitial (Voronoi)' and self.defect_amount is not None:
-            raise ValueError('Defect amount must be None for interstitial (Voronoi) defect type.')
-        
-        # ensure defect_amount is valid for vacancy and substitution
-        if self.defect_type in {'vacancy', 'substitution'}:
-            df = self.defect_amount
-            if isinstance(df, float):
-                if not (0 < df < 1):
-                    raise ValueError('Defect amount as a fraction must be between 0 and 1.')
-            elif isinstance(df, int):
-                if df < 1:
-                    raise ValueError('Defect amount as an integer must be at least 1.')
-            else:
-                raise ValueError('Defect amount must be either a fraction between 0 and 1, or an integer >= 1.')
-        
-        # validate original_element and defect_element
+        # validate original_element
         if self.original_element:
             try:
                 Element(self.original_element)
@@ -352,6 +326,110 @@ class GenerateVaspPoscarWithDefects(BaseModel):
             # ensure original_element exists in the POSCAR structure
             if self.original_element not in {str(site.specie) for site in structure.sites}:
                 raise ValueError(f'Original element {self.original_element} does not exist in POSCAR structure.')
+
+        return self
+    
+class GenerateVaspPoscarWithSubstitutionDefects(BaseModel):
+    '''
+    Schema for generating VASP POSCAR with substitution defects.
+    '''
+    poscar_path: str = Field(
+        ...,
+        description='Path to the original POSCAR file. Must exist.'
+    )
+    
+    original_element: str = Field(
+        ...,
+        description='Element symbol of the atom to be operated on.'
+    )
+
+    defect_element: str = Field(
+        ...,
+        description='Element symbol of the defect atom.'
+    )
+
+    defect_amount: float | int = Field(
+        ...,
+        description='Amount of defect to introduce. Either a fraction (0 < x < 1) of the total number of original_element atoms, or an integer count (>= 1).'
+    )
+
+    @model_validator(mode='after')
+    def validator(self):
+        # ensure POSCAR exists
+        if not os.path.isfile(self.poscar_path):
+            raise ValueError(f'POSCAR file not found: {self.poscar_path}')
+        
+        # ensure the poscar file is valid POSCAR
+        try:
+            structure = Structure.from_file(self.poscar_path)
+        except Exception as e:
+            raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
+        
+        # ensure defect_amount is valid
+        df = self.defect_amount
+        if isinstance(df, float):
+            if not (0 < df < 1):
+                raise ValueError('Defect amount as a fraction must be between 0 and 1.')
+        elif isinstance(df, int):
+            if not (df >= 1):
+                raise ValueError('Defect amount as an integer must be at least 1.')
+        else:
+            raise ValueError('Defect amount must be either a float (fraction) or an integer (count).')
+        
+        # ensure there are enough original_element atoms to substitute
+        total_original_atoms = sum(1 for site in structure.sites if str(site.specie) == self.original_element)
+        if isinstance(df, float):
+            num_defects = max(1, int(self.defect_amount * total_original_atoms))
+        else:
+            num_defects = self.defect_amount
+        if num_defects > total_original_atoms:
+            raise ValueError(f'Defect amount {num_defects} exceeds total number of {self.original_element} atoms ({total_original_atoms}).')
+        
+        # validate original_element
+        if self.original_element:
+            try:
+                Element(self.original_element)
+            except:
+                raise ValueError(f'Invalid original element symbol: {self.original_element}')
+            
+            # ensure original_element exists in the POSCAR structure
+            if self.original_element not in {str(site.specie) for site in structure.sites}:
+                raise ValueError(f'Original element {self.original_element} does not exist in POSCAR structure.')
+
+        # validate defect_element
+        if self.defect_element:
+            try:
+                Element(self.defect_element)
+            except:
+                raise ValueError(f'Invalid defect element symbol: {self.defect_element}')
+
+        return self
+    
+class GenerateVaspPoscarWithInterstitialDefects(BaseModel):
+    '''
+    Schema for generating VASP POSCAR with interstitial (Voronoi) defects.
+    '''
+    poscar_path: str = Field(
+        ...,
+        description='Path to the original POSCAR file. Must exist.'
+    )
+
+    defect_element: str = Field(
+        ...,
+        description='Element symbol of the defect atom.'
+    )
+
+    @model_validator(mode='after')
+    def validator(self):
+        # ensure POSCAR exists
+        if not os.path.isfile(self.poscar_path):
+            raise ValueError(f'POSCAR file not found: {self.poscar_path}')
+        
+        # ensure the poscar file is valid POSCAR
+        try:
+            structure = Structure.from_file(self.poscar_path)
+        except Exception as e:
+            raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
 
         # validate defect_element
         if self.defect_element:

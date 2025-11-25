@@ -1,6 +1,5 @@
 # Custom Python.gitignore file
-masgent_archive/
-masgent_outputs/
+masgent_projects/
 testing_venv/
 test.py
 

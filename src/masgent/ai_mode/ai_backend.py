@@ -4,6 +4,8 @@ import os, sys
 import asyncio
 from dotenv import load_dotenv
 from colorama import Fore, Style
+from yaspin import yaspin
+from yaspin.spinners import Spinners
 
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai import Agent
@@ -80,7 +82,8 @@ async def keep_recent_messages(messages: list[ModelMessage]) -> list[ModelMessag
 
     Reference: https://github.com/pydantic/pydantic-ai/issues/2050
     '''
-    message_window = 10
+    # Define how many recent messages to keep
+    message_window = 20
 
     if len(messages) <= message_window:
         return messages
@@ -125,18 +128,25 @@ async def keep_recent_messages(messages: list[ModelMessage]) -> list[ModelMessag
     return messages
 
 async def chat_stream(agent, user_input: str, history: list):
-    async with agent.run_stream(
-        user_prompt=user_input, 
-        message_history=history
-        ) as result:
-        fully_reply = ''
-        async for chunk in result.stream_text(delta=True):
-            fully_reply += chunk
-            print(Fore.GREEN + chunk + Style.RESET_ALL, end='', flush=True)
-        print('\n')
+    print('')
+    with yaspin(Spinners.dots, text='Thinking...', color='cyan') as sp:
+        async with agent.run_stream(
+            user_prompt=user_input, 
+            message_history=history
+            ) as result:
+            
+            fully_reply = ''
+            
+            async for chunk in result.stream_text(delta=True):
+                fully_reply += chunk
 
+                sp.hide()
+                print(Fore.GREEN + chunk + Style.RESET_ALL, end='', flush=True)
+
+        sp.stop()
+        print('\n')
         all_msgs = list(result.all_messages())
-        
+    
         return all_msgs
 
 async def ai_mode(agent):
@@ -167,7 +177,6 @@ async def ai_mode(agent):
 def main():
     print_entry_message()
 
-
     # Ensure OpenAI API key exists and validate it only once per process
     load_dotenv(dotenv_path='.env')
 
@@ -193,8 +202,10 @@ def main():
             tools.customize_vasp_kpoints_with_accuracy,
             tools.convert_structure_format,
             tools.convert_poscar_coordinates,
-            tools.generate_vasp_poscar_with_defects,
             tools.generate_supercell_from_poscar,
+            tools.generate_vasp_poscar_with_vacancy_defects,
+            tools.generate_vasp_poscar_with_substitution_defects,
+            tools.generate_vasp_poscar_with_interstitial_defects,
         ],
         history_processors=[keep_recent_messages],
         )
