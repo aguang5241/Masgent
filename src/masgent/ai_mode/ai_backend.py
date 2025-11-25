@@ -25,8 +25,6 @@ from masgent.utils import (
     load_system_prompts, 
     color_print,
     color_input,
-    os_path_setup,
-    set_session_runs_dir,
     start_new_session,
     )
 
@@ -157,7 +155,7 @@ async def ai_mode(agent):
     
     try:
         while True:
-            user_input = color_input('\nAsk anything, or type "back" to return, "new" to start a new session > ', 'green').strip()
+            user_input = color_input('\nAsk anything, or type "back" to return, "new" to start a new session > ', 'yellow').strip()
 
             if not user_input:
                 continue
@@ -181,18 +179,6 @@ async def ai_mode(agent):
 
 def main():
     print_entry_message()
-
-    # Create a single session runs directory
-    try:
-        base_dir, main_dir, runs_dir = os_path_setup()
-        color_print(f'[Info] Masgent AI session runs directory: {runs_dir}\n', 'green')
-        try:
-            set_session_runs_dir(runs_dir)
-        except Exception:
-            pass
-    except Exception as e:
-        color_print(f'[Error] Failed to set up runs directory: {str(e)}\n', 'red')
-        sys.exit(1)
 
     # Ensure OpenAI API key exists and validate it only once per process
     load_dotenv(dotenv_path='.env')

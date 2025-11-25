@@ -498,6 +498,12 @@ def command_1_2_1():
             elif user_input.startswith('MPMDSet'):
                 vasp_input_sets = 'MPMDSet'
                 break
+            elif user_input.startswith('NEBSet'):
+                vasp_input_sets = 'NEBSet'
+                break
+            elif user_input.startswith('MVLElasticSet'):
+                vasp_input_sets = 'MVLElasticSet'
+                break
             else:
                 continue
     
@@ -511,7 +517,78 @@ def command_1_2_1():
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
         return
 
-    input = schemas.GenerateVaspInputsFromPoscar(poscar_path=poscar_path, vasp_input_sets=vasp_input_sets)
+    input = schemas.GenerateVaspInputsFromPoscar(poscar_path=poscar_path, vasp_input_sets=vasp_input_sets, only_incar=False)
+    result = tools.generate_vasp_inputs_from_poscar(input=input)
+    color_print(result['message'], 'green')
+
+@register('1.2.2', 'Generate INCAR templates (relaxation, static, MD, etc.).')
+def command_1_2_2():
+    try:
+        while True:
+            choices = [
+                'MPRelaxSet       ->   suggested for structure relaxation',
+                'MPStaticSet      ->   suggested for static calculations',
+                'MPNonSCFSet      ->   suggested for non-self-consistent field calculations',
+                'MPScanRelaxSet   ->   suggested for structure relaxation with r2SCAN functional',
+                'MPScanStaticSet  ->   suggested for static calculations with r2SCAN functional',
+                'MPMDSet          ->   suggested for molecular dynamics simulations',
+                'NEBSet           ->   suggested for nudged elastic band calculations',
+                'MVLElasticSet    ->   suggested for elastic constant calculations',
+            ] + global_commands()
+            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+            user_input = cli.launch()
+
+            if user_input.startswith('AI'):
+                ai_backend.main()
+            elif user_input.startswith('New'):
+                start_new_session()
+            elif user_input.startswith('Back'):
+                return
+            elif user_input.startswith('Main'):
+                run_command('0')
+            elif user_input.startswith('Help'):
+                print_help()
+            elif user_input.startswith('Exit'):
+                color_print('\nExiting Masgent... Goodbye!\n', 'green')
+                sys.exit(0)
+            elif user_input.startswith('MPRelaxSet'):
+                vasp_input_sets = 'MPRelaxSet'
+                break
+            elif user_input.startswith('MPStaticSet'):
+                vasp_input_sets = 'MPStaticSet'
+                break
+            elif user_input.startswith('MPNonSCFSet'):
+                vasp_input_sets = 'MPNonSCFSet'
+                break
+            elif user_input.startswith('MPScanRelaxSet'):
+                vasp_input_sets = 'MPScanRelaxSet'
+                break
+            elif user_input.startswith('MPScanStaticSet'):
+                vasp_input_sets = 'MPScanStaticSet'
+                break
+            elif user_input.startswith('MPMDSet'):
+                vasp_input_sets = 'MPMDSet'
+                break
+            elif user_input.startswith('NEBSet'):
+                vasp_input_sets = 'NEBSet'
+                break
+            elif user_input.startswith('MVLElasticSet'):
+                vasp_input_sets = 'MVLElasticSet'
+                break
+            else:
+                continue
+    
+    except (KeyboardInterrupt, EOFError):
+        color_print('\nExiting Masgent... Goodbye!\n', 'green')
+        sys.exit(0)
+    
+    try:
+        poscar_path = check_poscar()
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+
+    input = schemas.GenerateVaspInputsFromPoscar(poscar_path=poscar_path, vasp_input_sets=vasp_input_sets, only_incar=True)
     result = tools.generate_vasp_inputs_from_poscar(input=input)
     color_print(result['message'], 'green')
 

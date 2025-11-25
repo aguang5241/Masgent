@@ -9,8 +9,6 @@ from masgent.utils import (
     color_print, 
     print_banner, 
     print_help, 
-    os_path_setup, 
-    set_session_runs_dir,
     start_new_session,
     )
 
@@ -18,16 +16,7 @@ def main():
     print_banner()
 
     # Create a single session runs directory
-    try:
-        base_dir, main_dir, runs_dir = os_path_setup()
-        color_print(f'[Info] Masgent session runs directory: {runs_dir}\n', 'green')
-        try:
-            set_session_runs_dir(runs_dir)
-        except Exception:
-            pass
-    except Exception as e:
-        color_print(f'[Error] Failed to set up runs directory: {str(e)}\n', 'red')
-        sys.exit(1)
+    start_new_session()
     
     try:
         while True:
