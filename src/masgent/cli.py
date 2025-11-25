@@ -4,12 +4,24 @@ import sys
 from bullet import Bullet, colors
 
 from masgent.ai_mode import ai_backend
-from masgent.utils import color_print, print_banner, print_help
+from masgent.utils import color_print, print_banner, print_help, os_path_setup
 from masgent.cli_mode.cli_entries import run_command
-
+from masgent import tools
 
 def main():
     print_banner()
+
+    # Create a single session runs directory
+    try:
+        base_dir, main_dir, runs_dir = os_path_setup()
+        color_print(f'[Info] Masgent session runs directory: {runs_dir}\n', 'green')
+        try:
+            tools.set_session_runs_dir(runs_dir)
+        except Exception:
+            pass
+    except Exception as e:
+        color_print(f'[Error] Failed to set up runs directory: {str(e)}\n', 'red')
+        sys.exit(1)
     
     try:
         while True:

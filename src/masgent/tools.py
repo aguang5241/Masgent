@@ -18,7 +18,6 @@ from pymatgen.io.vasp.sets import (
 
 from masgent import schemas
 from masgent.utils import (
-    os_path_setup, 
     write_comments,
     color_print,
     ask_for_mp_api_key,
@@ -30,6 +29,14 @@ warnings.filterwarnings('ignore')
 
 # Track whether Materials Project key has been checked during this process
 _mp_key_checked = False
+
+# Optional session runs directory
+_SESSION_RUNS_DIR = None
+
+def set_session_runs_dir(path: str):
+    '''Set the session runs directory.'''
+    global _SESSION_RUNS_DIR
+    _SESSION_RUNS_DIR = path
 
 def with_metadata(input: schemas.ToolMetadata):
     '''
@@ -52,12 +59,13 @@ def generate_vasp_poscar(input: schemas.GenerateVaspPoscarSchema) -> dict:
     '''
     Generate VASP POSCAR file from Materials Project database.
     '''
-    color_print(f'[Debug: Function Calling] generate_vasp_poscar with input: {input}', 'green')
+    color_print(f'\n[Debug: Function Calling] generate_vasp_poscar with input: {input}', 'green')
     
     formula_list = input.formula_list
 
     try:
-        base_dir, main_dir, runs_dir = os_path_setup()
+        runs_dir = _SESSION_RUNS_DIR
+
         poscar_paths = []
         
         for formula in formula_list:
@@ -76,7 +84,7 @@ def generate_vasp_poscar(input: schemas.GenerateVaspPoscarSchema) -> dict:
                     validate_mp_api_key(os.environ['MP_API_KEY'])
                 _mp_key_checked = True
             
-            with MPRester() as mpr:
+            with MPRester(mute_progress_bars=True) as mpr:
                 docs = mpr.materials.summary.search(formula=formula)
                 if not docs:
                     return {
@@ -109,16 +117,16 @@ def generate_vasp_poscar(input: schemas.GenerateVaspPoscarSchema) -> dict:
 @with_metadata(schemas.ToolMetadata(
     name='Generate VASP Inputs (INCAR, KPOINTS, POTCAR, POSCAR)',
     description='Generate VASP input files (INCAR, KPOINTS, POTCAR) using pymatgen input sets (MPRelaxSet, MPStaticSet, MPNonSCFSet, MPScanRelaxSet, MPScanStaticSet, MPMDSet).',
-    requires=['poscar_path', 'vasp_input_sets'],
-    optional=[],
-    defaults={},
+    requires=['vasp_input_sets'],
+    optional=['poscar_path'],
+    defaults={'poscar_path': f'{_SESSION_RUNS_DIR}/POSCAR'},
     prereqs=[],
 ))
 def generate_vasp_inputs_from_poscar(input: schemas.GenerateVaspInputsFromPoscar) -> dict:
     '''
     Generate VASP input files (INCAR, KPOINTS, POTCAR) using pymatgen input sets.
     '''
-    color_print(f'[Debug: Function Calling] generate_vasp_inputs_from_poscar with input: {input}', 'green')
+    color_print(f'\n[Debug: Function Calling] generate_vasp_inputs_from_poscar with input: {input}', 'green')
     
     poscar_path = input.poscar_path
     vasp_input_sets = input.vasp_input_sets
@@ -134,14 +142,10 @@ def generate_vasp_inputs_from_poscar(input: schemas.GenerateVaspInputsFromPoscar
     vis_class = VIS_MAP[vasp_input_sets]
 
     try:
-        base_dir, main_dir, runs_dir = os_path_setup()
-
+        runs_dir = _SESSION_RUNS_DIR
 
         structure = Structure.from_file(poscar_path)
         vis = vis_class(structure)
-
-        # Get the formula name from the structure
-        formula = structure.composition.reduced_formula
 
         vis.incar.write_file(os.path.join(runs_dir, 'INCAR'))
         vis.poscar.write_file(os.path.join(runs_dir, 'POSCAR'), direct=True)
@@ -182,7 +186,7 @@ def convert_structure_format(input: schemas.ConvertStructureFormatSchema) -> dic
     '''
     Convert structure files between different formats (CIF, POSCAR, XYZ).
     '''
-    color_print(f'[Debug: Function Calling] convert_structure_format with input: {input}', 'green')
+    color_print(f'\n[Debug: Function Calling] convert_structure_format with input: {input}', 'green')
     
     input_path = input.input_path
     input_format = input.input_format
@@ -195,7 +199,7 @@ def convert_structure_format(input: schemas.ConvertStructureFormatSchema) -> dic
     }
 
     try:
-        base_dir, main_dir, runs_dir = os_path_setup()
+        runs_dir = _SESSION_RUNS_DIR
 
         atoms = read(input_path, format=format_map[input_format])
         filename_wo_ext = os.path.splitext(os.path.basename(input_path))[0]
@@ -221,22 +225,25 @@ def convert_structure_format(input: schemas.ConvertStructureFormatSchema) -> dic
 @with_metadata(schemas.ToolMetadata(
     name='Convert POSCAR Coordinates',
     description='Convert POSCAR between direct and cartesian coordinates.',
-    requires=['poscar_path', 'to_cartesian'],
-    optional=[],
-    defaults={},
+    requires=['to_cartesian'],
+    optional=['poscar_path'],
+    defaults={'poscar_path': f'{_SESSION_RUNS_DIR}/POSCAR'},
     prereqs=[],
 ))
 def convert_poscar_coordinates(input: schemas.ConvertPoscarCoordinatesSchema) -> dict:
     '''
     Convert POSCAR between direct and cartesian coordinates.
     '''
-    color_print(f'[Debug: Function Calling] convert_poscar_coordinates with input: {input}', 'green')
+    color_print(f'\n[Debug: Function Calling] convert_poscar_coordinates with input: {input}', 'green')
     
     poscar_path = input.poscar_path
     to_cartesian = input.to_cartesian
 
     try:
-        base_dir, main_dir, runs_dir = os_path_setup()
+        runs_dir = _SESSION_RUNS_DIR
+
+        if poscar_path is None:
+            poscar_path = os.path.join(runs_dir, 'POSCAR')
         
         structure = Structure.from_file(poscar_path)
         poscar = Poscar(structure)
@@ -260,16 +267,16 @@ def convert_poscar_coordinates(input: schemas.ConvertPoscarCoordinatesSchema) ->
 @with_metadata(schemas.ToolMetadata(
     name='Customize KPOINTS',
     description='Customize VASP KPOINTS from POSCAR with specified accuracy level (Low, Medium, High).',
-    requires=['poscar_path', 'accuracy_level'],
-    optional=[],
-    defaults={},
+    requires=['accuracy_level'],
+    optional=['poscar_path'],
+    defaults={'poscar_path': f'{_SESSION_RUNS_DIR}/POSCAR'},
     prereqs=[],
 ))
 def customize_vasp_kpoints_with_accuracy(input: schemas.CustomizeVaspKpointsWithAccuracy) -> dict:
     '''
     Customize VASP KPOINTS from POSCAR with specified accuracy level.
     '''
-    color_print(f'[Debug: Function Calling] customize_vasp_kpoints_with_accuracy with input: {input}', 'green')
+    color_print(f'\n[Debug: Function Calling] customize_vasp_kpoints_with_accuracy with input: {input}', 'green')
     
     poscar_path = input.poscar_path
     accuracy_level = input.accuracy_level
@@ -282,7 +289,7 @@ def customize_vasp_kpoints_with_accuracy(input: schemas.CustomizeVaspKpointsWith
     kppa = DENSITY_MAP[accuracy_level]
 
     try:
-        base_dir, main_dir, runs_dir = os_path_setup()
+        runs_dir = _SESSION_RUNS_DIR
         
         structure = Structure.from_file(poscar_path)
         kpoints = Kpoints.automatic_density(structure, kppa=kppa)
@@ -305,23 +312,23 @@ def customize_vasp_kpoints_with_accuracy(input: schemas.CustomizeVaspKpointsWith
 @with_metadata(schemas.ToolMetadata(
     name='Generate Vacancy Defects',
     description='Generate VASP POSCAR with vacancy defects.',
-    requires=['poscar_path', 'original_element', 'defect_amount'],
-    optional=[],
-    defaults={},
+    requires=['original_element', 'defect_amount'],
+    optional=['poscar_path'],
+    defaults={'poscar_path': f'{_SESSION_RUNS_DIR}/POSCAR'},
     prereqs=[],
 ))
 def generate_vasp_poscar_with_vacancy_defects(input: schemas.GenerateVaspPoscarWithVacancyDefects) -> dict:
     '''
     Generate VASP POSCAR with vacancy defects.
     '''
-    color_print(f'[Debug: Function Calling] generate_vasp_poscar_with_vacancy_defects with input: {input}', 'green')
+    color_print(f'\n[Debug: Function Calling] generate_vasp_poscar_with_vacancy_defects with input: {input}', 'green')
     
     poscar_path = input.poscar_path
     original_element = input.original_element
     defect_amount = input.defect_amount
 
     try:
-        base_dir, main_dir, runs_dir = os_path_setup()
+        runs_dir = _SESSION_RUNS_DIR
         
         atoms = read(poscar_path, format='vasp')
 
@@ -354,16 +361,16 @@ def generate_vasp_poscar_with_vacancy_defects(input: schemas.GenerateVaspPoscarW
 @with_metadata(schemas.ToolMetadata(
     name='Generate Substitution Defects',
     description='Generate VASP POSCAR with substitution defects.',
-    requires=['poscar_path', 'original_element', 'defect_element', 'defect_amount'],
-    optional=[],
-    defaults={},
+    requires=['original_element', 'defect_element', 'defect_amount'],
+    optional=['poscar_path'],
+    defaults={'poscar_path': f'{_SESSION_RUNS_DIR}/POSCAR'},
     prereqs=[],
 ))
 def generate_vasp_poscar_with_substitution_defects(input: schemas.GenerateVaspPoscarWithSubstitutionDefects) -> dict:
     '''
     Generate VASP POSCAR with substitution defects.
     '''
-    color_print(f'[Debug: Function Calling] generate_vasp_poscar_with_substitution_defects with input: {input}', 'green')
+    color_print(f'\n[Debug: Function Calling] generate_vasp_poscar_with_substitution_defects with input: {input}', 'green')
 
     poscar_path = input.poscar_path
     original_element = input.original_element
@@ -371,7 +378,7 @@ def generate_vasp_poscar_with_substitution_defects(input: schemas.GenerateVaspPo
     defect_amount = input.defect_amount
 
     try:
-        base_dir, main_dir, runs_dir = os_path_setup()
+        runs_dir = _SESSION_RUNS_DIR
         
         atoms = read(poscar_path, format='vasp')
 
@@ -404,22 +411,22 @@ def generate_vasp_poscar_with_substitution_defects(input: schemas.GenerateVaspPo
 @with_metadata(schemas.ToolMetadata(
     name='Generate Interstitial (Voronoi) Defects',
     description='Generate VASP POSCAR with interstitial (Voronoi) defects.',
-    requires=['poscar_path', 'defect_element'],
-    optional=[],
-    defaults={},
+    requires=['defect_element'],
+    optional=['poscar_path'],
+    defaults={'poscar_path': f'{_SESSION_RUNS_DIR}/POSCAR'},
     prereqs=[],
 ))
 def generate_vasp_poscar_with_interstitial_defects(input: schemas.GenerateVaspPoscarWithInterstitialDefects) -> dict:
     '''
     Generate VASP POSCAR with interstitial (Voronoi) defects.
     '''
-    color_print(f'[Debug: Function Calling] generate_vasp_poscar_with_interstitial_defects with input: {input}', 'green')
+    color_print(f'\n[Debug: Function Calling] generate_vasp_poscar_with_interstitial_defects with input: {input}', 'green')
 
     poscar_path = input.poscar_path
     defect_element = input.defect_element
 
     try:
-        base_dir, main_dir, runs_dir = os_path_setup()
+        runs_dir = _SESSION_RUNS_DIR
         
         atoms = read(poscar_path, format='vasp')
 
@@ -460,16 +467,16 @@ def generate_vasp_poscar_with_interstitial_defects(input: schemas.GenerateVaspPo
 @with_metadata(schemas.ToolMetadata(
     name='Generate Supercell',
     description='Generate supercell from POSCAR based on user-defined 3x3 scaling matrix.',
-    requires=['poscar_path', 'scaling_matrix'],
-    optional=[],
-    defaults={},
+    requires=['scaling_matrix'],
+    optional=['poscar_path'],
+    defaults={'poscar_path': f'{_SESSION_RUNS_DIR}/POSCAR'},
     prereqs=[],
 ))
 def generate_supercell_from_poscar(input: schemas.GenerateSupercellFromPoscar) -> dict:
     '''
     Generate supercell from POSCAR based on user-defined 3x3 scaling matrix.
     '''
-    color_print(f'[Debug: Function Calling] generate_supercell_from_poscar with input: {input}', 'green')
+    color_print(f'\n[Debug: Function Calling] generate_supercell_from_poscar with input: {input}', 'green')
     
     poscar_path = input.poscar_path
     scaling_matrix = input.scaling_matrix
@@ -480,7 +487,7 @@ def generate_supercell_from_poscar(input: schemas.GenerateSupercellFromPoscar) -
         ]
 
     try:
-        base_dir, main_dir, runs_dir = os_path_setup()
+        runs_dir = _SESSION_RUNS_DIR
         
         structure = Structure.from_file(poscar_path).copy()
         supercell_structure = structure.make_supercell(scaling_matrix_)

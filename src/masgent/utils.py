@@ -123,17 +123,30 @@ def os_path_setup():
     '''Set up base and target directories for VASP input files.'''
     base_dir = os.getcwd()
     main_dir = os.path.join(base_dir, 'masgent_projects')
+    os.makedirs(main_dir, exist_ok=True)
 
+    # Check for MASGENT_SESSION_RUNS_DIR environment variable
+    session_runs_dir = os.environ.get('MASGENT_SESSION_RUNS_DIR')
+    if session_runs_dir:
+        if not os.path.exists(session_runs_dir):
+            os.makedirs(session_runs_dir, exist_ok=True)
+        runs_dir = session_runs_dir
+        return base_dir, main_dir, runs_dir
+    
+    # Otherwise, create a new runs directory with timestamp
     timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     runs_dir = os.path.join(main_dir, f'runs_{timestamp}')
     if not os.path.exists(runs_dir):
-        os.makedirs(runs_dir)
+        os.makedirs(runs_dir, exist_ok=True)
     else:
-        # In the rare case of collision, wait a second and try again
+        # Rare collision case, wait a second and try again
         time.sleep(1)
         timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         runs_dir = os.path.join(main_dir, f'runs_{timestamp}')
-        os.makedirs(runs_dir)
+        os.makedirs(runs_dir, exist_ok=True)
+    
+    # Set the environment variable for this session
+    os.environ['MASGENT_SESSION_RUNS_DIR'] = runs_dir
 
     return base_dir, main_dir, runs_dir
 

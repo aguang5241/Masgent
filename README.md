@@ -13,6 +13,7 @@ Masgent: Materials Simulation Agent
 - AI standby for instant assistance
 - Smart memory management
 - Detailed user guidance
+- Spinner for AI response waiting time (Yaspin)
 
 ## Progress Record
 1. Density Functional Theory (DFT) Simulations

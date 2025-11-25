@@ -23,7 +23,9 @@ from masgent.utils import (
     ask_for_openai_api_key,
     validate_openai_api_key,
     load_system_prompts, 
-    color_print, color_input
+    color_print,
+    color_input,
+    os_path_setup,
     )
 
 # Track whether OpenAI key has been checked during this process
@@ -176,6 +178,18 @@ async def ai_mode(agent):
 
 def main():
     print_entry_message()
+
+    # Create a single session runs directory
+    try:
+        base_dir, main_dir, runs_dir = os_path_setup()
+        color_print(f'[Info] Masgent AI session runs directory: {runs_dir}\n', 'green')
+        try:
+            tools.set_session_runs_dir(runs_dir)
+        except Exception:
+            pass
+    except Exception as e:
+        color_print(f'[Error] Failed to set up runs directory: {str(e)}\n', 'red')
+        sys.exit(1)
 
     # Ensure OpenAI API key exists and validate it only once per process
     load_dotenv(dotenv_path='.env')

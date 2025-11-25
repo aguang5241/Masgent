@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import sys
-from bullet import Bullet, colors
+import sys, os
+from bullet import Bullet, YesNo, colors
 
 from masgent import tools, schemas
 from masgent.ai_mode import ai_backend
@@ -27,8 +27,44 @@ def run_command(code):
 
 def check_poscar():
     while True:
-        poscar_path = color_input('\nEnter path to input structure file: ', 'yellow').strip()
+        runs_dir = os.environ.get('MASGENT_SESSION_RUNS_DIR')
 
+        if os.path.exists(os.path.join(runs_dir, 'POSCAR')):
+            use_default = True
+        else:
+            use_default = False
+
+        if use_default:
+            runs_dir_name = os.path.basename(runs_dir)
+            choices = [
+                'Yes  ->  Use POSCAR file in current runs directory',
+                'No   ->  Provide a different POSCAR file path',
+            ] + global_commands()
+
+            prompt = f'\nUse POSCAR file in current runs directory: {runs_dir_name}/POSCAR ?\n'
+            cli = Bullet(prompt=prompt, choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+            user_input = cli.launch()
+
+            if user_input.startswith('AI'):
+                ai_backend.main()
+            elif user_input.startswith('Back'):
+                return
+            elif user_input.startswith('Main'):
+                run_command('0')
+            elif user_input.startswith('Help'):
+                print_help()
+            elif user_input.startswith('Exit'):
+                color_print('\nExiting Masgent... Goodbye!\n', 'green')
+                sys.exit(0)
+            elif user_input.startswith('Yes'):
+                poscar_path = os.path.join(runs_dir, 'POSCAR')
+            elif user_input.startswith('No'):
+                poscar_path = color_input('\nEnter path to POSCAR file: ', 'yellow').strip()
+            else:
+                continue
+        else:
+            poscar_path = color_input('\nEnter path to POSCAR file: ', 'yellow').strip()
+        
         if not poscar_path:
             continue
         
@@ -65,7 +101,7 @@ def command_1_1_1():
 
     input = schemas.GenerateVaspPoscarSchema(formula_list=[formula])
     result = tools.generate_vasp_poscar(input=input)
-    color_print(result, 'green')
+    color_print(result['message'], 'green')
 
 @register('1.1.2', 'Convert POSCAR coordinates (Direct <-> Cartesian).')
 def command_1_1_2():
@@ -110,7 +146,7 @@ def command_1_1_2():
 
     input = schemas.ConvertPoscarCoordinatesSchema(poscar_path=poscar_path, to_cartesian=to_cartesian)
     result = tools.convert_poscar_coordinates(input=input)
-    color_print(result, 'green')
+    color_print(result['message'], 'green')
 
 @register('1.1.3', 'Convert structure file formats (CIF, POSCAR, XYZ).')
 def command_1_1_3():
@@ -182,7 +218,7 @@ def command_1_1_3():
 
     input = schemas.ConvertStructureFormatSchema(input_path=input_path, input_format=input_format, output_format=output_format)
     result = tools.convert_structure_format(input=input)
-    color_print(result, 'green')
+    color_print(result['message'], 'green')
 
 @register('1.1.4', 'Generate structure with defects (Vacancy, Interstitial, Substitution).')
 def command_1_1_4():
@@ -273,7 +309,7 @@ def command_vacancy():
 
     input = schemas.GenerateVaspPoscarWithVacancyDefects(poscar_path=poscar_path, original_element=original_element, defect_amount=defect_amount)
     result = tools.generate_vasp_poscar_with_vacancy_defects(input=input)
-    color_print(result, 'green')
+    color_print(result['message'], 'green')
 
 @register('substitution', 'Generate structure with substitution defects.')
 def command_substitution():
@@ -340,7 +376,7 @@ def command_substitution():
 
     input = schemas.GenerateVaspPoscarWithSubstitutionDefects(poscar_path=poscar_path, original_element=original_element, defect_element=defect_element, defect_amount=defect_amount)
     result = tools.generate_vasp_poscar_with_substitution_defects(input=input)
-    color_print(result, 'green')
+    color_print(result['message'], 'green')
 
 @register('interstitial', 'Generate structure with interstitial (Voronoi) defects.')
 def command_interstitial():
@@ -368,7 +404,7 @@ def command_interstitial():
 
     input = schemas.GenerateVaspPoscarWithInterstitialDefects(poscar_path=poscar_path, defect_element=defect_element)
     result = tools.generate_vasp_poscar_with_interstitial_defects(input=input)
-    color_print(result, 'green')
+    color_print(result['message'], 'green')
 
 @register('1.1.5', 'Generate supercell from POSCAR with specified scaling matrix.')
 def command_1_1_5():
@@ -398,7 +434,7 @@ def command_1_1_5():
     
     input = schemas.GenerateSupercellFromPoscar(poscar_path=poscar_path, scaling_matrix=sm)
     result = tools.generate_supercell_from_poscar(input=input)
-    color_print(result, 'green')
+    color_print(result['message'], 'green')
 
 @register('1.2.1', 'Prepare full VASP input files (INCAR, KPOINTS, POTCAR, POSCAR).')
 def command_1_2_1():
@@ -459,7 +495,7 @@ def command_1_2_1():
 
     input = schemas.GenerateVaspInputsFromPoscar(poscar_path=poscar_path, vasp_input_sets=vasp_input_sets)
     result = tools.generate_vasp_inputs_from_poscar(input=input)
-    color_print(result, 'green')
+    color_print(result['message'], 'green')
 
 @register('1.2.3', 'Generate KPOINTS with specified accuracy.')
 def command_1_2_3():
@@ -508,4 +544,4 @@ def command_1_2_3():
 
     input = schemas.CustomizeVaspKpointsWithAccuracy(poscar_path=poscar_path, accuracy_level=accuracy_level)
     result = tools.customize_vasp_kpoints_with_accuracy(input=input)
-    color_print(result, 'green')
+    color_print(result['message'], 'green')
