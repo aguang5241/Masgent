@@ -461,6 +461,8 @@ def command_1_2_1():
                 'MPScanRelaxSet   ->   suggested for structure relaxation with r2SCAN functional',
                 'MPScanStaticSet  ->   suggested for static calculations with r2SCAN functional',
                 'MPMDSet          ->   suggested for molecular dynamics simulations',
+                'NEBSet           ->   suggested for nudged elastic band calculations',
+                'MVLElasticSet    ->   suggested for elastic constant calculations',
             ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
