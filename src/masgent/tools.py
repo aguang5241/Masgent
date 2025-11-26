@@ -53,7 +53,7 @@ def generate_vasp_poscar(input: schemas.GenerateVaspPoscarSchema) -> dict:
     '''
     Generate VASP POSCAR file from Materials Project database.
     '''
-    color_print(f'\n[Debug: Function Calling] generate_vasp_poscar with input: {input}', 'green')
+    # color_print(f'\n[Debug: Function Calling] generate_vasp_poscar with input: {input}', 'green')
     
     formula_list = input.formula_list
 
@@ -74,7 +74,7 @@ def generate_vasp_poscar(input: schemas.GenerateVaspPoscarSchema) -> dict:
                 if 'MP_API_KEY' not in os.environ:
                     ask_for_mp_api_key()
                 else:
-                    color_print('[Info] Materials Project API key found in environment.\n', 'green')
+                    # color_print('[Info] Materials Project API key found in environment.\n', 'green')
                     validate_mp_api_key(os.environ['MP_API_KEY'])
                 _mp_key_checked = True
             
@@ -123,7 +123,7 @@ def generate_vasp_inputs_from_poscar(input: schemas.GenerateVaspInputsFromPoscar
     '''
     Generate VASP input files (INCAR, KPOINTS, POTCAR, POSCAR) from a given POSCAR file using pymatgen input sets.
     '''
-    color_print(f'\n[Debug: Function Calling] generate_vasp_inputs_from_poscar with input: {input}', 'green')
+    # color_print(f'\n[Debug: Function Calling] generate_vasp_inputs_from_poscar with input: {input}', 'green')
     
     poscar_path = input.poscar_path
     vasp_input_sets = input.vasp_input_sets
@@ -193,7 +193,7 @@ def convert_structure_format(input: schemas.ConvertStructureFormatSchema) -> dic
     '''
     Convert structure files between different formats (CIF, POSCAR, XYZ).
     '''
-    color_print(f'\n[Debug: Function Calling] convert_structure_format with input: {input}', 'green')
+    # color_print(f'\n[Debug: Function Calling] convert_structure_format with input: {input}', 'green')
     
     input_path = input.input_path
     input_format = input.input_format
@@ -241,7 +241,7 @@ def convert_poscar_coordinates(input: schemas.ConvertPoscarCoordinatesSchema) ->
     '''
     Convert POSCAR between direct and cartesian coordinates.
     '''
-    color_print(f'\n[Debug: Function Calling] convert_poscar_coordinates with input: {input}', 'green')
+    # color_print(f'\n[Debug: Function Calling] convert_poscar_coordinates with input: {input}', 'green')
     
     poscar_path = input.poscar_path
     to_cartesian = input.to_cartesian
@@ -283,7 +283,7 @@ def customize_vasp_kpoints_with_accuracy(input: schemas.CustomizeVaspKpointsWith
     '''
     Customize VASP KPOINTS from POSCAR with specified accuracy level.
     '''
-    color_print(f'\n[Debug: Function Calling] customize_vasp_kpoints_with_accuracy with input: {input}', 'green')
+    # color_print(f'\n[Debug: Function Calling] customize_vasp_kpoints_with_accuracy with input: {input}', 'green')
     
     poscar_path = input.poscar_path
     accuracy_level = input.accuracy_level
@@ -328,7 +328,7 @@ def generate_vasp_poscar_with_vacancy_defects(input: schemas.GenerateVaspPoscarW
     '''
     Generate VASP POSCAR with vacancy defects.
     '''
-    color_print(f'\n[Debug: Function Calling] generate_vasp_poscar_with_vacancy_defects with input: {input}', 'green')
+    # color_print(f'\n[Debug: Function Calling] generate_vasp_poscar_with_vacancy_defects with input: {input}', 'green')
     
     poscar_path = input.poscar_path
     original_element = input.original_element
@@ -377,7 +377,7 @@ def generate_vasp_poscar_with_substitution_defects(input: schemas.GenerateVaspPo
     '''
     Generate VASP POSCAR with substitution defects.
     '''
-    color_print(f'\n[Debug: Function Calling] generate_vasp_poscar_with_substitution_defects with input: {input}', 'green')
+    # color_print(f'\n[Debug: Function Calling] generate_vasp_poscar_with_substitution_defects with input: {input}', 'green')
 
     poscar_path = input.poscar_path
     original_element = input.original_element
@@ -427,7 +427,7 @@ def generate_vasp_poscar_with_interstitial_defects(input: schemas.GenerateVaspPo
     '''
     Generate VASP POSCAR with interstitial (Voronoi) defects.
     '''
-    color_print(f'\n[Debug: Function Calling] generate_vasp_poscar_with_interstitial_defects with input: {input}', 'green')
+    # color_print(f'\n[Debug: Function Calling] generate_vasp_poscar_with_interstitial_defects with input: {input}', 'green')
 
     poscar_path = input.poscar_path
     defect_element = input.defect_element
@@ -483,7 +483,7 @@ def generate_supercell_from_poscar(input: schemas.GenerateSupercellFromPoscar) -
     '''
     Generate supercell from POSCAR based on user-defined 3x3 scaling matrix.
     '''
-    color_print(f'\n[Debug: Function Calling] generate_supercell_from_poscar with input: {input}', 'green')
+    # color_print(f'\n[Debug: Function Calling] generate_supercell_from_poscar with input: {input}', 'green')
     
     poscar_path = input.poscar_path
     scaling_matrix = input.scaling_matrix
@@ -535,7 +535,7 @@ def generate_vasp_inputs_hpc_slurm_script(input: schemas.GenerateVaspInputsHpcSl
     '''
     Generate HPC Slurm job submission script for VASP calculations.
     '''
-    color_print(f'\n[Debug: Function Calling] generate_vasp_inputs_hpc_slurm_script with input: {input}', 'green')
+    # color_print(f'\n[Debug: Function Calling] generate_vasp_inputs_hpc_slurm_script with input: {input}', 'green')
     
     partition = input.partition
     nodes = input.nodes

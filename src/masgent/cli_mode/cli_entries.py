@@ -1,6 +1,6 @@
 # !/usr/bin/env python3
 
-import sys
+import sys, os
 from bullet import Bullet, colors
 
 from masgent.ai_mode import ai_backend

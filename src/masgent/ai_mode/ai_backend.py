@@ -121,7 +121,7 @@ async def keep_recent_messages(messages: list[ModelMessage]) -> list[ModelMessag
         if system_prompt is not None and system_prompt_index is not None and cut_index > system_prompt_index:
             result = [system_prompt] + result
 
-        color_print(f'[Debug] Message history truncated. Only keeping recent {len(result)} messages.\n', 'green')
+        # color_print(f'[Debug] Message history truncated. Only keeping recent {len(result)} messages.\n', 'green')
 
         return result
 
@@ -160,16 +160,14 @@ async def ai_mode(agent):
             if not user_input:
                 continue
             
-            if user_input.lower() in {'ai'}:
-                color_print('[Info] You are already in AI mode. \n', 'green')
-            elif user_input.lower() in {'new'}:
+            if user_input.lower() in {'new'}:
                 start_new_session()
             elif user_input.lower() in {'back'}:
                 return
             else:
                 try:
                     history = await chat_stream(agent, user_input, history)
-                    color_print(f'[Debug] Message history updated. Total messages: {len(history)}.\n', 'green')
+                    # color_print(f'[Debug] Message history updated. Total messages: {len(history)}.\n', 'green')
                 except Exception as e:
                     color_print(f'[Error]: {e}', 'red')
 
@@ -188,7 +186,7 @@ def main():
         if 'OPENAI_API_KEY' not in os.environ:
             ask_for_openai_api_key()
         else:
-            color_print('[Info] OpenAI API key found in environment.\n', 'green')
+            # color_print('[Info] OpenAI API key found in environment.\n', 'green')
             validate_openai_api_key(os.environ['OPENAI_API_KEY'])
         _openai_key_checked = True
 

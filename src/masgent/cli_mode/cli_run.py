@@ -659,7 +659,7 @@ def command_1_2_4():
                     nodes = 1
                 else:
                     nodes = int(nodes)
-                schemas.GenerateHPCSlurmScript(value=nodes, field_name='Number of nodes')
+                schemas.GenerateVaspInputsHpcSlurmScript(nodes=nodes)
                 break
             except ValueError:
                 color_print(f"\n[Error] Invalid number of nodes: {nodes}. Please enter a positive integer.\n", 'red')
@@ -676,7 +676,7 @@ def command_1_2_4():
                     ntasks = 8
                 else:
                     ntasks = int(ntasks)
-                schemas.GenerateHPCSlurmScript(value=ntasks, field_name='Number of tasks per node')
+                schemas.GenerateVaspInputsHpcSlurmScript(ntasks=ntasks)
                 break
             except ValueError:
                 color_print(f"\n[Error] Invalid number of tasks: {ntasks}. Please enter a positive integer.\n", 'red')
@@ -691,7 +691,7 @@ def command_1_2_4():
             try:
                 if not walltime:
                     walltime = '01:00:00'
-                schemas.GenerateHPCSlurmScript(walltime=walltime)
+                schemas.GenerateVaspInputsHpcSlurmScript(walltime=walltime)
                 break
             except ValueError:
                 color_print(f"\n[Error] Invalid walltime format: {walltime}. Please use 'HH:MM:SS' format.\n", 'red')
@@ -708,7 +708,7 @@ def command_1_2_4():
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
         return
     
-    input = schemas.GenerateHPCSlurmScript(
+    input = schemas.GenerateVaspInputsHpcSlurmScript(
         partition=partition,
         nodes=nodes,
         ntasks=ntasks,
@@ -716,5 +716,5 @@ def command_1_2_4():
         job_name=job_name,
         command='srun vasp_std > vasp.out'
     )
-    result = tools.generate_HPC_slurm_script(input=input)
+    result = tools.generate_vasp_inputs_hpc_slurm_script(input=input)
     color_print(result['message'], 'green')

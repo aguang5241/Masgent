@@ -88,7 +88,7 @@ def validate_openai_api_key(key):
     try:
         client = OpenAI(api_key=key)
         client.models.list()
-        color_print('[Info] OpenAI API key validated successfully.\n', 'green')
+        # color_print('[Info] OpenAI API key validated successfully.\n', 'green')
     except Exception as e:
         color_print('[Error] Invalid OpenAI API key. Exiting...\n', 'green')
         sys.exit(1)
@@ -118,7 +118,7 @@ def validate_mp_api_key(key):
                 formula='Si',
                 fields=['material_id']
             )
-        color_print('[Info] Materials Project API key validated successfully.\n', 'green')
+        # color_print('[Info] Materials Project API key validated successfully.\n', 'green')
     except Exception as e:
         color_print('[Error] Invalid Materials Project API key. Exiting...\n', 'green')
         sys.exit(1)
@@ -139,7 +139,7 @@ def ask_for_mp_api_key():
     if save == 'y':
         with open(env_path, 'a') as f:
             f.write(f'MP_API_KEY={key}\n')
-        color_print(f'Materials Project API key saved to {env_path} file.\n', 'green')
+        color_print(f'[Info] Materials Project API key saved to {env_path} file.\n', 'green')
 
 def print_banner():
     try:
