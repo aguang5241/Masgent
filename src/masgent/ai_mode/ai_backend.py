@@ -198,6 +198,9 @@ def main():
         model=model,
         system_prompt=system_prompt,
         tools=[
+            tools.list_files,
+            tools.rename_file,
+            tools.read_file,
             tools.generate_vasp_poscar,
             tools.generate_vasp_inputs_from_poscar,
             tools.customize_vasp_kpoints_with_accuracy,
@@ -208,6 +211,7 @@ def main():
             tools.generate_vasp_poscar_with_substitution_defects,
             tools.generate_vasp_poscar_with_interstitial_defects,
             tools.generate_vasp_inputs_hpc_slurm_script,
+            tools.generate_vasp_poscar_for_surface_slab,
         ],
         history_processors=[keep_recent_messages],
         )

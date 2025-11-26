@@ -570,3 +570,58 @@ class GenerateVaspInputsHpcSlurmScript(BaseModel):
             raise ValueError('Walltime must be in format HH:MM:SS.')
 
         return self
+    
+class GenerateVaspPoscarForSurfaceSlab(BaseModel):
+    '''
+    Schema for generating VASP POSCAR for surface slab from bulk POSCAR.
+    '''
+    poscar_path: Optional[str] = Field(
+        None,
+        description='Path to the bulk POSCAR file. Defaults to "POSCAR" in current directory if not provided.'
+    )
+
+    miller_indices: List[int] = Field(
+        ...,
+        description='Miller indices [h, k, l] for the surface slab, e.g., [1, 0, 0].'
+    )
+
+    vacuum_thickness: Optional[float] = Field(
+        15.0,
+        description='Vacuum thickness in Angstroms. Defaults to 15.0 Å if not provided.'
+    )
+
+    slab_layers: Optional[int] = Field(
+        4,
+        description='Number of atomic layers in the slab. Defaults to 4 if not provided.'
+    )
+
+    @model_validator(mode='after')
+    def validator(self):
+        # set default POSCAR path if not provided
+        runs_dir = os.environ.get('MASGENT_SESSION_RUNS_DIR')
+        if self.poscar_path is None:
+            self.poscar_path = os.path.join(runs_dir, 'POSCAR')
+        
+        # ensure POSCAR exists
+        if not os.path.isfile(self.poscar_path):
+            raise ValueError(f'POSCAR file not found: {self.poscar_path}')
+        
+        # ensure the poscar file is valid POSCAR
+        try:
+            _ = Structure.from_file(self.poscar_path)
+        except Exception as e:
+            raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
+        
+        # validate miller_indices
+        if len(self.miller_indices) != 3 or not all(isinstance(i, int) for i in self.miller_indices):
+            raise ValueError('Miller indices must be a list of three integers [h, k, l].')
+        
+        # validate vacuum_thickness
+        if self.vacuum_thickness <= 0:
+            raise ValueError('Vacuum thickness must be a positive number.')
+        
+        # validate slab_layers
+        if self.slab_layers < 1:
+            raise ValueError('Number of slab layers must be integer at least 1.')
+
+        return self

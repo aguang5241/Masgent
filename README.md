@@ -14,6 +14,7 @@ Masgent: Materials Simulation Agent
 - Smart memory management
 - Detailed user guidance
 - Spinner for AI response waiting time (Yaspin)
+- Automated file handling and management
 
 ## Progress Record
 1. Density Functional Theory (DFT) Simulations
@@ -24,7 +25,7 @@ Masgent: Materials Simulation Agent
     - 1.1.4 Generate structures with defects (Vacancies, Substitutions, Interstitials with Voronoi)
     - 1.1.5 Generate supercells
     - 1.1.6 (Planned) Generate special quasirandom structures (SQS)
-    - 1.1.7 (Planned) Generate surface slabs
+    - 1.1.7 Generate surface slabs
     - 1.1.8 (Planned) Generate interface structures
   
   - 1.2 VASP Input File Preparation

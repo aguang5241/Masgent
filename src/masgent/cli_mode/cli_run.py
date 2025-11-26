@@ -450,6 +450,72 @@ def command_1_1_5():
     result = tools.generate_supercell_from_poscar(input=input)
     color_print(result['message'], 'green')
 
+@register('1.1.7', 'Generate surface slab from POSCAR with specified Miller indices, vacuum thickness, and slab layers.')
+def command_1_1_7():
+    try:
+        poscar_path = check_poscar()
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+    
+    try:
+        while True:
+            miller_indices_str = color_input('\nEnter the Miller indices (e.g., "1 1 1"): ', 'yellow').strip()
+            
+            if not miller_indices_str:
+                continue
+
+            try:
+                miller_indices = [int(x) for x in miller_indices_str.split()]
+                schemas.GenerateVaspPoscarForSurfaceSlab(poscar_path=poscar_path, miller_indices=miller_indices)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid Miller indices: {miller_indices_str}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+    
+    try:
+        while True:
+            vacuum_thickness_str = color_input('\nEnter the vacuum thickness in Å (e.g., "15.0"): ', 'yellow').strip()
+
+            if not vacuum_thickness_str:
+                continue
+
+            try:
+                vacuum_thickness = float(vacuum_thickness_str)
+                schemas.GenerateVaspPoscarForSurfaceSlab(poscar_path=poscar_path, miller_indices=miller_indices, vacuum_thickness=vacuum_thickness)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid vacuum thickness: {vacuum_thickness_str}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+    
+    try:
+        while True:
+            slab_layers_str = color_input('\nEnter the number of slab layers (e.g., "4"): ', 'yellow').strip()
+
+            if not slab_layers_str:
+                continue
+
+            try:
+                slab_layers = int(slab_layers_str)
+                schemas.GenerateVaspPoscarForSurfaceSlab(poscar_path=poscar_path, miller_indices=miller_indices, vacuum_thickness=vacuum_thickness, slab_layers=slab_layers)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid slab layers: {slab_layers_str}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+    
+    input = schemas.GenerateVaspPoscarForSurfaceSlab(poscar_path=poscar_path, miller_indices=miller_indices, vacuum_thickness=vacuum_thickness, slab_layers=slab_layers)
+    result = tools.generate_vasp_poscar_for_surface_slab(input=input)
+    color_print(result['message'], 'green')
+
 @register('1.2.1', 'Prepare full VASP input files (INCAR, KPOINTS, POTCAR, POSCAR).')
 def command_1_2_1():
     try:
