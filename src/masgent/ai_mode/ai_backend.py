@@ -213,6 +213,7 @@ def main():
             tools.generate_vasp_inputs_hpc_slurm_script,
             tools.generate_vasp_poscar_for_surface_slab,
             tools.generate_vasp_workflow_of_convergence_tests,
+            tools.generate_vasp_workflow_of_eos,
         ],
         history_processors=[keep_recent_messages],
         )

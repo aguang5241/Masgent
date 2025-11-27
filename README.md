@@ -35,7 +35,7 @@ Masgent: Materials Simulation Agent
     - 1.2.4 Generate HPC job submission script
     - 1.2.5 Generate standard VASP calculation workflows
       - 1.2.5.1 Convergence testing (ENCUT, KPOINTS)
-      - 1.2.5.2 (Planned) Equation of State (EOS)
+      - 1.2.5.2 Equation of State (EOS)
       - 1.2.5.3 (Planned) Elastic constants
   
   - 1.3 VASP Output Analysis

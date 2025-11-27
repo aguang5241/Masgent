@@ -916,3 +916,33 @@ def command_1_2_5_1():
         input = schemas.GenerateVaspWorkflowOfConvergenceTests(poscar_path=poscar_path, test_type=test_type, encut_levels=encut_levels, kpoint_levels=kpoint_levels)
     result = tools.generate_vasp_workflow_of_convergence_tests(input=input)
     color_print(result['message'], 'green')
+
+@register('1.2.5.2', 'Generate VASP workflow of equation of state (EOS) calculations based on given POSCAR.')
+def command_1_2_5_2():
+    try:
+        poscar_path = check_poscar()
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+
+    try:
+        while True:
+            scale_factors_str = color_input('\nEnter the volume scale factors for EOS calculations (e.g., "0.94 0.96 0.98 1.00 1.02 1.04 1.06"): ', 'yellow').strip()
+
+            if not scale_factors_str:
+                continue
+
+            try:
+                scale_factors = [float(x) for x in scale_factors_str.split()]
+                schemas.GenerateVaspWorkflowOfEos(poscar_path=poscar_path, scale_factors=scale_factors)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid scale factors: {scale_factors_str}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+    
+    input = schemas.GenerateVaspWorkflowOfEos(poscar_path=poscar_path, scale_factors=scale_factors)
+    result = tools.generate_vasp_workflow_of_eos(input=input)
+    color_print(result['message'], 'green')

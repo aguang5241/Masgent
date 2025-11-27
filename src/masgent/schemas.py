@@ -589,7 +589,7 @@ class GenerateVaspPoscarForSurfaceSlab(BaseModel):
     
 class GenerateVaspWorkflowOfConvergenceTests(BaseModel):
     '''
-    Schema for generating VASP workflow for convergence tests for k-points and energy cutoff based on given POSCAR
+    Schema for generating VASP input files and submit bash script for workflow of convergence tests for k-points and energy cutoff based on given POSCAR
     '''
 
     poscar_path: Optional[str] = Field(
@@ -631,5 +631,38 @@ class GenerateVaspWorkflowOfConvergenceTests(BaseModel):
         # validate encut_levels
         if not all(isinstance(ec, int) and ec > 0 for ec in self.encut_levels):
             raise ValueError('All energy cutoff levels must be positive integers.')
+
+        return self
+    
+class GenerateVaspWorkflowOfEos(BaseModel):
+    '''
+    Schema for generating VASP input files and submit bash script for workflow of equation of state (EOS) calculations based on given POSCAR
+    '''
+    
+    poscar_path: Optional[str] = Field(
+        os.path.join(os.environ.get('MASGENT_SESSION_RUNS_DIR', ''), 'POSCAR'),
+        description='Path to the POSCAR file. Defaults to "POSCAR" in current directory if not provided.'
+    )
+
+    scale_factors: Optional[List[float]] = Field(
+        [0.94, 0.96, 0.98, 1.00, 1.02, 1.04, 1.06],
+        description='List of scale factors to apply to the lattice vectors for EOS calculations. Defaults to [0.94, 0.96, 0.98, 1.00, 1.02, 1.04, 1.06] if not provided.'
+    )
+
+    @model_validator(mode='after')
+    def validator(self):
+        # ensure POSCAR exists
+        if not os.path.isfile(self.poscar_path):
+            raise ValueError(f'POSCAR file not found: {self.poscar_path}')
+        
+        # ensure the poscar file is valid POSCAR
+        try:
+            _ = Structure.from_file(self.poscar_path)
+        except Exception as e:
+            raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
+        
+        # validate scale_factors
+        if not all(isinstance(sf, float) and sf > 0 for sf in self.scale_factors):
+            raise ValueError('All scale factors must be positive floats.')
 
         return self
