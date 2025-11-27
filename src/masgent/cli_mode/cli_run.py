@@ -784,3 +784,135 @@ def command_1_2_4():
     )
     result = tools.generate_vasp_inputs_hpc_slurm_script(input=input)
     color_print(result['message'], 'green')
+
+@register('1.2.5.1', 'Generate VASP workflow for convergence tests for k-points and energy cutoff based on given POSCAR.')
+def command_1_2_5_1():
+    try:
+        while True:
+            choices = [
+                'All      ->  Convergence tests for both energy cutoff and k-points',
+                'ENCUT    ->  Convergence test for energy cutoff only',
+                'KPOINTS  ->  Convergence test for k-points only',
+            ] + global_commands()
+
+            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+            user_input = cli.launch()
+
+            if user_input.startswith('AI'):
+                ai_backend.main()
+            elif user_input.startswith('New'):
+                start_new_session()
+            elif user_input.startswith('Back'):
+                return
+            elif user_input.startswith('Main'):
+                run_command('0')
+            elif user_input.startswith('Help'):
+                print_help()
+            elif user_input.startswith('Exit'):
+                color_print('\nExiting Masgent... Goodbye!\n', 'green')
+                sys.exit(0)
+            elif user_input.startswith('All'):
+                test_type = 'all'
+                break
+            elif user_input.startswith('ENCUT'):
+                test_type = 'encut'
+                break
+            elif user_input.startswith('KPOINTS'):
+                test_type = 'kpoints'
+                break
+            else:
+                continue
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\nExiting Masgent... Goodbye!\n', 'green')
+        sys.exit(0)
+    
+    try:
+        poscar_path = check_poscar()
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+
+    if test_type == 'encut':
+        try:
+            while True:
+                encut_levels_str = color_input('\nEnter the energy cutoff levels you want to test (e.g., "300 400 500 600 700"): ', 'yellow').strip()
+
+                if not encut_levels_str:
+                    continue
+
+                try:
+                    encut_levels = [int(x) for x in encut_levels_str.split()]
+                    schemas.GenerateVaspWorkflowOfConvergenceTests(poscar_path=poscar_path, test_type=test_type, encut_levels=encut_levels)
+                    break
+                except Exception:
+                    color_print(f'[Error] Invalid energy cutoff levels: {encut_levels_str}, please double check and try again.\n', 'red')
+        
+        except (KeyboardInterrupt, EOFError):
+            color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+            return
+        
+    elif test_type == 'kpoints':
+        try:
+            while True:
+                kpoint_levels_str = color_input('\nEnter the k-point grid density levels you want to test (e.g., "1000 2000 3000 4000 5000"): ', 'yellow').strip()
+
+                if not kpoint_levels_str:
+                    continue
+
+                try:
+                    kpoint_levels = [int(x) for x in kpoint_levels_str.split()]
+                    schemas.GenerateVaspWorkflowOfConvergenceTests(poscar_path=poscar_path, test_type=test_type, kpoint_levels=kpoint_levels)
+                    break
+                except Exception:
+                    color_print(f'[Error] Invalid k-point levels: {kpoint_levels_str}, please double check and try again.\n', 'red')
+        
+        except (KeyboardInterrupt, EOFError):
+            color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+            return
+        
+    else:
+        try:
+            while True:
+                encut_levels_str = color_input('\nEnter the energy cutoff levels you want to test (e.g., "300 400 500 600 700"): ', 'yellow').strip()
+
+                if not encut_levels_str:
+                    continue
+
+                try:
+                    encut_levels = [int(x) for x in encut_levels_str.split()]
+                    schemas.GenerateVaspWorkflowOfConvergenceTests(poscar_path=poscar_path, test_type=test_type, encut_levels=encut_levels)
+                    break
+                except Exception:
+                    color_print(f'[Error] Invalid energy cutoff levels: {encut_levels_str}, please double check and try again.\n', 'red')
+        
+        except (KeyboardInterrupt, EOFError):
+            color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+            return
+        
+        try:
+            while True:
+                kpoint_levels_str = color_input('\nEnter the k-point grid density levels you want to test (e.g., "1000 2000 3000 4000 5000"): ', 'yellow').strip()
+
+                if not kpoint_levels_str:
+                    continue
+
+                try:
+                    kpoint_levels = [int(x) for x in kpoint_levels_str.split()]
+                    schemas.GenerateVaspWorkflowOfConvergenceTests(poscar_path=poscar_path, test_type=test_type, kpoint_levels=kpoint_levels)
+                    break
+                except Exception:
+                    color_print(f'[Error] Invalid k-point levels: {kpoint_levels_str}, please double check and try again.\n', 'red')
+        
+        except (KeyboardInterrupt, EOFError):
+            color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+            return
+    
+    if test_type == 'encut':
+        input = schemas.GenerateVaspWorkflowOfConvergenceTests(poscar_path=poscar_path, test_type=test_type, encut_levels=encut_levels)
+    elif test_type == 'kpoints':
+        input = schemas.GenerateVaspWorkflowOfConvergenceTests(poscar_path=poscar_path, test_type=test_type, kpoint_levels=kpoint_levels)
+    else:
+        input = schemas.GenerateVaspWorkflowOfConvergenceTests(poscar_path=poscar_path, test_type=test_type, encut_levels=encut_levels, kpoint_levels=kpoint_levels)
+    result = tools.generate_vasp_workflow_of_convergence_tests(input=input)
+    color_print(result['message'], 'green')

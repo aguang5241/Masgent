@@ -181,7 +181,7 @@ class ConvertPoscarCoordinatesSchema(BaseModel):
     Schema for converting POSCAR between direct and cartesian coordinates.
     '''
     poscar_path: Optional[str] = Field(
-        None,
+        os.path.join(os.environ.get('MASGENT_SESSION_RUNS_DIR', ''), 'POSCAR'),
         description='Path to the POSCAR file. Defaults to "POSCAR" in current directory if not provided.'
     )
 
@@ -192,11 +192,6 @@ class ConvertPoscarCoordinatesSchema(BaseModel):
 
     @model_validator(mode='after')
     def validator(self):
-        # set default POSCAR path if not provided
-        runs_dir = os.environ.get('MASGENT_SESSION_RUNS_DIR')
-        if self.poscar_path is None:
-            self.poscar_path = os.path.join(runs_dir, 'POSCAR')
-
         # ensure POSCAR exists
         if not os.path.isfile(self.poscar_path):
             raise ValueError(f'POSCAR file not found: {self.poscar_path}')
@@ -214,7 +209,7 @@ class GenerateVaspInputsFromPoscar(BaseModel):
     Schema for generating VASP input files (INCAR, KPOINTS, POTCAR, POSCAR) from a given POSCAR file using pymatgen input sets.
     '''
     poscar_path: Optional[str] = Field(
-        None,
+        os.path.join(os.environ.get('MASGENT_SESSION_RUNS_DIR', ''), 'POSCAR'),
         description='Path to POSCAR file. Defaults to "POSCAR" in current directory if not provided.'
     )
 
@@ -234,11 +229,6 @@ class GenerateVaspInputsFromPoscar(BaseModel):
 
     @model_validator(mode='after')
     def validator(self):
-        # set default POSCAR path if not provided
-        runs_dir = os.environ.get('MASGENT_SESSION_RUNS_DIR')
-        if self.poscar_path is None:
-            self.poscar_path = os.path.join(runs_dir, 'POSCAR')
-
         # ensure POSCAR exists
         if not os.path.isfile(self.poscar_path):
             raise ValueError(f'POSCAR file not found: {self.poscar_path}')
@@ -256,7 +246,7 @@ class CustomizeVaspKpointsWithAccuracy(BaseModel):
     Schema for customizing VASP KPOINTS from POSCAR with specified accuracy level.
     '''
     poscar_path: Optional[str] = Field(
-        None,
+        os.path.join(os.environ.get('MASGENT_SESSION_RUNS_DIR', ''), 'POSCAR'),
         description='Path to POSCAR file. Defaults to "POSCAR" in current directory if not provided.'
     )
 
@@ -269,10 +259,6 @@ class CustomizeVaspKpointsWithAccuracy(BaseModel):
 
     @model_validator(mode='after')
     def validator(self):
-        # set default POSCAR path if not provided
-        runs_dir = os.environ.get('MASGENT_SESSION_RUNS_DIR')
-        if self.poscar_path is None:
-            self.poscar_path = os.path.join(runs_dir, 'POSCAR')
         # ensure POSCAR exists
         if not os.path.isfile(self.poscar_path):
             raise ValueError(f'POSCAR file not found: {self.poscar_path}')
@@ -290,7 +276,7 @@ class GenerateVaspPoscarWithVacancyDefects(BaseModel):
     Schema for generating VASP POSCAR with vacancy defects.
     '''
     poscar_path: Optional[str] = Field(
-        None,
+        os.path.join(os.environ.get('MASGENT_SESSION_RUNS_DIR', ''), 'POSCAR'),
         description='Path to the original POSCAR file. Defaults to "POSCAR" in current directory if not provided.'
     )
     
@@ -306,11 +292,6 @@ class GenerateVaspPoscarWithVacancyDefects(BaseModel):
 
     @model_validator(mode='after')
     def validator(self):
-        # set default POSCAR path if not provided
-        runs_dir = os.environ.get('MASGENT_SESSION_RUNS_DIR')
-        if self.poscar_path is None:
-            self.poscar_path = os.path.join(runs_dir, 'POSCAR')
-        
         # ensure POSCAR exists
         if not os.path.isfile(self.poscar_path):
             raise ValueError(f'POSCAR file not found: {self.poscar_path}')
@@ -359,7 +340,7 @@ class GenerateVaspPoscarWithSubstitutionDefects(BaseModel):
     Schema for generating VASP POSCAR with substitution defects.
     '''
     poscar_path: Optional[str] = Field(
-        None,
+        os.path.join(os.environ.get('MASGENT_SESSION_RUNS_DIR', ''), 'POSCAR'),
         description='Path to the original POSCAR file. Defaults to "POSCAR" in current directory if not provided.'
     )
     
@@ -380,11 +361,6 @@ class GenerateVaspPoscarWithSubstitutionDefects(BaseModel):
 
     @model_validator(mode='after')
     def validator(self):
-        # set default POSCAR path if not provided
-        runs_dir = os.environ.get('MASGENT_SESSION_RUNS_DIR')
-        if self.poscar_path is None:
-            self.poscar_path = os.path.join(runs_dir, 'POSCAR')
-        
         # ensure POSCAR exists
         if not os.path.isfile(self.poscar_path):
             raise ValueError(f'POSCAR file not found: {self.poscar_path}')
@@ -440,7 +416,7 @@ class GenerateVaspPoscarWithInterstitialDefects(BaseModel):
     Schema for generating VASP POSCAR with interstitial (Voronoi) defects.
     '''
     poscar_path: Optional[str] = Field(
-        None,
+        os.path.join(os.environ.get('MASGENT_SESSION_RUNS_DIR', ''), 'POSCAR'),
         description='Path to the original POSCAR file. Defaults to "POSCAR" in current directory if not provided.'
     )
 
@@ -451,11 +427,6 @@ class GenerateVaspPoscarWithInterstitialDefects(BaseModel):
 
     @model_validator(mode='after')
     def validator(self):
-        # set default POSCAR path if not provided
-        runs_dir = os.environ.get('MASGENT_SESSION_RUNS_DIR')
-        if self.poscar_path is None:
-            self.poscar_path = os.path.join(runs_dir, 'POSCAR')
-        
         # ensure POSCAR exists
         if not os.path.isfile(self.poscar_path):
             raise ValueError(f'POSCAR file not found: {self.poscar_path}')
@@ -480,7 +451,7 @@ class GenerateSupercellFromPoscar(BaseModel):
     Schema for generating supercell from POSCAR file.
     '''
     poscar_path: Optional[str] = Field(
-        None,
+        os.path.join(os.environ.get('MASGENT_SESSION_RUNS_DIR', ''), 'POSCAR'),
         description='Path to the POSCAR file. Defaults to "POSCAR" in current directory if not provided.'
     )
 
@@ -491,11 +462,6 @@ class GenerateSupercellFromPoscar(BaseModel):
 
     @model_validator(mode='after')
     def validator(self):
-        # set default POSCAR path if not provided
-        runs_dir = os.environ.get('MASGENT_SESSION_RUNS_DIR')
-        if self.poscar_path is None:
-            self.poscar_path = os.path.join(runs_dir, 'POSCAR')
-        
         # ensure POSCAR exists
         if not os.path.isfile(self.poscar_path):
             raise ValueError(f'POSCAR file not found: {self.poscar_path}')
@@ -576,7 +542,7 @@ class GenerateVaspPoscarForSurfaceSlab(BaseModel):
     Schema for generating VASP POSCAR for surface slab from bulk POSCAR.
     '''
     poscar_path: Optional[str] = Field(
-        None,
+        os.path.join(os.environ.get('MASGENT_SESSION_RUNS_DIR', ''), 'POSCAR'),
         description='Path to the bulk POSCAR file. Defaults to "POSCAR" in current directory if not provided.'
     )
 
@@ -597,11 +563,6 @@ class GenerateVaspPoscarForSurfaceSlab(BaseModel):
 
     @model_validator(mode='after')
     def validator(self):
-        # set default POSCAR path if not provided
-        runs_dir = os.environ.get('MASGENT_SESSION_RUNS_DIR')
-        if self.poscar_path is None:
-            self.poscar_path = os.path.join(runs_dir, 'POSCAR')
-        
         # ensure POSCAR exists
         if not os.path.isfile(self.poscar_path):
             raise ValueError(f'POSCAR file not found: {self.poscar_path}')
@@ -623,5 +584,52 @@ class GenerateVaspPoscarForSurfaceSlab(BaseModel):
         # validate slab_layers
         if self.slab_layers < 1:
             raise ValueError('Number of slab layers must be integer at least 1.')
+
+        return self
+    
+class GenerateVaspWorkflowOfConvergenceTests(BaseModel):
+    '''
+    Schema for generating VASP workflow for convergence tests for k-points and energy cutoff based on given POSCAR
+    '''
+
+    poscar_path: Optional[str] = Field(
+        os.path.join(os.environ.get('MASGENT_SESSION_RUNS_DIR', ''), 'POSCAR'),
+        description='Path to the POSCAR file. Defaults to "POSCAR" in current directory if not provided.'
+    )
+
+    test_type: Optional[Literal['kpoints', 'encut', 'all']] = Field(
+        'all',
+        description='Type of convergence test to perform: "kpoints", "encut", or "all". Defaults to "all" if not provided.'
+    )
+
+    kpoint_levels: Optional[List[int]] = Field(
+        [1000, 2000, 3000, 4000, 5000],
+        description='List of k-point density levels to test. Defaults to [1000, 2000, 3000, 4000, 5000] if not provided.'
+    )
+
+    encut_levels: Optional[List[int]] = Field(
+        [300, 400, 500, 600, 700],
+        description='List of energy cutoff levels (in eV) to test. Defaults to [300, 400, 500, 600, 700] if not provided.'
+    )
+
+    @model_validator(mode='after')
+    def validator(self):
+        # ensure POSCAR exists
+        if not os.path.isfile(self.poscar_path):
+            raise ValueError(f'POSCAR file not found: {self.poscar_path}')
+        
+        # ensure the poscar file is valid POSCAR
+        try:
+            _ = Structure.from_file(self.poscar_path)
+        except Exception as e:
+            raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
+        
+        # validate kpoint_levels
+        if not all(isinstance(k, int) and k > 0 for k in self.kpoint_levels):
+            raise ValueError('All k-point levels must be positive integers.')
+        
+        # validate encut_levels
+        if not all(isinstance(ec, int) and ec > 0 for ec in self.encut_levels):
+            raise ValueError('All energy cutoff levels must be positive integers.')
 
         return self
