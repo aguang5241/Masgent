@@ -1,6 +1,23 @@
 # Masgent
 Masgent: Materials Simulation Agent
 
+## Installation
+1. Requirements:
+   - Python >= 3.9, < 3.13
+2. Install via pip:
+```bash
+pip install masgent
+```
+
+## Usage
+1. After installation, run the following command to start the Masgent:
+```bash
+masgent
+```
+2. Optional preparation:
+- For AI functionalities, obtain your OpenAI API key from [platform.openai.com](https://platform.openai.com/account/api-keys).
+- For Materials Project access, obtain your API key from [materialsproject.org](https://next-gen.materialsproject.org/api).
+
 ## Features
 - AI agent (Pydantic AI + OpenAI)
 - Materials Project access
