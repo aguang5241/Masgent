@@ -46,7 +46,7 @@ Masgent: Materials Simulation Agent
 
 ## Installation
 1. Requirements:
-   - Python 3.9+
+   - Python >= 3.9, < 3.13
 2. Install via pip:
 ```bash
 pip install masgent
