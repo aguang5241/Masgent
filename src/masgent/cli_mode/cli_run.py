@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 
-import sys, os
+import sys, os, time
 from bullet import Bullet, colors
 from yaspin import yaspin
 from yaspin.spinners import Spinners
 
 from masgent import tools, schemas
 from masgent.ai_mode import ai_backend
-from masgent.utils import (
+from masgent.utils.utils import (
     color_print, 
     color_input, 
     print_help, 
     global_commands, 
-    start_new_session
+    start_new_session,
+    clear_and_print_entry_message,
     )
 
 COMMANDS = {}
@@ -44,6 +45,7 @@ def check_poscar():
 
         if use_default:
             runs_dir_name = os.path.basename(runs_dir)
+            clear_and_print_entry_message()
             choices = [
                 'Yes  ->  Use POSCAR file in current runs directory',
                 'No   ->  Provide a different POSCAR file path',
@@ -107,6 +109,7 @@ def command_1_1_1():
 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     input = schemas.GenerateVaspPoscarSchema(formula=formula)
@@ -117,6 +120,7 @@ def command_1_1_1():
 def command_1_1_2():
     try:
         while True:
+            clear_and_print_entry_message()
             choices = [
                 'Direct coordinates     —>  Cartesian coordinates',
                 'Cartesian coordinates  —>  Direct coordinates',
@@ -154,6 +158,7 @@ def command_1_1_2():
         poscar_path = check_poscar()
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     input = schemas.ConvertPoscarCoordinatesSchema(poscar_path=poscar_path, to_cartesian=to_cartesian)
@@ -164,6 +169,7 @@ def command_1_1_2():
 def command_1_1_3():
     try:
         while True:
+            clear_and_print_entry_message()
             choices = [
                 'POSCAR  ->  CIF',
                 'POSCAR  ->  XYZ',
@@ -228,6 +234,7 @@ def command_1_1_3():
 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     input = schemas.ConvertStructureFormatSchema(input_path=input_path, input_format=input_format, output_format=output_format)
@@ -238,6 +245,7 @@ def command_1_1_3():
 def command_1_1_4():
     try:
         while True:
+            clear_and_print_entry_message()
             choices = [
                 'Vacancy                 ->  Randomly remove atoms of a selected element',
                 'Substitution            ->  Randomly substitute atoms of a selected element with defect element',
@@ -281,6 +289,7 @@ def command_vacancy():
         poscar_path = check_poscar()
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     try:
@@ -299,6 +308,7 @@ def command_vacancy():
 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     try:
@@ -321,6 +331,7 @@ def command_vacancy():
 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     input = schemas.GenerateVaspPoscarWithVacancyDefects(poscar_path=poscar_path, original_element=original_element, defect_amount=defect_amount)
@@ -333,6 +344,7 @@ def command_substitution():
         poscar_path = check_poscar()
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     try:
@@ -351,6 +363,7 @@ def command_substitution():
                 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     try:
@@ -367,6 +380,7 @@ def command_substitution():
 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     try:
@@ -388,6 +402,7 @@ def command_substitution():
 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     input = schemas.GenerateVaspPoscarWithSubstitutionDefects(poscar_path=poscar_path, original_element=original_element, defect_element=defect_element, defect_amount=defect_amount)
@@ -400,6 +415,7 @@ def command_interstitial():
         poscar_path = check_poscar()
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     try:
@@ -416,6 +432,7 @@ def command_interstitial():
 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     input = schemas.GenerateVaspPoscarWithInterstitialDefects(poscar_path=poscar_path, defect_element=defect_element)
@@ -430,6 +447,7 @@ def command_1_1_5():
         poscar_path = check_poscar()
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     try:
@@ -448,6 +466,7 @@ def command_1_1_5():
 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     input = schemas.GenerateSupercellFromPoscar(poscar_path=poscar_path, scaling_matrix=sm)
@@ -460,6 +479,7 @@ def command_1_1_6():
         poscar_path = check_poscar()
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     try:
@@ -491,6 +511,7 @@ def command_1_1_6():
     
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     try:
@@ -509,6 +530,7 @@ def command_1_1_6():
 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     try:
@@ -527,6 +549,7 @@ def command_1_1_6():
 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     try:
@@ -545,6 +568,7 @@ def command_1_1_6():
 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     input = schemas.GenerateSqsFromPoscar(poscar_path=poscar_path, target_configurations=target_configurations, cutoffs=cutoffs, max_supercell_size=max_supercell_size, mc_steps=mc_steps)
@@ -559,6 +583,7 @@ def command_1_1_7():
         poscar_path = check_poscar()
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     try:
@@ -577,6 +602,7 @@ def command_1_1_7():
 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     try:
@@ -595,6 +621,7 @@ def command_1_1_7():
 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     try:
@@ -613,6 +640,7 @@ def command_1_1_7():
 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     input = schemas.GenerateSurfaceSlabFromPoscar(poscar_path=poscar_path, miller_indices=miller_indices, vacuum_thickness=vacuum_thickness, slab_layers=slab_layers)
@@ -623,6 +651,7 @@ def command_1_1_7():
 def command_1_2_1():
     try:
         while True:
+            clear_and_print_entry_message()
             choices = [
                 'MPRelaxSet       ->   suggested for structure relaxation',
                 'MPStaticSet      ->   suggested for static calculations',
@@ -684,6 +713,7 @@ def command_1_2_1():
         poscar_path = check_poscar()
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     input = schemas.GenerateVaspInputsFromPoscar(poscar_path=poscar_path, vasp_input_sets=vasp_input_sets, only_incar=False)
@@ -694,6 +724,7 @@ def command_1_2_1():
 def command_1_2_2():
     try:
         while True:
+            clear_and_print_entry_message()
             choices = [
                 'MPRelaxSet       ->   suggested for structure relaxation',
                 'MPStaticSet      ->   suggested for static calculations',
@@ -755,6 +786,7 @@ def command_1_2_2():
         poscar_path = check_poscar()
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     input = schemas.GenerateVaspInputsFromPoscar(poscar_path=poscar_path, vasp_input_sets=vasp_input_sets, only_incar=True)
@@ -765,6 +797,7 @@ def command_1_2_2():
 def command_1_2_3():
     try:
         while True:
+            clear_and_print_entry_message()
             choices = [
                 'Low     ->  Suitable for preliminary calculations, grid density = 1000 / number of atoms',
                 'Medium  ->  Balanced accuracy and computational cost, grid density = 3000 / number of atoms',
@@ -806,6 +839,7 @@ def command_1_2_3():
         poscar_path = check_poscar()
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     input = schemas.CustomizeVaspKpointsWithAccuracy(poscar_path=poscar_path, accuracy_level=accuracy_level)
@@ -818,6 +852,7 @@ def command_1_2_4():
         partition = color_input('\nEnter the HPC partition/queue name (default: normal): ', 'yellow').strip() or 'normal'
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     try:
@@ -835,6 +870,7 @@ def command_1_2_4():
                 continue
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     try:
@@ -852,6 +888,7 @@ def command_1_2_4():
                 continue
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     try:
@@ -867,6 +904,7 @@ def command_1_2_4():
                 continue
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     try:
@@ -875,6 +913,7 @@ def command_1_2_4():
             job_name = 'masgent_job'
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     input = schemas.GenerateVaspInputsHpcSlurmScript(
@@ -892,6 +931,7 @@ def command_1_2_4():
 def command_1_3_1():
     try:
         while True:
+            clear_and_print_entry_message()
             choices = [
                 'All      ->  Convergence tests for both energy cutoff and k-points',
                 'ENCUT    ->  Convergence test for energy cutoff only',
@@ -934,6 +974,7 @@ def command_1_3_1():
         poscar_path = check_poscar()
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     if test_type == 'encut':
@@ -953,6 +994,7 @@ def command_1_3_1():
         
         except (KeyboardInterrupt, EOFError):
             color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+            time.sleep(1)
             return
         
     elif test_type == 'kpoints':
@@ -972,6 +1014,7 @@ def command_1_3_1():
         
         except (KeyboardInterrupt, EOFError):
             color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+            time.sleep(1)
             return
         
     else:
@@ -991,6 +1034,7 @@ def command_1_3_1():
         
         except (KeyboardInterrupt, EOFError):
             color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+            time.sleep(1)
             return
         
         try:
@@ -1009,6 +1053,7 @@ def command_1_3_1():
         
         except (KeyboardInterrupt, EOFError):
             color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+            time.sleep(1)
             return
     
     if test_type == 'encut':
@@ -1026,6 +1071,7 @@ def command_1_3_2():
         poscar_path = check_poscar()
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     try:
@@ -1044,6 +1090,7 @@ def command_1_3_2():
 
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
     
     input = schemas.GenerateVaspWorkflowOfEos(poscar_path=poscar_path, scale_factors=scale_factors)
@@ -1056,6 +1103,7 @@ def command_1_3_3():
         poscar_path = check_poscar()
     except (KeyboardInterrupt, EOFError):
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
         return
 
     input = schemas.GenerateVaspWorkflowOfElasticConstants(poscar_path=poscar_path)

@@ -19,7 +19,7 @@ from pydantic_ai.messages import (
     )
 
 from masgent import tools
-from masgent.utils import (
+from masgent.utils.utils import (
     ask_for_openai_api_key,
     validate_openai_api_key,
     load_system_prompts, 
@@ -52,9 +52,11 @@ Global Commands:
     color_print(msg, 'green')
 
 def print_entry_message():
-    msg_1 = '''
+    msg_1 = f'''
 Welcome to Masgent AI — Your Materials Simulations Agent.
 ---------------------------------------------------------
+Current Session Runs Directory: {os.environ["MASGENT_SESSION_RUNS_DIR"]}
+
 Ask Masgent AI for help with any simulation tasks.
 '''
     msg_2 = '''
@@ -162,6 +164,8 @@ async def ai_mode(agent):
             
             if user_input.lower() in {'new'}:
                 start_new_session()
+                os.system('cls' if os.name == 'nt' else 'clear')
+                print_entry_message()
             elif user_input.lower() in {'back'}:
                 return
             else:
@@ -176,6 +180,7 @@ async def ai_mode(agent):
         sys.exit(0)
 
 def main():
+    os.system('cls' if os.name == 'nt' else 'clear')
     print_entry_message()
 
     # Ensure OpenAI API key exists and validate it only once per process

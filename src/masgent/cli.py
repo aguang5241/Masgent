@@ -1,33 +1,27 @@
 # !/usr/bin/env python3
 
-import sys
+import sys, os
 from bullet import Bullet, colors
 
 from masgent.ai_mode import ai_backend
 from masgent.cli_mode.cli_entries import run_command
-from masgent.utils import (
-    color_print, 
-    print_banner, 
-    print_help, 
+from masgent.utils.utils import (
+    color_print,
+    print_help,
     start_new_session,
+    clear_and_print_banner_and_entry_message,
     )
 
 def main():
-    print_banner()
-
     # Create a single session runs directory
     start_new_session()
     
     try:
         while True:
-            prompt = '''
-Welcome to Masgent — Your Materials Simulation Agent.
------------------------------------------------------
-Please select from the following options:
-'''
+            clear_and_print_banner_and_entry_message()
             choices = [
                 '1. Density Functional Theory (DFT) Simulations',
-                '2. Machine Learning Potentials (MLP)',
+                '2. Fast simulations using machine learning potentials (MLPs)',
                 '3. Machine Learning Model Training & Evaluation',
                 '',
                 'AI    ->  Chat with the Masgent AI',
@@ -35,7 +29,7 @@ Please select from the following options:
                 'Help  ->  Show available functions',
                 'Exit  ->  Quit the Masgent',
             ]
-            cli = Bullet(prompt=prompt, choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
             
             if user_input.startswith('AI'):

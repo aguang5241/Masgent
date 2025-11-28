@@ -34,8 +34,7 @@ def start_new_session():
         timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         runs_dir = os.path.join(main_dir, f'runs_{timestamp}')
         os.makedirs(runs_dir, exist_ok=True)
-    
-    color_print(f'\n[Info] New Masgent session runs directory: {runs_dir}', 'green')
+
     os.environ['MASGENT_SESSION_RUNS_DIR'] = runs_dir
 
 def global_commands():
@@ -212,7 +211,32 @@ def print_banner():
     '''
     color_print(ascii_banner, 'yellow')
 
+def clear_and_print_entry_message():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    msg = f'''
+Welcome to Masgent AI — Your Materials Simulations Agent.
+---------------------------------------------------------
+Current Session Runs Directory: {os.environ["MASGENT_SESSION_RUNS_DIR"]}
+
+Please select from the following options:
+'''
+    color_print(msg, 'white')
+
+def clear_and_print_banner_and_entry_message():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print_banner()
+    msg = f'''
+Welcome to Masgent — Your Materials Simulation Agent.
+---------------------------------------------------------
+Current Session Runs Directory: {os.environ["MASGENT_SESSION_RUNS_DIR"]}
+
+Please select from the following options:
+'''
+    color_print(msg, 'white')
+
 def print_help():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
     title = '\n Masgent - Available Commands and Functions '
     color_print(title, "green")
 
@@ -243,10 +267,19 @@ def print_help():
 
         ['1.4', 'VASP Output Analysis'],
 
-        ['2', 'Machine Learning Potentials (MLP)'],
+        ['2', 'Fast simulations using machine learning potentials (MLPs)'],
 
         ['3', 'Machine Learning Model Training & Evaluation'],
     ]
     
     table = tabulate.tabulate(rows, headers, tablefmt='fancy_grid')
     color_print(table, "green")
+
+    try:
+        while True:
+            input = color_input('Type "back" to return: ', 'yellow').strip().lower()
+            if input == 'back':
+                return
+    except KeyboardInterrupt:
+        return
+

@@ -25,7 +25,7 @@ from pymatgen.io.vasp.sets import (
     )
 
 from masgent import schemas
-from masgent.utils import (
+from masgent.utils.utils import (
     write_comments,
     color_print,
     ask_for_mp_api_key,
