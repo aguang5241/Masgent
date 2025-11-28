@@ -241,6 +241,56 @@ class GenerateVaspInputsFromPoscar(BaseModel):
 
         return self
 
+class GenerateVaspInputsHpcSlurmScript(BaseModel):
+    '''
+    Schema for generating HPC Slurm job submission script for VASP calculations.
+    '''
+    partition: Optional[str] = Field(
+        'normal',
+        description='Slurm partition/queue name. Defaults to "normal" if not provided.'
+    )
+
+    nodes: Optional[int] = Field(
+        1,
+        description='Number of nodes to request. Defaults to 1 if not provided.'
+    )
+
+    ntasks: Optional[int] = Field(
+        8,
+        description='Number of tasks (cores) to request. Defaults to 8 if not provided.'
+    )
+
+    walltime: Optional[str] = Field(
+        '00:10:00',
+        description='Walltime limit in format HH:MM:SS. Defaults to "00:10:00" if not provided.'
+    )
+
+    jobname: Optional[str] = Field(
+        'masgent_job',
+        description='Name of the job. Defaults to "masgent_job" if not provided.'
+    )
+
+    command: Optional[str] = Field(
+        'srun vasp_std > vasp.out',
+        description='Command to execute the job. Defaults to "srun vasp_std > vasp.out" if not provided.'
+    )
+
+    @model_validator(mode='after')
+    def validator(self):
+        # validate nodes
+        if self.nodes < 1:
+            raise ValueError('Number of nodes must be at least 1.')
+        
+        # validate ntasks
+        if self.ntasks < 1:
+            raise ValueError('Number of tasks must be at least 1.')
+        
+        # validate walltime format HH:MM:SS
+        if not re.match(r'^\d{1,2}:\d{2}:\d{2}$', self.walltime):
+            raise ValueError('Walltime must be in format HH:MM:SS.')
+
+        return self
+
 class CustomizeVaspKpointsWithAccuracy(BaseModel):
     '''
     Schema for customizing VASP KPOINTS from POSCAR with specified accuracy level.
@@ -486,60 +536,83 @@ class GenerateSupercellFromPoscar(BaseModel):
             raise ValueError('Scaling matrix must be a 3x3 matrix with integer entries.')
 
         return self
-    
-class GenerateVaspInputsHpcSlurmScript(BaseModel):
+
+class GenerateSqsFromPoscar(BaseModel):
     '''
-    Schema for generating HPC Slurm job submission script for VASP calculations.
+    Schema for generating Special Quasirandom Structures (SQS) from a given POSCAR file.
     '''
-    partition: Optional[str] = Field(
-        'normal',
-        description='Slurm partition/queue name. Defaults to "normal" if not provided.'
+    poscar_path: Optional[str] = Field(
+        os.path.join(os.environ.get('MASGENT_SESSION_RUNS_DIR', ''), 'POSCAR'),
+        description='Path to the POSCAR file. Defaults to "POSCAR" in current directory if not provided.'
     )
 
-    nodes: Optional[int] = Field(
-        1,
-        description='Number of nodes to request. Defaults to 1 if not provided.'
+    target_configurations: Dict[str, Dict[str, float]] = Field(
+        ...,
+        description='Dictionary specifying target configurations for each sublattice. E.g., {"La": {"La": 0.5, "Y": 0.5}, "Co": {"Al": 0.75, "Co": 0.25}}'
     )
 
-    ntasks: Optional[int] = Field(
+    cutoffs: Optional[List[float]] = Field(
+        [8.0, 4.0],
+        description='List of cutoff distances (in Angstroms) for cluster expansion. Defaults to [8.0, 4.0] if not provided.'
+    )
+
+    max_supercell_size: Optional[int] = Field(
         8,
-        description='Number of tasks (cores) to request. Defaults to 8 if not provided.'
+        description='Maximum size of the supercell (number of primitive cells). Defaults to 8 if not provided.'
     )
 
-    walltime: Optional[str] = Field(
-        '00:10:00',
-        description='Walltime limit in format HH:MM:SS. Defaults to "00:10:00" if not provided.'
-    )
-
-    jobname: Optional[str] = Field(
-        'masgent_job',
-        description='Name of the job. Defaults to "masgent_job" if not provided.'
-    )
-
-    command: Optional[str] = Field(
-        'srun vasp_std > vasp.out',
-        description='Command to execute the job. Defaults to "srun vasp_std > vasp.out" if not provided.'
+    mc_steps: Optional[int] = Field(
+        10000,
+        description='Number of Monte Carlo steps for SQS generation. Defaults to 10000 if not provided.'
     )
 
     @model_validator(mode='after')
     def validator(self):
-        # validate nodes
-        if self.nodes < 1:
-            raise ValueError('Number of nodes must be at least 1.')
+        # ensure POSCAR exists
+        if not os.path.isfile(self.poscar_path):
+            raise ValueError(f'POSCAR file not found: {self.poscar_path}')
         
-        # validate ntasks
-        if self.ntasks < 1:
-            raise ValueError('Number of tasks must be at least 1.')
+        # ensure the poscar file is valid POSCAR
+        try:
+            _ = Structure.from_file(self.poscar_path)
+        except Exception as e:
+            raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
         
-        # validate walltime format HH:MM:SS
-        if not re.match(r'^\d{1,2}:\d{2}:\d{2}$', self.walltime):
-            raise ValueError('Walltime must be in format HH:MM:SS.')
+        # validate cutoffs
+        if not all(isinstance(cutoff, (float, int)) and cutoff > 0 for cutoff in self.cutoffs):
+            raise ValueError('All cutoff distances must be positive numbers.')
+        
+        # validate target_configurations
+        for sublattice, conc_dict in self.target_configurations.items():
+            # validate sublattice element is valid
+            try:
+                Element(sublattice)
+            except:
+                raise ValueError(f'Invalid sublattice element symbol: {sublattice}')
+            # validate sublattice element exists in the POSCAR structure
+            structure = Structure.from_file(self.poscar_path)
+            if sublattice not in {str(site.specie) for site in structure.sites}:
+                raise ValueError(f'Sublattice element {sublattice} does not exist in POSCAR structure.')
+            # validate concentration dictionary
+            if not isinstance(conc_dict, dict) or not conc_dict:
+                raise ValueError(f'Target configurations for sublattice {sublattice} must be a non-empty dictionary.')
+            total_conc = sum(conc_dict.values())
+            if abs(total_conc - 1.0) > 1e-5:
+                raise ValueError(f'Target concentrations for sublattice {sublattice} must sum to 1.0. Current sum: {total_conc}')
+        
+        # validate max_supercell_size
+        if self.max_supercell_size < 1:
+            raise ValueError('Maximum supercell size must be at least 1.')
+        
+        # validate mc_steps
+        if self.mc_steps < 1000:
+            raise ValueError('Number of Monte Carlo steps must be at least 1000 for meaningful SQS generation.')
 
         return self
     
-class GenerateVaspPoscarForSurfaceSlab(BaseModel):
+class GenerateSurfaceSlabFromPoscar(BaseModel):
     '''
-    Schema for generating VASP POSCAR for surface slab from bulk POSCAR.
+    Schema for generating surface slab from bulk POSCAR.
     '''
     poscar_path: Optional[str] = Field(
         os.path.join(os.environ.get('MASGENT_SESSION_RUNS_DIR', ''), 'POSCAR'),
@@ -666,34 +739,15 @@ class GenerateVaspWorkflowOfEos(BaseModel):
             raise ValueError('All scale factors must be positive floats.')
 
         return self
+
+class GenerateVaspWorkflowOfElasticConstants(BaseModel):
+    '''
+    Schema for generating VASP input files and submit bash script for workflow of elastic constants calculations based on given POSCAR
+    '''
     
-class GenerateSqsFromPoscar(BaseModel):
-    '''
-    Schema for generating Special Quasirandom Structures (SQS) from a given POSCAR file.
-    '''
     poscar_path: Optional[str] = Field(
         os.path.join(os.environ.get('MASGENT_SESSION_RUNS_DIR', ''), 'POSCAR'),
         description='Path to the POSCAR file. Defaults to "POSCAR" in current directory if not provided.'
-    )
-
-    target_configurations: Dict[str, Dict[str, float]] = Field(
-        ...,
-        description='Dictionary specifying target configurations for each sublattice. E.g., {"La": {"La": 0.5, "Y": 0.5}, "Co": {"Al": 0.75, "Co": 0.25}}'
-    )
-
-    cutoffs: Optional[List[float]] = Field(
-        [8.0, 4.0],
-        description='List of cutoff distances (in Angstroms) for cluster expansion. Defaults to [8.0, 4.0] if not provided.'
-    )
-
-    max_supercell_size: Optional[int] = Field(
-        8,
-        description='Maximum size of the supercell (number of primitive cells). Defaults to 8 if not provided.'
-    )
-
-    mc_steps: Optional[int] = Field(
-        10000,
-        description='Number of Monte Carlo steps for SQS generation. Defaults to 10000 if not provided.'
     )
 
     @model_validator(mode='after')
@@ -707,37 +761,5 @@ class GenerateSqsFromPoscar(BaseModel):
             _ = Structure.from_file(self.poscar_path)
         except Exception as e:
             raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
-        
-        # validate cutoffs
-        if not all(isinstance(cutoff, (float, int)) and cutoff > 0 for cutoff in self.cutoffs):
-            raise ValueError('All cutoff distances must be positive numbers.')
-        
-        # validate target_configurations
-        for sublattice, conc_dict in self.target_configurations.items():
-            # validate sublattice element is valid
-            try:
-                Element(sublattice)
-            except:
-                raise ValueError(f'Invalid sublattice element symbol: {sublattice}')
-            # validate sublattice element exists in the POSCAR structure
-            structure = Structure.from_file(self.poscar_path)
-            if sublattice not in {str(site.specie) for site in structure.sites}:
-                raise ValueError(f'Sublattice element {sublattice} does not exist in POSCAR structure.')
-            # validate concentration dictionary
-            if not isinstance(conc_dict, dict) or not conc_dict:
-                raise ValueError(f'Target configurations for sublattice {sublattice} must be a non-empty dictionary.')
-            total_conc = sum(conc_dict.values())
-            if abs(total_conc - 1.0) > 1e-5:
-                raise ValueError(f'Target concentrations for sublattice {sublattice} must sum to 1.0. Current sum: {total_conc}')
-        
-        # validate max_supercell_size
-        if self.max_supercell_size < 1:
-            raise ValueError('Maximum supercell size must be at least 1.')
-        
-        # validate mc_steps
-        if self.mc_steps < 1000:
-            raise ValueError('Number of Monte Carlo steps must be at least 1000 for meaningful SQS generation.')
 
         return self
-
-

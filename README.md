@@ -47,15 +47,16 @@ masgent
   
   - 1.2 VASP Input File Preparation
     - 1.2.1 Prepare full VASP input files (INCAR, KPOINTS, POTCAR, POSCAR)
-    - 1.2.2 Generate INCAR templates (relaxation, static, MD, etc.)
+    - 1.2.2 Generate INCAR templates (relaxation, static, etc.)
     - 1.2.3 Generate KPOINTS with specified accuracy
     - 1.2.4 Generate HPC job submission script
-    - 1.2.5 Generate standard VASP calculation workflows
-      - 1.2.5.1 Convergence testing (ENCUT, KPOINTS)
-      - 1.2.5.2 Equation of State (EOS)
-      - 1.2.5.3 (Planned) Elastic constants
   
-  - 1.3 VASP Output Analysis
+  - 1.3 Standard VASP Workflows
+      - 1.3.1 Convergence testing (ENCUT, KPOINTS)
+      - 1.3.2 Equation of State (EOS)
+      - 1.3.3 Elastic constants calculations
+  
+  - 1.4 VASP Output Analysis
 
 2. (Planned) Machine Learning Potentials (MLP)
 

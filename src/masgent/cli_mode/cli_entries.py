@@ -73,7 +73,8 @@ def command_1():
             choices = [
                 '1.1 Structure Preparation & Manipulation',
                 '1.2 VASP Input File Preparation',
-                '1.3 VASP Output Analysis',
+                '1.3 Standard VASP Workflows',
+                '1.4 VASP Output Analysis',
             ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
@@ -97,6 +98,8 @@ def command_1():
                 run_command('1.2')
             elif user_input.startswith('1.3'):
                 run_command('1.3')
+            elif user_input.startswith('1.4'):
+                run_command('1.4')
             else:
                 continue
 
@@ -164,10 +167,9 @@ def command_1_2():
         while True:
             choices = [
                 '1.2.1 Prepare full VASP input files (INCAR, KPOINTS, POTCAR, POSCAR)',
-                '1.2.2 Generate INCAR templates (relaxation, static, MD, etc.)',
+                '1.2.2 Generate INCAR templates (relaxation, static, etc.)',
                 '1.2.3 Gernerate KPOINTS with specified accuracy',
                 '1.2.4 Generate HPC job submission script',
-                '1.2.5 Generate standard VASP calculation workflows',
             ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
@@ -193,8 +195,6 @@ def command_1_2():
                 run_command('1.2.3')
             elif user_input.startswith('1.2.4'):
                 run_command('1.2.4')
-            elif user_input.startswith('1.2.5'):
-                run_command('1.2.5')
             else:
                 continue
 
@@ -202,14 +202,14 @@ def command_1_2():
         color_print('\nExiting Masgent... Goodbye!\n', 'green')
         sys.exit(0)
 
-@register('1.2.5', 'Generate standard VASP calculation workflows.')
-def command_1_2_5():
+@register('1.3', 'Standard VASP Workflows.')
+def command_1_3():
     try:
         while True:
             choices = [
-                '1.2.5.1 Convergence testing (ENCUT, KPOINTS)',
-                '1.2.5.2 Equation of State (EOS)',
-                '1.2.5.3 Elastic constants',
+                '1.3.1 Convergence testing (ENCUT, KPOINTS)',
+                '1.3.2 Equation of State (EOS)',
+                '1.3.3 Elastic constants calculations',
             ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
@@ -227,12 +227,12 @@ def command_1_2_5():
             elif user_input.startswith('Exit'):
                 color_print('\nExiting Masgent... Goodbye!\n', 'green')
                 sys.exit(0)
-            elif user_input.startswith('1.2.5.1'):
-                run_command('1.2.5.1')
-            elif user_input.startswith('1.2.5.2'):
-                run_command('1.2.5.2')
-            elif user_input.startswith('1.2.5.3'):
-                run_command('1.2.5.3')
+            elif user_input.startswith('1.3.1'):
+                run_command('1.3.1')
+            elif user_input.startswith('1.3.2'):
+                run_command('1.3.2')
+            elif user_input.startswith('1.3.3'):
+                run_command('1.3.3')
             else:
                 continue
 
@@ -240,8 +240,8 @@ def command_1_2_5():
         color_print('\nExiting Masgent... Goodbye!\n', 'green')
         sys.exit(0)
 
-@register('1.3', 'VASP Output Analysis')
-def command_1_3():
+@register('1.4', 'VASP Output Analysis')
+def command_1_4():
     try:
         while True:
             choices = [

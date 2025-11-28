@@ -570,7 +570,7 @@ def command_1_1_7():
 
             try:
                 miller_indices = [int(x) for x in miller_indices_str.split()]
-                schemas.GenerateVaspPoscarForSurfaceSlab(poscar_path=poscar_path, miller_indices=miller_indices)
+                schemas.GenerateSurfaceSlabFromPoscar(poscar_path=poscar_path, miller_indices=miller_indices)
                 break
             except Exception:
                 color_print(f'[Error] Invalid Miller indices: {miller_indices_str}, please double check and try again.\n', 'red')
@@ -588,7 +588,7 @@ def command_1_1_7():
 
             try:
                 vacuum_thickness = float(vacuum_thickness_str)
-                schemas.GenerateVaspPoscarForSurfaceSlab(poscar_path=poscar_path, miller_indices=miller_indices, vacuum_thickness=vacuum_thickness)
+                schemas.GenerateSurfaceSlabFromPoscar(poscar_path=poscar_path, miller_indices=miller_indices, vacuum_thickness=vacuum_thickness)
                 break
             except Exception:
                 color_print(f'[Error] Invalid vacuum thickness: {vacuum_thickness_str}, please double check and try again.\n', 'red')
@@ -606,7 +606,7 @@ def command_1_1_7():
 
             try:
                 slab_layers = int(slab_layers_str)
-                schemas.GenerateVaspPoscarForSurfaceSlab(poscar_path=poscar_path, miller_indices=miller_indices, vacuum_thickness=vacuum_thickness, slab_layers=slab_layers)
+                schemas.GenerateSurfaceSlabFromPoscar(poscar_path=poscar_path, miller_indices=miller_indices, vacuum_thickness=vacuum_thickness, slab_layers=slab_layers)
                 break
             except Exception:
                 color_print(f'[Error] Invalid slab layers: {slab_layers_str}, please double check and try again.\n', 'red')
@@ -615,8 +615,8 @@ def command_1_1_7():
         color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
         return
     
-    input = schemas.GenerateVaspPoscarForSurfaceSlab(poscar_path=poscar_path, miller_indices=miller_indices, vacuum_thickness=vacuum_thickness, slab_layers=slab_layers)
-    result = tools.generate_vasp_poscar_for_surface_slab(input=input)
+    input = schemas.GenerateSurfaceSlabFromPoscar(poscar_path=poscar_path, miller_indices=miller_indices, vacuum_thickness=vacuum_thickness, slab_layers=slab_layers)
+    result = tools.generate_surface_slab_from_poscar(input=input)
     color_print(result['message'], 'green')
 
 @register('1.2.1', 'Prepare full VASP input files (INCAR, KPOINTS, POTCAR, POSCAR).')
@@ -888,8 +888,8 @@ def command_1_2_4():
     result = tools.generate_vasp_inputs_hpc_slurm_script(input=input)
     color_print(result['message'], 'green')
 
-@register('1.2.5.1', 'Generate VASP workflow for convergence tests for k-points and energy cutoff based on given POSCAR.')
-def command_1_2_5_1():
+@register('1.3.1', 'Generate VASP workflow for convergence tests for k-points and energy cutoff based on given POSCAR.')
+def command_1_3_1():
     try:
         while True:
             choices = [
@@ -1020,8 +1020,8 @@ def command_1_2_5_1():
     result = tools.generate_vasp_workflow_of_convergence_tests(input=input)
     color_print(result['message'], 'green')
 
-@register('1.2.5.2', 'Generate VASP workflow of equation of state (EOS) calculations based on given POSCAR.')
-def command_1_2_5_2():
+@register('1.3.2', 'Generate VASP workflow of equation of state (EOS) calculations based on given POSCAR.')
+def command_1_3_2():
     try:
         poscar_path = check_poscar()
     except (KeyboardInterrupt, EOFError):
@@ -1048,4 +1048,16 @@ def command_1_2_5_2():
     
     input = schemas.GenerateVaspWorkflowOfEos(poscar_path=poscar_path, scale_factors=scale_factors)
     result = tools.generate_vasp_workflow_of_eos(input=input)
+    color_print(result['message'], 'green')
+
+@register('1.3.3', 'Generate VASP workflow for elastic constants calculations based on given POSCAR.')
+def command_1_3_3():
+    try:
+        poscar_path = check_poscar()
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        return
+
+    input = schemas.GenerateVaspWorkflowOfElasticConstants(poscar_path=poscar_path)
+    result = tools.generate_vasp_workflow_of_elastic_constants(input=input)
     color_print(result['message'], 'green')

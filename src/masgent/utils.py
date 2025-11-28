@@ -226,8 +226,8 @@ def print_help():
         ['1.1.3', 'Convert structure file formats (CIF, POSCAR, XYZ)'],
         ['1.1.4', 'Generate structures with defects (Vacancies, Interstitials, Substitutions)'],
         ['1.1.5', 'Generate supercells'],
-        # ['1.1.6', 'Generate special quasirandom structures (SQS)'],
-        # ['1.1.7', 'Generate surface slabs'],
+        ['1.1.6', 'Generate special quasirandom structures (SQS)'],
+        ['1.1.7', 'Generate surface slabs'],
         # ['1.1.8', 'Generate interface structures'],
 
         ['1.2', 'VASP Input File Preparation'],
@@ -235,12 +235,13 @@ def print_help():
         ['1.2.2', 'Generate INCAR templates (relaxation, static, MD, etc.)'],
         ['1.2.3', 'Generate KPOINTS with specified accuracy'],
         ['1.2.4', 'Generate HPC job submission script'],
-        # ['1.2.5', 'Generate standard VASP calculation workflows'],
-        # ['1.2.5.1', 'Convergence testing (ENCUT, KPOINTS)'],
-        # ['1.2.5.2', 'Equation of State (EOS)'],
-        # ['1.2.5.3', 'Elastic constants'],
 
-        ['1.3', 'VASP Output Analysis'],
+        ['1.3', 'Standard VASP Workflows'],
+        ['1.3.1', 'Convergence testing (ENCUT, KPOINTS)'],
+        ['1.3.2', 'Equation of State (EOS)'],
+        ['1.3.3', 'Elastic constants calculations'],
+
+        ['1.4', 'VASP Output Analysis'],
 
         ['2', 'Machine Learning Potentials (MLP)'],
 
