@@ -61,7 +61,7 @@ def command_0():
         color_print('\nExiting Masgent... Goodbye!\n', 'green')
         sys.exit(0)
 
-@register('1', 'Entry point for Density Functional Theory (DFT) Simulations.')
+@register('1', 'Density Functional Theory (DFT) Simulations.')
 def command_1():
     try:
         while True:
@@ -272,7 +272,7 @@ def command_1_4():
         color_print('\nExiting Masgent... Goodbye!\n', 'green')
         sys.exit(0)
 
-@register('2', 'Fast simulations using machine learning potentials (MLPs).')
+@register('2', 'Fast Simulations Using Machine Learning Potentials (MLPs).')
 def command_2():
     try:
         while True:

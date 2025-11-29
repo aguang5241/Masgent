@@ -267,7 +267,7 @@ def print_help():
 
         ['1.4', 'VASP Output Analysis'],
 
-        ['2', 'Fast simulations using machine learning potentials (MLPs)'],
+        ['2', 'Fast Simulations Using Machine Learning Potentials (MLPs)'],
 
         ['3', 'Machine Learning Model Training & Evaluation'],
     ]
