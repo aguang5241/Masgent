@@ -66,7 +66,7 @@ def list_files() -> dict:
     base_dir = Path(runs_dir)
     for item in base_dir.rglob('*'):
         if item.is_file():
-            file_list.append(str(item.relative_to(base_dir)))
+            file_list.append(os.path.join(runs_dir, str(item.relative_to(base_dir))))
     return {
         'status': 'success',
         'message': f'Found {len(file_list)} files in the current session runs directory.',

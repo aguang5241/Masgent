@@ -8,7 +8,7 @@ from yaspin import yaspin
 from yaspin.spinners import Spinners
 
 from pydantic_ai.models.openai import OpenAIChatModel
-from pydantic_ai import Agent
+from pydantic_ai import Agent, Tool
 from pydantic_ai.messages import (
     ModelMessage,
     ModelRequest,
