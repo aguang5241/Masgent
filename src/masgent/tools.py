@@ -8,16 +8,19 @@ import seaborn as sns
 import matplotlib
 matplotlib.use('Agg')  # Use non-interactive backend for plotting
 from typing import Literal, Optional, List, Dict, Any
-from contextlib import redirect_stdout
 from pathlib import Path
 from dotenv import load_dotenv
 from mp_api.client import MPRester
 from sevenn.calculator import SevenNetCalculator
-from chgnet.model import StructOptimizer
-from ase.io import read, write
+from chgnet.model.dynamics import CHGNetCalculator
+from ase import units
 from ase.build import surface
 from ase.filters import FrechetCellFilter
 from ase.optimize import LBFGS
+from ase.io import read, write
+from ase.md.velocitydistribution import MaxwellBoltzmannDistribution, Stationary
+from ase.md.nose_hoover_chain import NoseHooverChainNVT
+from ase.md import MDLogger
 from icet import ClusterSpace
 from icet.tools.structure_generation import generate_sqs
 from icet.input_output.logging_tools import set_log_config
@@ -1399,48 +1402,90 @@ def generate_vasp_workflow_of_elastic_constants(
         }
 
 @with_metadata(schemas.ToolMetadata(
-    name='Perform fast simulation using machine learning potentials (MLPs)',
-    description='Perform fast simulation using machine learning potentials (MLPs) based on given POSCAR',
+    name='Run simulation using machine learning potentials (MLPs)',
+    description='Run simulation using machine learning potentials (MLPs) based on given POSCAR',
     requires=[],
     optional=['poscar_path', 'mlps_type', 'fmax', 'max_steps', 'task_type'],
     defaults={
         'poscar_path': f'{os.environ.get("MASGENT_SESSION_RUNS_DIR")}/POSCAR',
         'mlps_type': 'SevenNet',
+        'task_type': 'single_point',
         'fmax': 0.1,
         'max_steps': 500,
-        'task_type': 'single_point',
         },
     prereqs=[],
 ))
-def fast_simulation_using_mlps(
+def run_simulation_using_mlps(
     poscar_path: str = f'{os.environ.get("MASGENT_SESSION_RUNS_DIR")}/POSCAR',
     mlps_type: Literal['SevenNet', 'CHGNet'] = 'SevenNet',
+    task_type: Literal['single_point', 'eos', 'md'] = 'single_point',
     fmax: float = 0.1,
     max_steps: int = 500,
-    task_type: Literal['single_point', 'eos'] = 'single_point',
+    temperature: float = 1000.0,
+    md_steps: int = 1000,
+    md_timestep: float = 5.0,
 ) -> dict:
     '''
-    Perform fast simulation using machine learning potentials (MLPs) based on given POSCAR
+    Run simulation using machine learning potentials (MLPs) based on given POSCAR
     '''
-    # color_print(f'\n[Debug: Function Calling] fast_simulation_using_mlps with input: {input}', 'green')
+    # color_print(f'\n[Debug: Function Calling] run_simulation_using_mlps with input: {input}', 'green')
 
     def fit_and_plot_eos(volumes, energies, mlps_type, task_dir):
         volumes_fit, energies_fit = fit_eos(volumes, energies)
+        eos_fit_df = pd.DataFrame({'Volume[Å³]': volumes_fit, 'Energy[eV/atom]': energies_fit})
+        eos_fit_df.to_csv(f'{task_dir}/eos_fit.csv', index=False, float_format='%.8f')
         sns.set_theme(font_scale=1.2, style='whitegrid')
         matplotlib.rcParams['xtick.direction'] = 'in'
         matplotlib.rcParams['ytick.direction'] = 'in'
         fig = plt.figure(figsize=(8, 6), constrained_layout=True)
         ax = plt.subplot()
-        ax.scatter(volumes, energies, color='C3', label='Simulated')
+        ax.scatter(volumes, energies, color='C3', label='Calculated')
         ax.plot(volumes_fit, energies_fit, color='C0', label='Fitted')
         ax.set_xlabel('Volume (Å³)', fontsize=14)
         ax.set_ylabel('Energy (eV/atom)', fontsize=14)
         ax.set_title(f'Masgent EOS using {mlps_type}')
-        ax.legend(frameon=True, loc='upper center')
+        ax.legend(frameon=True, loc='upper right')
         plt.savefig(f'{task_dir}/eos_curve.png', dpi=330)
+
+    def parse_and_plot_md_log(logfile, mlps_type, task_dir):
+        with open(logfile, 'r') as f:
+            lines = f.readlines()
+        data_lines = [line for line in lines if re.match(r'^\s*\d+\.\d+', line)]
+        data = []
+        for line in data_lines:
+            parts = line.split()
+            if len(parts) >= 5:
+                time_ps = float(parts[0])
+                etot_per_atom = float(parts[1])
+                epot_per_atom = float(parts[2])
+                ekin_per_atom = float(parts[3])
+                temperature_k = float(parts[4])
+                data.append({
+                    'Time[ps]': time_ps,
+                    'Etot/N[eV]': etot_per_atom,
+                    'Epot/N[eV]': epot_per_atom,
+                    'Ekin/N[eV]': ekin_per_atom,
+                    'T[K]': temperature_k
+                })
+        df = pd.DataFrame(data)
+        sns.set_theme(font_scale=1.2, style='whitegrid')
+        matplotlib.rcParams['xtick.direction'] = 'in'
+        matplotlib.rcParams['ytick.direction'] = 'in'
+        fig, ax = plt.subplots(4, 1, figsize=(8, 6), sharex=True, sharey=False, constrained_layout=True)
+        ax[0].plot(df['Time[ps]'], df['Etot/N[eV]'], color='C0')
+        ax[1].plot(df['Time[ps]'], df['Epot/N[eV]'], color='C1')
+        ax[2].plot(df['Time[ps]'], df['Ekin/N[eV]'], color='C2')
+        ax[3].plot(df['Time[ps]'], df['T[K]'], label='T', color='C3')
+        ax[0].set_ylabel('$E_{tot}$ (eV/atom)')
+        ax[1].set_ylabel('$E_{pot}$ (eV/atom)')
+        ax[2].set_ylabel('$E_{kin}$ (eV/atom)')
+        ax[3].set_ylabel('$T$ (K)')
+        ax[3].set_xlabel('Time (ps)')
+        ax[0].set_title(f'Masgent MD using {mlps_type}')
+        plt.savefig(f'{task_dir}/md_log.png', dpi=330)
     
     try:
-        schemas.FastSimulationUsingMlps(
+        schemas.RunSimulationUsingMlps(
             poscar_path=poscar_path,
             mlps_type=mlps_type,
             fmax=fmax,
@@ -1461,155 +1506,111 @@ def fast_simulation_using_mlps(
 
         scale_factors = [0.94, 0.96, 0.98, 1.00, 1.02, 1.04, 1.06]
 
-        ###############################
-        #  SevenNet MLPs simulation   #
-        ###############################
         if mlps_type == 'SevenNet':
             calc = SevenNetCalculator(model='7net-0')
-            if task_type == 'single_point':
-                task_dir = os.path.join(mlps_simulation_dir, 'single')
-                os.makedirs(task_dir, exist_ok=True)
-                atoms = read(poscar_path, format='vasp')
-                atoms.calc = calc
-                opt = LBFGS(FrechetCellFilter(atoms), logfile=f'{task_dir}/masgent_mlps_single.log')
-                opt.run(fmax=fmax, steps=max_steps)
-                atoms.write(f'{task_dir}/CONTCAR', format='vasp', direct=True, sort=True)
-                comments = f'# Generated by Masgent from fast simulation using {mlps_type} with fmax = {fmax} eV/Å.'
-                write_comments(f'{task_dir}/CONTCAR', 'poscar', comments)
-                total_energy = atoms.get_potential_energy()
-                energy_per_atom = total_energy / len(atoms)
-                return {
-                    'status': 'success',
-                    'message': f'Completed fast simulation using {mlps_type} in {mlps_simulation_dir}.',
-                    'mlps_simulation_dir': mlps_simulation_dir,
-                    'simulation_log_path': f'{task_dir}/masgent_mlps_single.log',
-                    'contcar_path': f'{task_dir}/CONTCAR',
-                    'total_energy (eV)': total_energy,
-                    'energy_per_atom (eV/atom)': energy_per_atom,
-                }
-            elif task_type == 'eos':
-                task_dir = os.path.join(mlps_simulation_dir, 'eos')
-                os.makedirs(task_dir, exist_ok=True)
-                structure = Structure.from_file(poscar_path)
-                volumes, energies = [], []
-                for scale in scale_factors:
-                    # Create scaled structure
-                    scaled_structure = structure.copy()
-                    scaled_structure.scale_lattice(structure.volume * scale)
-                    scaled_structure_path = os.path.join(task_dir, f'POSCAR_{scale:.3f}')
-                    scaled_structure.to(fmt='poscar', filename=scaled_structure_path)
-                    comments = f'# Generated by Masgent for EOS calculation with scale factor = {scale:.3f} using {mlps_type}.'
-                    write_comments(scaled_structure_path, 'poscar', comments)
-                    # Load scaled structure and perform optimization
-                    atoms = read(scaled_structure_path, format='vasp')
-                    atoms.calc = calc
-                    # opt = LBFGS(FrechetCellFilter(atoms), logfile=f'{task_dir}/masgent_mlps_eos_{scale:.3f}.log')
-                    opt = LBFGS(atoms, logfile=f'{task_dir}/masgent_mlps_eos_{scale:.3f}.log')
-                    opt.run(fmax=fmax, steps=max_steps)
-                    atoms.write(f'{task_dir}/CONTCAR_{scale:.3f}', format='vasp', direct=True, sort=True)
-                    comments = f'# Generated by Masgent from fast simulation using {mlps_type} with fmax = {fmax} eV/Å.'
-                    write_comments(f'{task_dir}/CONTCAR_{scale:.3f}', 'poscar', comments)
-                    energy_per_atom = atoms.get_potential_energy() / len(atoms)
-                    volumes.append(atoms.get_volume())
-                    energies.append(energy_per_atom)
-                # Save EOS results to CSV
-                pd.DataFrame({'Scale Factor': scale_factors, 'Volume (Å³)': volumes, 'Energy (eV/atom)': energies}).to_csv(f'{task_dir}/eos_results.csv', index=False, float_format='%.8f')
-                # Fit and plot EOS
-                fit_and_plot_eos(volumes, energies, mlps_type, task_dir)
-                return {
-                    'status': 'success',
-                    'message': f'Completed EOS simulation using {mlps_type} in {mlps_simulation_dir}.',
-                    'mlps_simulation_dir': mlps_simulation_dir,
-                    'eos_results_csv_path': f'{task_dir}/eos_results.csv',
-                    'eos_curve_png_path': f'{task_dir}/eos_curve.png',
-                }
-            else:
-                return {
-                    'status': 'error',
-                    'message': f'Invalid task type: {task}.'
-                }
-        ###############################
-        #   CHGNet MLPs simulation    #
-        ###############################
         elif mlps_type == 'CHGNet':
-            if task_type == 'single_point':
-                task_dir = os.path.join(mlps_simulation_dir, 'single')
-                os.makedirs(task_dir, exist_ok=True)
-                structure = Structure.from_file(poscar_path)
-                with open(os.path.join(task_dir, 'masgent_mlps_single.log'), 'w') as f, redirect_stdout(f):
-                    relaxer = StructOptimizer(optimizer_class='LBFGS')
-                    structure.perturb(0.1)
-                    result = relaxer.relax(structure, verbose=True, fmax=fmax, steps=max_steps)
-                    relaxed_atoms = result['final_structure'].to_ase_atoms()
-                    relaxed_atoms.write(f'{task_dir}/CONTCAR', format='vasp', direct=True, sort=True)
-                    comments = f'# Generated by Masgent from fast simulation using {mlps_type} with fmax = {fmax} eV/Å.'
-                    write_comments(f'{task_dir}/CONTCAR', 'poscar', comments)
-                with open(os.path.join(task_dir, 'masgent_mlps_single.log'), 'r') as log_file:
-                    lines = log_file.readlines()
-                    for line in lines[::-1]:
-                        parts = line.split()
-                        total_energy = float(parts[3])
-                        break
-                energy_per_atom = total_energy / len(relaxed_atoms)
-                return {
-                    'status': 'success',
-                    'message': f'Completed fast simulation using {mlps_type} in {mlps_simulation_dir}.',
-                    'mlps_simulation_dir': mlps_simulation_dir,
-                    'simulation_log_path': f'{task_dir}/masgent_mlps_single.log',
-                    'contcar_path': f'{task_dir}/CONTCAR',
-                    'total_energy (eV)': total_energy,
-                    'energy_per_atom (eV/atom)': energy_per_atom,
-                }
-            elif task_type == 'eos':
-                task_dir = os.path.join(mlps_simulation_dir, 'eos')
-                os.makedirs(task_dir, exist_ok=True)
-                structure = Structure.from_file(poscar_path)
-                volumes, energies = [], []
-                for scale in scale_factors:
-                    # Create scaled structure
-                    scaled_structure = structure.copy()
-                    scaled_structure.scale_lattice(structure.volume * scale)
-                    scaled_structure_path = os.path.join(task_dir, f'POSCAR_{scale:.3f}')
-                    scaled_structure.to(fmt='poscar', filename=scaled_structure_path)
-                    comments = f'# Generated by Masgent for EOS calculation with scale factor = {scale:.3f} using {mlps_type}.'
-                    write_comments(scaled_structure_path, 'poscar', comments)
-                    # Load scaled structure and perform optimization
-                    with open(os.path.join(task_dir, f'masgent_mlps_eos_{scale:.3f}.log'), 'w') as f, redirect_stdout(f):
-                        relaxer = StructOptimizer(optimizer_class='LBFGS')
-                        scaled_structure.perturb(0.1)
-                        result = relaxer.relax(scaled_structure, verbose=True, fmax=fmax, steps=max_steps, relax_cell=False)
-                        relaxed_atoms = result['final_structure'].to_ase_atoms()
-                        relaxed_atoms.write(f'{task_dir}/CONTCAR_{scale:.3f}', format='vasp', direct=True, sort=True)
-                        comments = f'# Generated by Masgent from fast simulation using {mlps_type} with fmax = {fmax} eV/Å.'
-                        write_comments(f'{task_dir}/CONTCAR_{scale:.3f}', 'poscar', comments)
-                    with open(os.path.join(task_dir, f'masgent_mlps_eos_{scale:.3f}.log'), 'r') as log_file:
-                        lines = log_file.readlines()
-                        for line in lines[::-1]:
-                            parts = line.split()
-                            energy_per_atom = float(parts[3]) / len(relaxed_atoms)
-                            break
-                    volumes.append(relaxed_atoms.get_volume())
-                    energies.append(energy_per_atom)
-                # Save EOS results to CSV
-                pd.DataFrame({'Scale Factor': scale_factors, 'Volume (Å³)': volumes, 'Energy (eV/atom)': energies}).to_csv(f'{task_dir}/eos_results.csv', index=False, float_format='%.8f')
-                # Fit and plot EOS
-                fit_and_plot_eos(volumes, energies, mlps_type, task_dir)
-                return {
-                    'status': 'success',
-                    'message': f'Completed EOS simulation using {mlps_type} in {mlps_simulation_dir}.',
-                    'mlps_simulation_dir': mlps_simulation_dir,
-                    'eos_results_csv_path': f'{task_dir}/eos_results.csv',
-                    'eos_curve_png_path': f'{task_dir}/eos_curve.png',
-                }
-            else:
-                return {
-                    'status': 'error',
-                    'message': f'Invalid task type: {task}.'
-                }
+            calc = CHGNetCalculator()
         else:
             return {
                 'status': 'error',
                 'message': f'Invalid MLPs type: {mlps_type}.'
+            }
+        
+        if task_type == 'single_point':
+            task_dir = os.path.join(mlps_simulation_dir, 'single')
+            os.makedirs(task_dir, exist_ok=True)
+            atoms = read(poscar_path, format='vasp')
+            atoms.calc = calc
+            opt = LBFGS(FrechetCellFilter(atoms), logfile=f'{task_dir}/masgent_mlps_single.log')
+            opt.run(fmax=fmax, steps=max_steps)
+            atoms.write(f'{task_dir}/CONTCAR', format='vasp', direct=True, sort=True)
+            comments = f'# Generated by Masgent from fast simulation using {mlps_type} with fmax = {fmax} eV/Å.'
+            write_comments(f'{task_dir}/CONTCAR', 'poscar', comments)
+            total_energy = atoms.get_potential_energy()
+            energy_per_atom = total_energy / len(atoms)
+            return {
+                'status': 'success',
+                'message': f'Completed fast simulation using {mlps_type} in {mlps_simulation_dir}.',
+                'mlps_simulation_dir': mlps_simulation_dir,
+                'simulation_log_path': f'{task_dir}/masgent_mlps_single.log',
+                'contcar_path': f'{task_dir}/CONTCAR',
+                'total_energy (eV)': total_energy,
+                'energy_per_atom (eV/atom)': energy_per_atom,
+            }
+        elif task_type == 'eos':
+            task_dir = os.path.join(mlps_simulation_dir, 'eos')
+            os.makedirs(task_dir, exist_ok=True)
+            structure = Structure.from_file(poscar_path)
+            volumes, energies = [], []
+            for scale in scale_factors:
+                # Create scaled structure
+                scaled_structure = structure.copy()
+                scaled_structure.scale_lattice(structure.volume * scale)
+                scaled_structure_path = os.path.join(task_dir, f'POSCAR_{scale:.3f}')
+                scaled_structure.to(fmt='poscar', filename=scaled_structure_path)
+                comments = f'# Generated by Masgent for EOS calculation with scale factor = {scale:.3f} using {mlps_type}.'
+                write_comments(scaled_structure_path, 'poscar', comments)
+                # Load scaled structure and perform optimization
+                atoms = read(scaled_structure_path, format='vasp')
+                atoms.calc = calc
+                # opt = LBFGS(FrechetCellFilter(atoms), logfile=f'{task_dir}/masgent_mlps_eos_{scale:.3f}.log')
+                opt = LBFGS(atoms, logfile=f'{task_dir}/masgent_mlps_eos_{scale:.3f}.log')
+                opt.run(fmax=fmax, steps=max_steps)
+                atoms.write(f'{task_dir}/CONTCAR_{scale:.3f}', format='vasp', direct=True, sort=True)
+                comments = f'# Generated by Masgent from fast simulation using {mlps_type} with fmax = {fmax} eV/Å.'
+                write_comments(f'{task_dir}/CONTCAR_{scale:.3f}', 'poscar', comments)
+                energy_per_atom = atoms.get_potential_energy() / len(atoms)
+                volumes.append(atoms.get_volume())
+                energies.append(energy_per_atom)
+            # Save EOS results to CSV
+            pd.DataFrame({'Scale Factor': scale_factors, 'Volume (Å³)': volumes, 'Energy (eV/atom)': energies}).to_csv(f'{task_dir}/eos_cal.csv', index=False, float_format='%.8f')
+            # Fit and plot EOS
+            fit_and_plot_eos(volumes, energies, mlps_type, task_dir)
+            return {
+                'status': 'success',
+                'message': f'Completed EOS simulation using {mlps_type} in {mlps_simulation_dir}.',
+                'mlps_simulation_dir': mlps_simulation_dir,
+                'eos_cal_csv_path': f'{task_dir}/eos_cal.csv',
+                'eos_curve_png_path': f'{task_dir}/eos_curve.png',
+            }
+        elif task_type == 'md':
+            task_dir = os.path.join(mlps_simulation_dir, 'md')
+            os.makedirs(task_dir, exist_ok=True)
+            atoms = read(poscar_path, format='vasp')
+            atoms.calc = calc
+            MaxwellBoltzmannDistribution(atoms, temperature_K=temperature)
+            Stationary(atoms)
+            dyn = NoseHooverChainNVT(
+                atoms=atoms,
+                timestep=md_timestep * units.fs,
+                temperature_K=temperature,
+                tdamp=100 * md_timestep * units.fs,
+                trajectory=f'{task_dir}/masgent_mlps_md.traj',
+                loginterval=10,
+                append_trajectory=False,
+            )
+            dyn.attach(MDLogger(
+                dyn=dyn,
+                atoms=atoms,
+                logfile=f'{task_dir}/masgent_mlps_md.log',
+                header=True,
+                peratom=True,
+                mode='w',
+            ), interval=10)
+            dyn.run(md_steps)
+            parse_and_plot_md_log(f'{task_dir}/masgent_mlps_md.log', mlps_type, task_dir)
+            return {
+                'status': 'success',
+                'message': f'Completed MD simulation using {mlps_type} in {mlps_simulation_dir}.',
+                'mlps_simulation_dir': mlps_simulation_dir,
+                'md_trajectory_path': f'{task_dir}/masgent_mlps_md.traj',
+                'md_log_path': f'{task_dir}/masgent_mlps_md.log',
+                'md_log_png_path': f'{task_dir}/md_log.png',
+            }
+        else:
+            return {
+                'status': 'error',
+                'message': f'Invalid task type: {task_type}.'
             }
     
     except Exception as e:

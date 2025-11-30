@@ -894,7 +894,7 @@ class GenerateVaspWorkflowOfElasticConstants(BaseModel):
 
         return self
     
-class FastSimulationUsingMlps(BaseModel):
+class RunSimulationUsingMlps(BaseModel):
     '''
     Schema for performing fast simulation using machine learning potentials (MLPs) based on given POSCAR
     '''
@@ -909,6 +909,11 @@ class FastSimulationUsingMlps(BaseModel):
         description='Type of machine learning potentials (MLPs) to use. Defaults to "SevenNet" if not provided.'
     )
 
+    task_type: Literal['single_point', 'eos', 'md'] = Field(
+        'single_point',
+        description='Type of simulation task to perform. Defaults to "single_point" if not provided.'
+    )
+
     fmax: float = Field(
         0.1,
         description='Maximum force convergence criterion in eV/Å. Defaults to 0.1 eV/Å if not provided.'
@@ -919,9 +924,19 @@ class FastSimulationUsingMlps(BaseModel):
         description='Maximum number of simulation steps. Defaults to 500 if not provided.'
     )
 
-    task_type: Literal['single_point', 'eos'] = Field(
-        'single_point',
-        description='Type of simulation task to perform. Defaults to "single_point" if not provided.'
+    temperature: float = Field(
+        1000.0,
+        description='Temperature in Kelvin for molecular dynamics simulations. Defaults to 1000 K if not provided.'
+    )
+
+    md_steps: int = Field(
+        1000,
+        description='Number of molecular dynamics steps. Defaults to 1000 if not provided.'
+    )
+
+    md_timestep: float = Field(
+        5.0,
+        description='Time step in femtoseconds for molecular dynamics simulations. Defaults to 5.0 fs if not provided.'
     )
 
     @model_validator(mode='after')
@@ -943,5 +958,17 @@ class FastSimulationUsingMlps(BaseModel):
         # validate max_steps
         if self.max_steps < 1:
             raise ValueError('Maximum number of simulation steps (max_steps) must be at least 1.')
+        
+        # validate temperature
+        if self.temperature < 0:
+            raise ValueError('Temperature must be a non-negative number.')
+        
+        # validate md_steps
+        if self.md_steps < 1:
+            raise ValueError('Number of molecular dynamics steps (md_steps) must be at least 1.')
+        
+        # validate md_timestep
+        if self.md_timestep <= 0:
+            raise ValueError('Molecular dynamics time step (md_timestep) must be a positive number.')
 
         return self

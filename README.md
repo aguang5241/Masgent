@@ -42,8 +42,13 @@ Masgent: Materials Simulation Agent
   - 1.4 (Planned) VASP Output Analysis
 
 2. Fast Simulations Using Machine Learning Potentials (MLPs)
-  - 2.1 SevenNet
-  - 2.2 CHGNet
+  - Supported MLPs:
+    - 2.1 SevenNet
+    - 2.2 CHGNet
+  - Implemented Simulations for all MLPs:
+    - Single Point Energy Calculation
+    - Equation of State (EOS) Calculation
+    - Molecular Dynamics Simulation (NVT)
 
 3. (Planned) Machine Learning Model Training & Evaluation
 

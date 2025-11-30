@@ -1,7 +1,6 @@
 # !/usr/bin/env python3
 
 import os, sys, datetime, time
-import tabulate
 import numpy as np
 from scipy.optimize import curve_fit
 from pathlib import Path
@@ -249,43 +248,40 @@ Please select from the following options:
 def print_help():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-    title = '\n Masgent - Available Commands and Functions '
-    color_print(title, "green")
-
-    headers = ['Index', 'Description']
-    rows = [
-        ['1', 'Density Functional Theory (DFT) Simulations'],
-        
-        ['1.1', 'Structure Preparation & Manipulation'],
-        ['1.1.1', 'Generate POSCAR from chemical formula'],
-        ['1.1.2', 'Convert POSCAR coordinates (Direct <-> Cartesian)'],
-        ['1.1.3', 'Convert structure file formats (CIF, POSCAR, XYZ)'],
-        ['1.1.4', 'Generate structures with defects (Vacancies, Interstitials, Substitutions)'],
-        ['1.1.5', 'Generate supercells'],
-        ['1.1.6', 'Generate Special Quasirandom Structures (SQS)'],
-        ['1.1.7', 'Generate surface slabs'],
-        # ['1.1.8', 'Generate interface structures'],
-
-        ['1.2', 'VASP Input File Preparation'],
-        ['1.2.1', 'Prepare full VASP input files (INCAR, KPOINTS, POTCAR, POSCAR)'],
-        ['1.2.2', 'Generate INCAR templates (relaxation, static, MD, etc.)'],
-        ['1.2.3', 'Generate KPOINTS with specified accuracy'],
-        ['1.2.4', 'Generate HPC job submission script'],
-
-        ['1.3', 'Standard VASP Workflows'],
-        ['1.3.1', 'Convergence testing (ENCUT, KPOINTS)'],
-        ['1.3.2', 'Equation of State (EOS)'],
-        ['1.3.3', 'Elastic constants calculations'],
-
-        ['1.4', 'VASP Output Analysis'],
-
-        ['2', 'Fast Simulations Using Machine Learning Potentials (MLPs)'],
-
-        ['3', 'Machine Learning Model Training & Evaluation'],
-    ]
-    
-    table = tabulate.tabulate(rows, headers, tablefmt='fancy_grid')
-    color_print(table, "green")
+    content = '''
+Masgent - Available Commands and Functions: 
+-------------------------------------------
+1. Density Functional Theory (DFT) Simulations
+  1.1 Structure Preparation & Manipulation
+    1.1.1 Generate POSCAR from chemical formula
+    1.1.2 Convert POSCAR coordinates (Direct <-> Cartesian)
+    1.1.3 Convert structure file formats (CIF, POSCAR, XYZ)
+    1.1.4 Generate structures with defects (Vacancies, Interstitials, Substitutions)
+    1.1.5 Generate supercells
+    1.1.6 Generate Special Quasirandom Structures (SQS)
+    1.1.7 Generate surface slabs
+    1.1.8 Generate interface structures
+  1.2 VASP Input File Preparation
+    1.2.1 Prepare full VASP input files (INCAR, KPOINTS, POTCAR, POSCAR)
+    1.2.2 Generate INCAR templates (relaxation, static, MD, etc.)
+    1.2.3 Generate KPOINTS with specified accuracy
+    1.2.4 Generate HPC job submission script
+  1.3 Standard VASP Workflows
+    1.3.1 Convergence testing (ENCUT, KPOINTS)
+    1.3.2 Equation of State (EOS)
+    1.3.3 Elastic constants calculations
+  1.4 VASP Output Analysis
+2. Fast Simulations Using Machine Learning Potentials (MLPs)
+  * Supported MLPs:
+    2.1 SevenNet
+    2.2 CHGNet
+  * Implemented Simulations for all MLPs:
+    - Single Point Energy Calculation
+    - Equation of State (EOS) Calculation
+    - Molecular Dynamics Simulation (NVT)
+3. Machine Learning Model Training & Evaluation
+'''
+    color_print(content, "green")
 
     try:
         while True:
