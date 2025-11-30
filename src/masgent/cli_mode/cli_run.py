@@ -1354,10 +1354,10 @@ def command_2_1():
 
     try:
         while True:
-            fmax_str = color_input('\nEnter the maximum force convergence criterion in eV/Å (default: 1.0 eV/Å): ', 'yellow').strip()
+            fmax_str = color_input('\nEnter the maximum force convergence criterion in eV/Å (default: 0.1 eV/Å): ', 'yellow').strip()
 
             if not fmax_str:
-                fmax = 1.0
+                fmax = 0.1
                 break
 
             try:
@@ -1374,10 +1374,10 @@ def command_2_1():
     
     try:
         while True:
-            max_steps_str = color_input('\nEnter the maximum number of optimization steps (default: 1000): ', 'yellow').strip()
+            max_steps_str = color_input('\nEnter the maximum number of optimization steps (default: 500): ', 'yellow').strip()
 
             if not max_steps_str:
-                max_steps = 1000
+                max_steps = 500
                 break
 
             try:
@@ -1395,5 +1395,94 @@ def command_2_1():
     print('')
     with yaspin(Spinners.dots, text='Running fast simulation using SevenNet... See details in the log file.', color='cyan') as sp:
         result = tools.fast_simulation_using_mlps(poscar_path=poscar_path, mlps_type='SevenNet', fmax=fmax, max_steps=max_steps, task_type=task_type)
+    color_print(result['message'], 'green')
+    time.sleep(1)
+
+@register('2.2', 'CHGNet')
+def command_2_2():
+    try:
+        poscar_path = check_poscar()
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
+        return
+
+    try:
+        while True:
+            choices = [
+                '1. Single Point Energy Calculation',
+                '2. Equation of State (EOS) Calculation',
+            ] + global_commands()
+            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+            user_input = cli.launch()
+            if user_input.startswith('AI'):
+                ai_backend.main()
+            elif user_input.startswith('New'):
+                start_new_session()
+            elif user_input.startswith('Back'):
+                return
+            elif user_input.startswith('Main'):
+                run_command('0')
+            elif user_input.startswith('Help'):
+                print_help()
+            elif user_input.startswith('Exit'):
+                color_print('\nExiting Masgent... Goodbye!\n', 'green')
+                sys.exit(0)
+            elif user_input.startswith('1'):
+                task_type = 'single_point'
+                break
+            elif user_input.startswith('2'):
+                task_type = 'eos'
+                break
+            else:
+                continue
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\nExiting Masgent... Goodbye!\n', 'green')
+        sys.exit(0)
+
+    try:
+        while True:
+            fmax_str = color_input('\nEnter the maximum force convergence criterion in eV/Å (default: 0.1 eV/Å): ', 'yellow').strip()
+
+            if not fmax_str:
+                fmax = 0.1
+                break
+
+            try:
+                fmax = float(fmax_str)
+                schemas.FastSimulationUsingMlps(poscar_path=poscar_path, fmax=fmax)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid force criterion: {fmax_str}, please double check and try again.\n', 'red')
+    
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
+        return
+    
+    try:
+        while True:
+            max_steps_str = color_input('\nEnter the maximum number of optimization steps (default: 500): ', 'yellow').strip()
+
+            if not max_steps_str:
+                max_steps = 500
+                break
+
+            try:
+                max_steps = int(max_steps_str)
+                schemas.FastSimulationUsingMlps(poscar_path=poscar_path, max_steps=max_steps)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid maximum steps: {max_steps_str}, please double check and try again.\n', 'red')
+    
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
+        return
+
+    print('')
+    with yaspin(Spinners.dots, text='Running fast simulation using CHGNet... See details in the log file.', color='cyan') as sp:
+        result = tools.fast_simulation_using_mlps(poscar_path=poscar_path, mlps_type='CHGNet', fmax=fmax, max_steps=max_steps, task_type=task_type)
     color_print(result['message'], 'green')
     time.sleep(1)

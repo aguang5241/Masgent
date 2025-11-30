@@ -904,19 +904,19 @@ class FastSimulationUsingMlps(BaseModel):
         description='Path to the POSCAR file. Defaults to "POSCAR" in current directory if not provided.'
     )
 
-    mlps_type: Literal['SevenNet'] = Field(
+    mlps_type: Literal['SevenNet', 'CHGNet'] = Field(
         'SevenNet',
         description='Type of machine learning potentials (MLPs) to use. Defaults to "SevenNet" if not provided.'
     )
 
     fmax: float = Field(
-        1.0,
-        description='Maximum force convergence criterion in eV/Å. Defaults to 1.0 eV/Å if not provided.'
+        0.1,
+        description='Maximum force convergence criterion in eV/Å. Defaults to 0.1 eV/Å if not provided.'
     )
 
     max_steps: int = Field(
-        1000,
-        description='Maximum number of simulation steps. Defaults to 1000 if not provided.'
+        500,
+        description='Maximum number of simulation steps. Defaults to 500 if not provided.'
     )
 
     task_type: Literal['single_point', 'eos'] = Field(

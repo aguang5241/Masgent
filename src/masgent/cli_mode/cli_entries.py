@@ -278,7 +278,8 @@ def command_2():
         while True:
             clear_and_print_entry_message()
             choices = [
-                '2.1 SenvenNet',
+                '2.1 SevenNet',
+                '2.2 CHGNet',
             ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
@@ -298,6 +299,8 @@ def command_2():
                 sys.exit(0)
             elif user_input.startswith('2.1'):
                 run_command('2.1')
+            elif user_input.startswith('2.2'):
+                run_command('2.2')
             else:
                 continue
 

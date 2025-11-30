@@ -43,6 +43,7 @@ Masgent: Materials Simulation Agent
 
 2. Fast Simulations Using Machine Learning Potentials (MLPs)
   - 2.1 SevenNet
+  - 2.2 CHGNet
 
 3. (Planned) Machine Learning Model Training & Evaluation
 
