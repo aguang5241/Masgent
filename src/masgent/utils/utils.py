@@ -9,6 +9,64 @@ from mp_api.client import MPRester
 from openai import OpenAI
 from importlib.metadata import version, PackageNotFoundError
 
+def create_deformation_matrices():
+    xx = [-0.010, 0.010]
+    yy = [-0.010, 0.010]
+    zz = [-0.010, 0.010]
+    xy = [-0.005, 0.005]
+    yz = [-0.005, 0.005]
+    xz = [-0.005, 0.005]
+    D_xx0 = {f'01_strain_xx_{float(xx[0]):.3f}': [
+        [xx[0], 0.000, 0.000], 
+        [0.000, 0.000, 0.000], 
+        [0.000, 0.000, 0.000]]}
+    D_yy0 = {f'03_strain_yy_{float(yy[0]):.3f}': [
+        [0.000, 0.000, 0.000], 
+        [0.000, yy[0], 0.000], 
+        [0.000, 0.000, 0.000]]}
+    D_zz0 = {f'05_strain_zz_{float(zz[0]):.3f}': [
+        [0.000, 0.000, 0.000], 
+        [0.000, 0.000, 0.000], 
+        [0.000, 0.000, zz[0]]]}
+    D_xy0 = {f'07_strain_xy_{float(xy[0]):.3f}': [
+        [0.000, xy[0], 0.000], 
+        [xy[0], 0.000, 0.000], 
+        [0.000, 0.000, 0.000]]}
+    D_yz0 = {f'09_strain_yz_{float(yz[0]):.3f}': [
+        [0.000, 0.000, 0.000], 
+        [0.000, 0.000, yz[0]], 
+        [0.000, yz[0], 0.000]]}
+    D_xz0 = {f'11_strain_xz_{float(xz[0]):.3f}': [
+        [0.000, 0.000, xz[0]], 
+        [0.000, 0.000, 0.000], 
+        [xz[0], 0.000, 0.000]]}
+    D_xx1 = {f'02_strain_xx_{float(xx[1]):.3f}': [
+        [xx[1], 0.000, 0.000], 
+        [0.000, 0.000, 0.000], 
+        [0.000, 0.000, 0.000]]}
+    D_yy1 = {f'04_strain_yy_{float(yy[1]):.3f}': [
+        [0.000, 0.000, 0.000], 
+        [0.000, yy[1], 0.000], 
+        [0.000, 0.000, 0.000]]}
+    D_zz1 = {f'06_strain_zz_{float(zz[1]):.3f}': [
+        [0.000, 0.000, 0.000], 
+        [0.000, 0.000, 0.000], 
+        [0.000, 0.000, zz[1]]]}
+    D_xy1 = {f'08_strain_xy_{float(xy[1]):.3f}': [
+        [0.000, xy[1], 0.000], 
+        [xy[1], 0.000, 0.000], 
+        [0.000, 0.000, 0.000]]}
+    D_yz1 = {f'10_strain_yz_{float(yz[1]):.3f}': [
+        [0.000, 0.000, 0.000], 
+        [0.000, 0.000, yz[1]], 
+        [0.000, yz[1], 0.000]]}
+    D_xz1 = {f'12_strain_xz_{float(xz[1]):.3f}': [
+        [0.000, 0.000, xz[1]], 
+        [0.000, 0.000, 0.000], 
+        [xz[1], 0.000, 0.000]]}
+    D_all = [D_xx0, D_yy0, D_zz0, D_xy0, D_yz0, D_xz0, D_xx1, D_yy1, D_zz1, D_xy1, D_yz1, D_xz1]
+    return D_all
+
 def eos_func(volume, a, b, c, d):
     energy = a + b * volume**(-2/3) + c * volume**(-4/3) + d * volume**(-2)
     return energy
@@ -275,9 +333,11 @@ Masgent - Available Commands and Functions:
   * Supported MLPs:
     2.1 SevenNet
     2.2 CHGNet
+    2.3 Orb-v3
   * Implemented Simulations for all MLPs:
     - Single Point Energy Calculation
     - Equation of State (EOS) Calculation
+    - Elastic Constants Calculation
     - Molecular Dynamics Simulation (NVT)
 3. Machine Learning Model Training & Evaluation
 '''

@@ -1,0 +1,15 @@
+Elastic Constants (GPa):
+-126.67	-269.46	-119.53	44.01	16.50	-17.44
+-144.25	-107.65	-210.41	-24.14	-53.10	-10.38
+-242.12	-133.01	-165.52	-5.04	72.08	42.60
+0.00	-0.00	-0.00	0.00	-0.00	0.00
+-0.00	-0.00	-0.00	0.00	0.00	-0.00
+-0.00	-0.00	0.00	-0.00	0.00	-0.00
+
+
+Bulk Modulus K_V (Voigt): -168.74 GPa
+Bulk Modulus K_R (Reuss): -161.02 GPa
+Bulk Modulus K_H (Hill): -164.88 GPa
+Shear Modulus G_V (Voigt): 13.30 GPa
+Shear Modulus G_R (Reuss): 0.00 GPa
+Shear Modulus G_H (Hill): 6.65 GPa

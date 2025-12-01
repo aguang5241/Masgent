@@ -896,7 +896,8 @@ class GenerateVaspWorkflowOfElasticConstants(BaseModel):
     
 class RunSimulationUsingMlps(BaseModel):
     '''
-    Schema for performing fast simulation using machine learning potentials (MLPs) based on given POSCAR
+    Schema for performing fast simulation using machine learning potentials (MLPs) based on given POSCAR.
+    Supported tasks include: single point calculation, equation of state (EOS), elastic constants, and molecular dynamics (MD) simulations.
     '''
     
     poscar_path: str = Field(
@@ -904,14 +905,14 @@ class RunSimulationUsingMlps(BaseModel):
         description='Path to the POSCAR file. Defaults to "POSCAR" in current directory if not provided.'
     )
 
-    mlps_type: Literal['SevenNet', 'CHGNet'] = Field(
-        'SevenNet',
-        description='Type of machine learning potentials (MLPs) to use. Defaults to "SevenNet" if not provided.'
+    mlps_type: Literal['SevenNet', 'CHGNet', 'Orb-v3'] = Field(
+        'CHGNet',
+        description='Type of machine learning potentials (MLPs) to use. Defaults to "CHGNet" if not provided.'
     )
 
-    task_type: Literal['single_point', 'eos', 'md'] = Field(
-        'single_point',
-        description='Type of simulation task to perform. Defaults to "single_point" if not provided.'
+    task_type: Literal['single', 'eos', 'elastic', 'md'] = Field(
+        'single',
+        description='Type of simulation task to perform. Defaults to "single" if not provided.'
     )
 
     fmax: float = Field(

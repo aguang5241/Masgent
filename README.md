@@ -45,9 +45,11 @@ Masgent: Materials Simulation Agent
   - Supported MLPs:
     - 2.1 SevenNet
     - 2.2 CHGNet
+    - 2.3 Orb-v3
   - Implemented Simulations for all MLPs:
     - Single Point Energy Calculation
     - Equation of State (EOS) Calculation
+    - Elastic Constants Calculation
     - Molecular Dynamics Simulation (NVT)
 
 3. (Planned) Machine Learning Model Training & Evaluation

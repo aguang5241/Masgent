@@ -280,6 +280,7 @@ def command_2():
             choices = [
                 '2.1 SevenNet',
                 '2.2 CHGNet',
+                '2.3 Orb-v3',
             ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
@@ -301,6 +302,8 @@ def command_2():
                 run_command('2.1')
             elif user_input.startswith('2.2'):
                 run_command('2.2')
+            elif user_input.startswith('2.3'):
+                run_command('2.3')
             else:
                 continue
 

@@ -1316,7 +1316,8 @@ def call_mlps(mlps_type: str):
             choices = [
                 '1. Single Point Energy Calculation',
                 '2. Equation of State (EOS) Calculation',
-                '3. Molecular Dynamics Simulation (NVT)',
+                '3. Elastic Constants Calculation',
+                '4. Molecular Dynamics Simulation (NVT)',
             ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
@@ -1334,12 +1335,15 @@ def call_mlps(mlps_type: str):
                 color_print('\nExiting Masgent... Goodbye!\n', 'green')
                 sys.exit(0)
             elif user_input.startswith('1'):
-                task_type = 'single_point'
+                task_type = 'single'
                 break
             elif user_input.startswith('2'):
                 task_type = 'eos'
                 break
             elif user_input.startswith('3'):
+                task_type = 'elastic'
+                break
+            elif user_input.startswith('4'):
                 task_type = 'md'
                 break
             else:
@@ -1356,7 +1360,7 @@ def call_mlps(mlps_type: str):
         time.sleep(1)
         return
 
-    if task_type in ['single_point', 'eos']:
+    if task_type in ['single', 'eos', 'elastic']:
         try:
             while True:
                 fmax_str = color_input('\nEnter the maximum force convergence criterion in eV/Å (default: 0.1 eV/Å): ', 'yellow').strip()
@@ -1477,3 +1481,7 @@ def command_2_1():
 @register('2.2', 'CHGNet')
 def command_2_2():
     call_mlps(mlps_type='CHGNet')
+
+@register('2.3', 'Orb-v3')
+def command_2_3():
+    call_mlps(mlps_type='Orb-v3')

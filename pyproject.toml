@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "masgent"
-version = "1.0.16"
+version = "1.0.17"
 description = "Masgent: Materials Simulation Agent"
 readme = "README.md"
 authors = [{name = "Guangchen Liu", email = "gliu4@wpi.edu"}]
@@ -30,6 +30,7 @@ dependencies = [
     "icet",
     "sevenn",
     "chgnet",
+    "orb-models",
 ]
 
 [tool.setuptools.package-data]
