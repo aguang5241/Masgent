@@ -7,7 +7,7 @@ https://github.com/user-attachments/assets/8ee0d146-15ca-47e1-9d5f-14f4b943ae77
 
 - Basic Usage:  
 <video width="600" controls>
-  <source src="https://raw.githubusercontent.com/aguang5241/Masgent/main/res/basic.mp4" type="video/mp4">
+  <source src="https://github.com/user-attachments/assets/8ee0d146-15ca-47e1-9d5f-14f4b943ae77" type="video/mp4">
 </video>
 
 - Machine Learning Potentials (MLPs) Simulations:  
