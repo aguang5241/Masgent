@@ -1004,7 +1004,7 @@ class RunSimulationUsingMlps(BaseModel):
         description='Path to the POSCAR file. Defaults to "POSCAR" in current directory if not provided.'
     )
 
-    mlps_type: Literal['SevenNet', 'CHGNet', 'Orb-v3'] = Field(
+    mlps_type: Literal['SevenNet', 'CHGNet', 'Orb-v3', 'MatSim'] = Field(
         'CHGNet',
         description='Type of machine learning potentials (MLPs) to use. Defaults to "CHGNet" if not provided.'
     )

@@ -1,13 +1,12 @@
 # !/usr/bin/env python3
 
 import os, warnings, random, shutil, re
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib
 matplotlib.use('Agg')  # Use non-interactive backend for plotting
-from typing import Literal, Optional, List, Dict, Any
+from typing import Literal, List
 from pathlib import Path
 from dotenv import load_dotenv
 from mp_api.client import MPRester
@@ -15,6 +14,7 @@ from sevenn.calculator import SevenNetCalculator
 from chgnet.model.dynamics import CHGNetCalculator
 from orb_models.forcefield import pretrained
 from orb_models.forcefield.calculator import ORBCalculator
+from mattersim.forcefield import MatterSimCalculator
 from ase import units
 from ase.build import surface
 from ase.filters import FrechetCellFilter
@@ -48,7 +48,6 @@ from masgent import schemas
 from masgent.utils.interface_maker import run_interface_maker
 from masgent.utils.utils import (
     write_comments,
-    color_print,
     ask_for_mp_api_key,
     validate_mp_api_key,
     generate_batch_script,
@@ -1342,7 +1341,6 @@ def generate_vasp_workflow_of_elastic_constants(
         os.makedirs(elastic_dir, exist_ok=True)
         
         structure = Structure.from_file(poscar_path)
-        lattice_matrix = structure.lattice.matrix
 
         D_all = create_deformation_matrices()
 
@@ -1574,7 +1572,7 @@ srun vasp_std > vasp_neb.out
 ))
 def run_simulation_using_mlps(
     poscar_path: str = f'{os.environ.get("MASGENT_SESSION_RUNS_DIR")}/POSCAR',
-    mlps_type: Literal['SevenNet', 'CHGNet', 'Orb-v3'] = 'CHGNet',
+    mlps_type: Literal['SevenNet', 'CHGNet', 'Orb-v3', 'MatSim'] = 'CHGNet',
     task_type: Literal['single', 'eos', 'elastic', 'md'] = 'single',
     fmax: float = 0.1,
     max_steps: int = 500,
@@ -1674,6 +1672,8 @@ def run_simulation_using_mlps(
             precision="float32-high",   # or "float32-highest" / "float64
             )
             calc = ORBCalculator(orbff, device='cpu')
+        elif mlps_type == 'MatSim':
+            calc = MatterSimCalculator()
         else:
             return {
                 'status': 'error',

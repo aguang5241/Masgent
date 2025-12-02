@@ -16,7 +16,7 @@ Masgent: Materials Simulation Agent
 - Spinner for AI response waiting time (Yaspin)
 - Automated file handling and management
 
-## Progress Record
+## Functionalities
 1. Density Functional Theory (DFT) Simulations
   - 1.1 Structure Preparation & Manipulation
     - 1.1.1 Generate POSCAR from chemical formula
@@ -35,30 +35,29 @@ Masgent: Materials Simulation Agent
     - 1.2.4 Generate HPC job submission script
   
   - 1.3 Standard VASP Workflows
-      - 1.3.1 Convergence testing (ENCUT, KPOINTS)
-      - 1.3.2 Equation of State (EOS)
-      - 1.3.3 Elastic constants calculations
-      - 1.3.4 Ab-initio Molecular Dynamics (AIMD)
-      - 1.3.5 Nudged Elastic Band (NEB) calculations
+    - 1.3.1 Convergence testing (ENCUT, KPOINTS)
+    - 1.3.2 Equation of State (EOS)
+    - 1.3.3 Elastic constants calculations
+    - 1.3.4 Ab-initio Molecular Dynamics (AIMD)
+    - 1.3.5 Nudged Elastic Band (NEB) calculations
   
-  - 1.4 (Planned) VASP Output Analysis
+  - 1.4 (Planned) Workflow Output Analysis
 
 2. Fast Simulations Using Machine Learning Potentials (MLPs)
   - Supported MLPs:
     - 2.1 SevenNet
     - 2.2 CHGNet
     - 2.3 Orb-v3
+    - 2.4 MatSim
   - Implemented Simulations for all MLPs:
     - Single Point Energy Calculation
     - Equation of State (EOS) Calculation
     - Elastic Constants Calculation
     - Molecular Dynamics Simulation (NVT)
 
-3. Machine Learning for Materials Science
-  - 3.1 (Planned) Data Preparation
-  - 3.2 (Planned) Model Design
-    - 3.2.1 (Planned) Artificial Neural Networks (ANNs)
-    - 3.2.2 (Planned) Bayesian Neural Networks (BNNs)
+3. Simple Machine Learning for Materials Science
+  - 3.1 (Planned) Data Preparation & Feature Engineering
+  - 3.2 (Planned) Model Design & Hyperparameter Tuning
   - 3.3 (Planned) Model Training & Evaluation
 
 ## Installation
@@ -75,5 +74,5 @@ Masgent: Materials Simulation Agent
   masgent
   ```
 2. Optional preparation:
-- For AI functionalities, obtain your OpenAI API key from [platform.openai.com](https://platform.openai.com/account/api-keys).
-- For Materials Project access, obtain your API key from [materialsproject.org](https://next-gen.materialsproject.org/api).
+  - For AI functionalities, obtain your OpenAI API key from [platform.openai.com](https://platform.openai.com/account/api-keys).
+  - For Materials Project access, obtain your API key from [materialsproject.org](https://next-gen.materialsproject.org/api).

@@ -328,18 +328,24 @@ Masgent - Available Commands and Functions:
     1.3.1 Convergence testing (ENCUT, KPOINTS)
     1.3.2 Equation of State (EOS)
     1.3.3 Elastic constants calculations
-  1.4 VASP Output Analysis
+    1.3.4 Ab-initio Molecular Dynamics (AIMD)
+    1.3.5 Nudged Elastic Band (NEB) calculations
+  1.4 (Planned) Workflow Output Analysis
 2. Fast Simulations Using Machine Learning Potentials (MLPs)
   * Supported MLPs:
     2.1 SevenNet
     2.2 CHGNet
     2.3 Orb-v3
+    2.4 MatSim
   * Implemented Simulations for all MLPs:
     - Single Point Energy Calculation
     - Equation of State (EOS) Calculation
     - Elastic Constants Calculation
     - Molecular Dynamics Simulation (NVT)
-3. Machine Learning Model Training & Evaluation
+3. Simple Machine Learning for Materials Science
+  3.1 (Planned) Data Preparation & Feature Engineering
+  3.2 (Planned) Model Design & Hyperparameter Tuning
+  3.3 (Planned) Model Training & Evaluation
 '''
     color_print(content, "green")
 

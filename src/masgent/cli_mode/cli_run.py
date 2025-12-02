@@ -1614,3 +1614,7 @@ def command_2_2():
 @register('2.3', 'Orb-v3')
 def command_2_3():
     call_mlps(mlps_type='Orb-v3')
+
+@register('2.4', 'MatSim')
+def command_2_4():
+    call_mlps(mlps_type='MatSim')

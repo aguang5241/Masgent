@@ -1,6 +1,6 @@
 # !/usr/bin/env python3
 
-import sys, os
+import sys
 from bullet import Bullet, colors
 
 from masgent.ai_mode import ai_backend
@@ -287,6 +287,7 @@ def command_2():
                 '2.1 SevenNet',
                 '2.2 CHGNet',
                 '2.3 Orb-v3',
+                '2.4 MatSim',
             ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
@@ -310,6 +311,8 @@ def command_2():
                 run_command('2.2')
             elif user_input.startswith('2.3'):
                 run_command('2.3')
+            elif user_input.startswith('2.4'):
+                run_command('2.4')
             else:
                 continue
 
