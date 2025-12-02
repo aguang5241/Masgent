@@ -3,10 +3,10 @@ Masgent: Materials Simulation Agent
 
 ## Usage Demo
 ### Basic Usage:  
-<div align=left><img src='./res/basic.gif' alt='Basic Usage' width='800'/></div>
+<div align=left><img src='./res/basic_sm.gif' alt='Basic Usage' width='800'/></div>
 
 ### AI Agent:  
-<div align=left><img src='./res/ai.gif' alt='AI Agent' width='800'/></div>
+<div align=left><img src='./res/ai_sm.gif' alt='AI Agent' width='800'/></div>
 
 ## Features
 - AI agent (Pydantic AI + OpenAI)
