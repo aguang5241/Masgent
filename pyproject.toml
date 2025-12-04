@@ -44,7 +44,6 @@ docs = []
 [project.urls]
 Homepage = "https://github.com/aguang5241/masgent"
 Issues = "https://github.com/aguang5241/masgent/issues"
-Documentation = "https://github.com/aguang5241/masgent"
 Repository = "https://github.com/aguang5241/masgent"
 
 [project.scripts]

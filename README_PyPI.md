@@ -69,7 +69,7 @@ Masgent is a materials simulation AI agent that streamlines **DFT workflows and 
     ```bash
     masgent
     ```
-- You'll guided by an interactive menu and can invoke the AI agent anytime by typing your requests, e.g.,:
+- You'll guided by an interactive menu and can invoke the AI agent anytime. Ask anything in AI chat, for example:
     ```bash
     > Generate a POSCAR file for NaCl.
     > Prepare VASP input files for a graphene structure.
