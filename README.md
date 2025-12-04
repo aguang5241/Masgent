@@ -88,8 +88,7 @@ Masgent is a materials simulation AI agent that streamlines **DFT workflows and 
 
 ## 🐞 Issues and Suggestions
 Found a bug? Have a feature request?  
-Please open an issue here:  
-[https://github.com/aguang5241/masgent/issues](https://github.com/aguang5241/masgent/issues)
+Please open an issue here: [https://github.com/aguang5241/masgent/issues](https://github.com/aguang5241/masgent/issues)
 
 ## 📚 Cite Us
 If you use Masgent in your research, please cite the following reference:
