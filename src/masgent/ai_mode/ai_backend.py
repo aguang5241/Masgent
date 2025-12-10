@@ -173,6 +173,7 @@ async def ai_mode(agent):
             else:
                 try:
                     wrapped_input = f'Request/Confirmation: {user_input} (If this is a Request: ALWAYS output a workflow plan with choosen tools and required parameters FIRST and ask for confirmation; if this is a Confirmation: ignore the instruction above.)'
+                    # wrapped_input = user_input
                     history = await chat_stream(agent, wrapped_input, history)
                     # color_print(f'[Debug] Message history updated. Total messages: {len(history)}.\n', 'green')
                 except Exception as e:

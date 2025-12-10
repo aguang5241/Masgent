@@ -276,7 +276,7 @@ def print_banner():
 ║  Version:         {pkg_version:<52}  ║
 ║  Licensed:        MIT License                                           ║
 ║  Repository:      https://github.com/aguang5241/masgent                 ║
-║  Citation:        Liu, G. et al. (2025), DOI:10.XXXX/XXXXX'             ║
+║  Citation:        Liu, G. et al. (2025), DOI:XX.XXXX/XXXXX              ║
 ║  Contact:         gliu4@wpi.edu                                         ║
 ║                                                                         ║
 ╚═════════════════════════════════════════════════════════════════════════╝
