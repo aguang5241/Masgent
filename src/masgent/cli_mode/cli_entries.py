@@ -11,6 +11,7 @@ from masgent.utils.utils import (
     start_new_session,
     clear_and_print_entry_message,
     clear_and_print_banner_and_entry_message,
+    exit_and_cleanup,
     )
 
 
@@ -46,8 +47,7 @@ def command_0():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('1'):
                 run_command('1')
             elif user_input.startswith('2'):
@@ -58,8 +58,7 @@ def command_0():
                 continue
     
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
 
 @register('1', 'Density Functional Theory (DFT) Simulations.')
 def command_1():
@@ -69,8 +68,8 @@ def command_1():
             choices = [
                 '1.1 Structure Preparation & Manipulation',
                 '1.2 VASP Input File Preparation',
-                '1.3 Standard VASP Workflows Preparation',
-                '1.4 Workflow Output Analysis',
+                '1.3 Standard VASP Workflow Preparation',
+                '1.4 Standard VASP Workflow Output Analysis',
             ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
@@ -87,8 +86,7 @@ def command_1():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('1.1'):
                 run_command('1.1')
             elif user_input.startswith('1.2'):
@@ -101,8 +99,7 @@ def command_1():
                 continue
 
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
 
 
 @register('1.1', 'Structure Preparation & Manipulation.')
@@ -135,8 +132,7 @@ def command_1_1():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('1.1.1'):
                 run_command('1.1.1')
             elif user_input.startswith('1.1.2'):
@@ -157,8 +153,7 @@ def command_1_1():
                 continue
 
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
 
 @register('1.2', 'VASP Input File Preparation')
 def command_1_2():
@@ -186,8 +181,7 @@ def command_1_2():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('1.2.1'):
                 run_command('1.2.1')
             elif user_input.startswith('1.2.2'):
@@ -200,8 +194,7 @@ def command_1_2():
                 continue
 
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
 
 @register('1.3', 'Standard VASP Workflows.')
 def command_1_3():
@@ -230,8 +223,7 @@ def command_1_3():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('1.3.1'):
                 run_command('1.3.1')
             elif user_input.startswith('1.3.2'):
@@ -246,8 +238,7 @@ def command_1_3():
                 continue
 
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
 
 @register('1.4', 'VASP Output Analysis')
 def command_1_4():
@@ -255,7 +246,11 @@ def command_1_4():
         while True:
             clear_and_print_entry_message()
             choices = [
-                '(To be implemented)',
+                '1.4.1 Convergence test analysis',
+                '1.4.2 Equation of State (EOS) analysis',
+                '1.4.3 Elastic constants analysis',
+                '1.4.4 Ab-initio Molecular Dynamics (AIMD) analysis',
+                '1.4.5 Nudged Elastic Band (NEB) analysis',
             ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
@@ -272,16 +267,22 @@ def command_1_4():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
-            elif user_input == '(To be implemented)':
-                print('This feature is under development. Stay tuned!')
+                exit_and_cleanup()
+            elif user_input.startswith('1.4.1'):
+                run_command('1.4.1')
+            elif user_input.startswith('1.4.2'):
+                run_command('1.4.2')
+            elif user_input.startswith('1.4.3'):
+                run_command('1.4.3')
+            elif user_input.startswith('1.4.4'):
+                run_command('1.4.4')
+            elif user_input.startswith('1.4.5'):
+                run_command('1.4.5')
             else:
                 continue
 
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
 
 @register('2', 'Fast Simulations Using Machine Learning Potentials (MLPs).')
 def command_2():
@@ -309,8 +310,7 @@ def command_2():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('2.1'):
                 run_command('2.1')
             elif user_input.startswith('2.2'):
@@ -323,8 +323,7 @@ def command_2():
                 continue
 
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
 
 @register('3', 'Simple Machine Learning for Materials Science.')
 def command_3():
@@ -351,8 +350,7 @@ def command_3():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('3.1'):
                 run_command('3.1')
             elif user_input.startswith('3.2'):
@@ -363,8 +361,7 @@ def command_3():
                 continue
 
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
 
 @register('3.1', 'Data Preparation & Feature Analysis')
 def command_3_1():
@@ -391,8 +388,7 @@ def command_3_1():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('3.1.1'):
                 run_command('3.1.1')
             elif user_input.startswith('3.1.2'):
@@ -403,5 +399,4 @@ def command_3_1():
                 continue
 
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()

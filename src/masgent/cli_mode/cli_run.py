@@ -13,6 +13,7 @@ from masgent.utils.utils import (
     global_commands, 
     start_new_session,
     clear_and_print_entry_message,
+    exit_and_cleanup,
     )
 
 COMMANDS = {}
@@ -66,8 +67,7 @@ def check_poscar():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('Yes'):
                 poscar_path = os.path.join(runs_dir, 'POSCAR')
             elif user_input.startswith('No'):
@@ -140,8 +140,7 @@ def command_1_1_2():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('Direct coordinates'):
                 to_cartesian = True
                 break
@@ -152,8 +151,7 @@ def command_1_1_2():
                 continue
     
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
 
     try:
         poscar_path = check_poscar()
@@ -194,8 +192,7 @@ def command_1_1_3():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('POSCAR') and user_input.endswith('CIF'):
                 input_format, output_format = 'POSCAR', 'CIF'
                 break
@@ -218,8 +215,7 @@ def command_1_1_3():
                 continue
     
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
 
     try:
         while True:
@@ -268,8 +264,7 @@ def command_1_1_4():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('Vacancy'):
                 run_command('vacancy')
                 break
@@ -283,8 +278,7 @@ def command_1_1_4():
                 continue
     
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
 
 @register('vacancy', 'Generate structure with vacancy defects.')
 def command_vacancy():
@@ -883,8 +877,7 @@ def command_1_2_1():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('MPRelaxSet'):
                 vasp_input_sets = 'MPRelaxSet'
                 break
@@ -913,8 +906,7 @@ def command_1_2_1():
                 continue
     
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
     
     try:
         poscar_path = check_poscar()
@@ -956,8 +948,7 @@ def command_1_2_2():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('MPRelaxSet'):
                 vasp_input_sets = 'MPRelaxSet'
                 break
@@ -986,8 +977,7 @@ def command_1_2_2():
                 continue
     
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
     
     try:
         poscar_path = check_poscar()
@@ -1025,8 +1015,7 @@ def command_1_2_3():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('Low'):
                 accuracy_level = 'Low'
                 break
@@ -1040,8 +1029,7 @@ def command_1_2_3():
                 continue
     
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
 
     try:
         poscar_path = check_poscar()
@@ -1161,8 +1149,7 @@ def command_1_3_1():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('All'):
                 test_type = 'all'
                 break
@@ -1176,8 +1163,7 @@ def command_1_3_1():
                 continue
 
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
     
     try:
         poscar_path = check_poscar()
@@ -1445,6 +1431,84 @@ def command_1_3_5():
     color_print(result['message'], 'green')
     time.sleep(3)
 
+@register('1.4.1', 'Convergence test analysis')
+def command_1_4_1():
+    try:
+        while True:
+            convergence_tests_dir = color_input('\nEnter the convergence tests directory path that contains encut and kpoints subdirectories: ', 'yellow').strip()
+            
+            if not convergence_tests_dir:
+                continue
+
+            try:
+                os.path.exists(convergence_tests_dir)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid directory: {convergence_tests_dir}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
+        return
+    
+    print('')
+    with yaspin(Spinners.dots, text='Analyzing VASP convergence tests...', color='cyan') as sp:
+        result = tools.analyze_vasp_workflow_of_convergence_tests(convergence_tests_dir=convergence_tests_dir)
+    color_print(result['message'], 'green')
+    time.sleep(3)
+
+@register('1.4.2', 'Equation of State (EOS) analysis')
+def command_1_4_2():
+    try:
+        while True:
+            eos_dir = color_input('\nEnter the EOS calculations directory path that contains volume-scaled subdirectories: ', 'yellow').strip()
+            
+            if not eos_dir:
+                continue
+
+            try:
+                os.path.exists(eos_dir)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid directory: {eos_dir}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
+        return
+    
+    print('')
+    with yaspin(Spinners.dots, text='Analyzing VASP EOS calculations...', color='cyan') as sp:
+        result = tools.analyze_vasp_workflow_of_eos(eos_dir=eos_dir)
+    color_print(result['message'], 'green')
+    time.sleep(3)
+
+@register('1.4.3', 'Elastic constants analysis')
+def command_1_4_3():
+    try:
+        while True:
+            elastic_constants_dir = color_input('\nEnter the elastic constants calculations directory path that contains strain subdirectories: ', 'yellow').strip()
+
+            if not elastic_constants_dir:
+                continue
+
+            try:
+                os.path.exists(elastic_constants_dir)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid directory: {elastic_constants_dir}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
+        return
+    
+    print('')
+    with yaspin(Spinners.dots, text='Analyzing VASP elastic constants calculations...', color='cyan') as sp:
+        result = tools.analyze_vasp_workflow_of_elastic_constants(elastic_constants_dir=elastic_constants_dir)
+    color_print(result['message'], 'green')
+    time.sleep(3)
+
 def call_mlps(mlps_type: str):
     try:
         while True:
@@ -1469,8 +1533,7 @@ def call_mlps(mlps_type: str):
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('1'):
                 task_type = 'single'
                 break
@@ -1487,8 +1550,7 @@ def call_mlps(mlps_type: str):
                 continue
 
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
     
     try:
         poscar_path = check_poscar()

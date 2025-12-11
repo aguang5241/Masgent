@@ -26,6 +26,7 @@ from masgent.utils.utils import (
     color_print,
     color_input,
     start_new_session,
+    exit_and_cleanup,
     )
 
 # Track whether OpenAI key has been checked during this process
@@ -180,8 +181,7 @@ async def ai_mode(agent):
                     color_print(f'[Error]: {e}', 'red')
 
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
 
 def main():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -228,6 +228,9 @@ def main():
             tools.generate_vasp_workflow_of_elastic_constants,
             tools.generate_vasp_workflow_of_aimd,
             tools.generate_vasp_workflow_of_neb,
+            tools.analyze_vasp_workflow_of_convergence_tests,
+            tools.analyze_vasp_workflow_of_eos,
+            tools.analyze_vasp_workflow_of_elastic_constants,
             tools.run_simulation_using_mlps,
             tools.analyze_features_for_machine_learning,
             tools.reduce_dimensions_for_machine_learning,

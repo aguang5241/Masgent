@@ -52,17 +52,17 @@ Masgent is a materials simulation AI agent that streamlines **DFT workflows and 
     - 1.2.3 Generate KPOINTS with specified accuracy
     - 1.2.4 Generate HPC job submission script
   
-  - 1.3 Standard VASP Workflows Preparation
+  - 1.3 Standard VASP Workflow Preparation
     - 1.3.1 Convergence test (ENCUT, KPOINTS)
     - 1.3.2 Equation of State (EOS)
     - 1.3.3 Elastic constants calculations
     - 1.3.4 Ab-initio Molecular Dynamics (AIMD)
     - 1.3.5 Nudged Elastic Band (NEB) calculations
   
-  - 1.4 (Planned) Workflow Output Analysis
-    - 1.4.1 (Planned) Convergence test analysis
-    - 1.4.2 (Planned) Equation of State (EOS) analysis
-    - 1.4.3 (Planned) Elastic constants analysis 
+  - 1.4 Standard VASP Workflow Output Analysis
+    - 1.4.1 Convergence test analysis
+    - 1.4.2 Equation of State (EOS) analysis
+    - 1.4.3 Elastic constants analysis 
     - 1.4.4 (Planned) Ab-initio Molecular Dynamics (AIMD) analysis
     - 1.4.5 (Planned) Nudged Elastic Band (NEB) analysis
 

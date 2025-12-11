@@ -9,6 +9,7 @@ from masgent.utils.utils import (
     print_help,
     start_new_session,
     clear_and_print_banner_and_entry_message,
+    exit_and_cleanup,
     )
 
 def main():
@@ -21,7 +22,7 @@ def main():
             choices = [
                 '1. Density Functional Theory (DFT) Simulations',
                 '2. Fast simulations using machine learning potentials (MLPs)',
-                '3. Machine Learning Model Training & Evaluation',
+                '3. Simple Machine Learning for Materials Science',
                 '',
                 'AI    ->  Chat with the Masgent AI',
                 'New   ->  Start a new session',
@@ -39,8 +40,7 @@ def main():
             elif user_input.startswith('Help'):
                 print_help()
             elif user_input.startswith('Exit'):
-                color_print('\nExiting Masgent... Goodbye!\n', 'green')
-                sys.exit(0)
+                exit_and_cleanup()
             elif user_input.startswith('1'):
                 run_command('1')
             elif user_input.startswith('2'):
@@ -51,8 +51,7 @@ def main():
                 continue
     
     except (KeyboardInterrupt, EOFError):
-        color_print('\nExiting Masgent... Goodbye!\n', 'green')
-        sys.exit(0)
+        exit_and_cleanup()
 
 if __name__ == '__main__':
     main()

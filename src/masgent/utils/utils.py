@@ -13,6 +13,10 @@ def create_deformation_matrices():
     xy = [-0.005, 0.005]
     yz = [-0.005, 0.005]
     xz = [-0.005, 0.005]
+    D_000 = {f'00_strain_0.000': [
+        [0.000, 0.000, 0.000], 
+        [0.000, 0.000, 0.000], 
+        [0.000, 0.000, 0.000]]}
     D_xx0 = {f'01_strain_xx_{float(xx[0]):.3f}': [
         [xx[0], 0.000, 0.000], 
         [0.000, 0.000, 0.000], 
@@ -61,7 +65,7 @@ def create_deformation_matrices():
         [0.000, 0.000, xz[1]], 
         [0.000, 0.000, 0.000], 
         [xz[1], 0.000, 0.000]]}
-    D_all = [D_xx0, D_yy0, D_zz0, D_xy0, D_yz0, D_xz0, D_xx1, D_yy1, D_zz1, D_xy1, D_yz1, D_xz1]
+    D_all = [D_000, D_xx0, D_yy0, D_zz0, D_xy0, D_yz0, D_xz0, D_xx1, D_yy1, D_zz1, D_xy1, D_yz1, D_xz1]
     return D_all
 
 def eos_func(volume, a, b, c, d):
@@ -104,6 +108,14 @@ def start_new_session():
         os.makedirs(runs_dir, exist_ok=True)
 
     os.environ['MASGENT_SESSION_RUNS_DIR'] = runs_dir
+
+def exit_and_cleanup():
+    '''Exit Masgent and clean up empty runs directory.'''
+    runs_dir = os.environ.get('MASGENT_SESSION_RUNS_DIR')
+    if runs_dir and os.path.exists(runs_dir) and not os.listdir(runs_dir):
+        os.rmdir(runs_dir)
+    color_print('\nExiting Masgent... Goodbye!\n', 'green')
+    sys.exit(0)
 
 def global_commands():
     return [
