@@ -2,6 +2,7 @@
 masgent_projects/
 test*
 venv*
+manuscript*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
