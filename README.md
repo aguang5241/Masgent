@@ -34,6 +34,18 @@ Masgent is a materials simulation AI agent that streamlines **DFT workflows and 
   e.g., prepare POSCAR files and run EOS calculations simply by chatting
   <div align=left><img src='./res/ai_sm.gif' alt='AI Agent' width='800'/></div>
 
+## ⭐️ Why Masgent?
+Most materials-simulation tools—pymatgen, ASE, VASPkit, etc.—require manual scripting, multi-step workflows, and deep HPC expertise to run full DFT or ML-based simulations.
+Masgent removes that barrier by providing a unified, AI-driven interface for structure generation, workflow preparation, fast simulations, and analysis.
+
+Masgent offers:
+- An AI-native simulation assistant that prepares VASP workflows, analyzes results, and answers technical questions through natural language.
+- Turn-key VASP workflow templates (Convergence Test, EOS, Elastic, AIMD, NEB) with built-in analysis tools.
+- Automatic generation of all VASP inputs — INCAR, KPOINTS, POTCAR, POSCAR, and HPC job scripts — with sensible defaults.
+- One-command structure operations, including defect creation, supercells, slabs, interfaces, and SQS generation.
+- Fast machine-learning-potential simulations using SevenNet, CHGNet, Orb-v3, and MatSim for rapid EOS, elasticity, and MD.
+- Lightweight ML utilities for feature preparation, dimensionality reduction, data augmentation, hyperparameter tuning, and model training.
+
 ## 🧩 Features
 1. Density Functional Theory (DFT) Simulations
   - 1.1 Structure Preparation & Manipulation
