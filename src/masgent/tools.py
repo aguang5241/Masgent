@@ -1110,8 +1110,8 @@ def visualize_structure_from_poscar(poscar_path: str) -> dict:
         
         return {
             'status': 'success',
-            'message': 'Structure visualization HTML file "OPEN_TO_VIEW_STRUCTURE.html" generated successfully.',
-            'visualization_html_path': f'{vis_dir}/OPEN_TO_VIEW_STRUCTURE.html',
+            'message': 'Structure visualization HTML file "OPEN_IN_BROWSER.html" generated successfully.',
+            'visualization_html_path': f'{vis_dir}/OPEN_IN_BROWSER.html',
         }
     
     except Exception as e:

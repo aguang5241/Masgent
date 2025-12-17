@@ -131,7 +131,7 @@ def visualize_structure(poscar_path, save_dir):
     '''
 
     # Save HTML file
-    with open(f'{save_dir}/OPEN_TO_VIEW_STRUCTURE.html', "w") as f:
+    with open(f'{save_dir}/OPEN_IN_BROWSER.html', "w") as f:
         f.write(html)
 
 def create_deformation_matrices():
