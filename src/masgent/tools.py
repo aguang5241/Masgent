@@ -203,7 +203,6 @@ def generate_vasp_poscar(formula: str) -> dict:
         return {
             'status': 'success',
             'message': f'Generated POSCAR(s) in {poscars_dir}.',
-            'poscar_dir': poscars_dir,
             'all_poscars': poscar_files,
             'most_stable_poscar': os.path.join(runs_dir, f'POSCAR_{formula}'),
         }
@@ -277,8 +276,7 @@ def generate_vasp_inputs_from_poscar(
             write_comments(os.path.join(vasp_inputs_dir, 'INCAR'), 'incar', incar_comments)
             return {
                 'status': 'success',
-                'message': f'Generated INCAR based on {vasp_input_sets} in {vasp_inputs_dir}.',
-                'incar_path': os.path.join(vasp_inputs_dir, 'INCAR'),
+                'message': f'Generated INCAR based on {vasp_input_sets} in {os.path.join(vasp_inputs_dir, "INCAR")}.',
             }
         
         vis.incar.write_file(os.path.join(vasp_inputs_dir, 'INCAR'))
@@ -371,7 +369,6 @@ def generate_vasp_inputs_hpc_slurm_script(
         return {
             'status': 'success',
             'message': f'Generated Slurm script in {script_path}.',
-            'script_path': script_path,
         }
     
     except Exception as e:
@@ -432,7 +429,6 @@ def convert_structure_format(
         return {
             'status': 'success',
             'message': f'Converted structure saved to {output_path}.',
-            'output_path': output_path
         }
     
     except Exception as e:
@@ -482,8 +478,7 @@ def convert_poscar_coordinates(
 
         return {
             'status': 'success',
-            'message': f'Converted POSCAR to {coord_type} coordinates in {convert_dir}.',
-            'poscar_path': os.path.join(convert_dir, 'POSCAR'),
+            'message': f'Converted POSCAR to {coord_type} coordinates in {os.path.join(convert_dir, "POSCAR")}.',
         }
 
     except Exception as e:
@@ -536,8 +531,7 @@ def customize_vasp_kpoints_with_accuracy(
         
         return {
             'status': 'success',
-            'message': f'Updated KPOINTS with {accuracy_level} accuracy in {runs_dir}.',
-            'kpoints_path': os.path.join(runs_dir, 'KPOINTS'),
+            'message': f'Updated KPOINTS with {accuracy_level} accuracy in {os.path.join(runs_dir, "KPOINTS")}.',
         }
     
     except Exception as e:
@@ -599,7 +593,6 @@ def generate_vasp_poscar_with_vacancy_defects(
         return {
             'status': 'success',
             'message': f'Generated POSCAR with vacancy defects in {os.path.join(defect_dir, "POSCAR")}.',
-            'poscar_path': os.path.join(defect_dir, 'POSCAR'),
         }
     
     except Exception as e:
@@ -663,7 +656,6 @@ def generate_vasp_poscar_with_substitution_defects(
         return {
             'status': 'success',
             'message': f'Generated POSCAR with substitution defects in {os.path.join(defect_dir, "POSCAR")}.',
-            'poscar_path': os.path.join(defect_dir, 'POSCAR'),
         }
     
     except Exception as e:
@@ -790,7 +782,6 @@ def generate_supercell_from_poscar(
         return {
             'status': 'success',
             'message': f'Generated supercell POSCAR in {os.path.join(supercell_dir, "POSCAR")}.',
-            'poscar_path': os.path.join(supercell_dir, 'POSCAR'),
         }
     
     except Exception as e:
@@ -917,7 +908,6 @@ def generate_sqs_from_poscar(
         return {
             'status': 'success',
             'message': f'Generated SQS POSCAR in {os.path.join(sqs_dir, "POSCAR")}.',
-            'poscar_path': os.path.join(sqs_dir, 'POSCAR'),
         }
 
     except Exception as e:
@@ -976,7 +966,6 @@ def generate_surface_slab_from_poscar(
         return {
             'status': 'success',
             'message': f'Generated surface slab POSCAR in {os.path.join(surface_slab_dir, "POSCAR")}.',
-            'poscar_path': os.path.join(surface_slab_dir, 'POSCAR'),
         }
 
     except Exception as e:
@@ -1072,7 +1061,6 @@ def generate_interface_from_poscars(
         return {
             'status': 'success',
             'message': f'Generated interface POSCAR(s) in {interfaces_dir}.',
-            'interface_dir': interfaces_dir,
         }
     
     except Exception as e:
@@ -1106,12 +1094,17 @@ def visualize_structure_from_poscar(poscar_path: str) -> dict:
         vis_dir = os.path.join(runs_dir, 'visualization')
         os.makedirs(vis_dir, exist_ok=True)
 
-        visualize_structure(poscar_path=poscar_path, save_dir=vis_dir)
+        save_path = os.path.join(vis_dir, f'OPEN_IN_BROWSER.html')
+        count = 1
+        while os.path.exists(save_path):
+            save_path = os.path.join(vis_dir, f'OPEN_IN_BROWSER_{count}.html')
+            count += 1
+
+        visualize_structure(poscar_path=poscar_path, save_path=save_path)
         
         return {
             'status': 'success',
-            'message': 'Structure visualization HTML file "OPEN_IN_BROWSER.html" generated successfully.',
-            'visualization_html_path': f'{vis_dir}/OPEN_IN_BROWSER.html',
+            'message': f'Structure visualization HTML file generated successfully at {save_path}.',
         }
     
     except Exception as e:
@@ -1237,8 +1230,6 @@ def generate_vasp_workflow_of_convergence_tests(
         return {
             'status': 'success',
             'message': f'Generated VASP workflow of convergence tests of k-points in {kpoint_tests_dir} and energy cutoff in {encut_tests_dir}.',
-            'kpoint_tests_dir': kpoint_tests_dir,
-            'encut_tests_dir': encut_tests_dir,
             'kpoint_tests_files': kpoint_tests_files,
             'encut_tests_files': encut_tests_files,
         }
@@ -1319,7 +1310,6 @@ def generate_vasp_workflow_of_eos(
         return {
             'status': 'success',
             'message': f'Generated VASP workflow of EOS calculations in {eos_dir}.',
-            'eos_dir': eos_dir,
             'eos_files': eos_files,
         }
     
@@ -1398,7 +1388,6 @@ def generate_vasp_workflow_of_elastic_constants(
         return {
             'status': 'success',
             'message': f'Generated VASP workflow of elastic constants calculations in {elastic_dir}.',
-            'elastic_dir': elastic_dir,
             'elastic_files': elastic_files,
         }
 
@@ -1482,7 +1471,6 @@ def generate_vasp_workflow_of_aimd(
         return {
             'status': 'success',
             'message': f'Generated VASP workflow of AIMD simulations in {aimd_dir}.',
-            'aimd_dir': aimd_dir,
             'aimd_files': aimd_files,
         }
     
@@ -1563,7 +1551,6 @@ def generate_vasp_workflow_of_neb(
         return {
             'status': 'success',
             'message': f'Generated VASP workflow of NEB calculations in {neb_dir}.',
-            'neb_dir': neb_dir,
             'neb_files': neb_files,
         }
 
@@ -1667,7 +1654,6 @@ def analyze_vasp_workflow_of_convergence_tests(
         return {
             'status': 'success',
             'message': f'Analyzed VASP workflow of convergence tests in {runs_dir}.',
-            'convergence_tests_dir': runs_dir,
             'encut_tests_plot': f'{runs_dir}/encut_tests.png' if encut_tests_dict else None,
             'kpoint_tests_plot': f'{runs_dir}/kpoint_tests.png' if kpoint_tests_dict else None,
         }
@@ -1744,7 +1730,6 @@ def analyze_vasp_workflow_of_eos(
         return {
             'status': 'success',
             'message': f'Analyzed VASP workflow of EOS calculations in {runs_dir}.',
-            'eos_dir': runs_dir,
             'eos_fit_csv': f'{runs_dir}/eos_fit.csv',
             'eos_curve_plot': f'{runs_dir}/eos_curve.png',
         }
@@ -1831,7 +1816,6 @@ def analyze_vasp_workflow_of_elastic_constants(
         return {
             'status': 'success',
             'message': f'Analyzed VASP workflow of elastic constants calculations in {runs_dir}.',
-            'elastic_constants_dir': runs_dir,
             'elastic_constants_txt': f'{runs_dir}/elastic_constants.txt',
         }
     
@@ -1998,7 +1982,6 @@ def analyze_vasp_workflow_of_aimd(
         return {
             'status': 'success',
             'message': f'Analyzed VASP workflow of AIMD simulations in {runs_dir}.',
-            'aimd_dir': runs_dir,
             'diffusion_coefficients_csv': f'{runs_dir}/aimd_diffusion_coefficients.csv',
             'arrhenius_plot': f'{runs_dir}/aimd_arrhenius_plot.png',
         }
@@ -2167,7 +2150,6 @@ def run_simulation_using_mlps(
             return {
                 'status': 'success',
                 'message': f'Completed simulation using {mlps_type} in {mlps_simulation_dir}.',
-                'mlps_simulation_dir': mlps_simulation_dir,
                 'simulation_log_path': f'{task_dir}/masgent_mlps_single.log',
                 'contcar_path': f'{task_dir}/CONTCAR',
                 'total_energy (eV)': total_energy,
@@ -2205,7 +2187,6 @@ def run_simulation_using_mlps(
             return {
                 'status': 'success',
                 'message': f'Completed EOS simulation using {mlps_type} in {mlps_simulation_dir}.',
-                'mlps_simulation_dir': mlps_simulation_dir,
                 'eos_cal_csv_path': f'{task_dir}/eos_cal.csv',
                 'eos_curve_png_path': f'{task_dir}/eos_curve.png',
             }
@@ -2274,7 +2255,6 @@ def run_simulation_using_mlps(
             return {
                 'status': 'success',
                 'message': f'Completed elastic constants simulation using {mlps_type} in {mlps_simulation_dir}.',
-                'mlps_simulation_dir': mlps_simulation_dir,
                 'elastic_constants_path': f'{task_dir}/elastic_constants.txt',
             }
         elif task_type == 'md':
@@ -2458,7 +2438,6 @@ def reduce_dimensions_for_machine_learning(
         return {
             'status': 'success',
             'message': f'Completed dimension reduction for machine learning in {ml_dimension_reduction_dir}.',
-            'ml_dimension_reduction_dir': ml_dimension_reduction_dir,
             'input_data_reduced_path': os.path.join(ml_dimension_reduction_dir, 'ml_input_data_reduced.csv'),
         }
     
@@ -2520,7 +2499,6 @@ def augment_data_for_machine_learning(
         return {
             'status': 'success',
             'message': f'Completed data augmentation for machine learning in {ml_data_augmentation_dir}.',
-            'ml_data_augmentation_dir': ml_data_augmentation_dir,
             'input_data_augmented_path': os.path.join(ml_data_augmentation_dir, 'ml_input_data_augmented.csv'),
             'output_data_augmented_path': os.path.join(ml_data_augmentation_dir, 'ml_output_data_augmented.csv'),
         }
@@ -2578,10 +2556,12 @@ def design_model_for_machine_learning(
             n_trials=n_trials,
         )
 
+        ml_files = list_files_in_dir(ml_model_design_dir)
+
         return {
             'status': 'success',
             'message': f'Completed model design for machine learning in {ml_model_design_dir}.',
-            'ml_model_design_dir': ml_model_design_dir,
+            'ml_model_design_files': ml_files,
         }
     
     except Exception as e:
@@ -2646,10 +2626,12 @@ def train_model_for_machine_learning(
             save_path=ml_model_training_dir,
         )
 
+        ml_files = list_files_in_dir(ml_model_training_dir)
+
         return {
             'status': 'success',
             'message': f'Completed model training for machine learning in {ml_model_training_dir}.',
-            'ml_model_training_dir': ml_model_training_dir,
+            'ml_model_training_files': ml_files,
         }
     
     except Exception as e:

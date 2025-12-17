@@ -6,10 +6,42 @@ from pathlib import Path
 from colorama import Fore, Style
 from importlib.metadata import version, PackageNotFoundError
 
-def visualize_structure(poscar_path, save_dir):
+def visualize_structure(poscar_path, save_path):
     from pymatgen.core import Structure
+    import json
+
     structure = Structure.from_file(poscar_path)
-    cif_str = structure.to(fmt="cif")
+    cif_str = structure.to(fmt='cif')
+
+    lattice = structure.lattice
+    a = lattice.matrix[0]
+    b = lattice.matrix[1]
+    c = lattice.matrix[2]
+
+    lattice_js = json.dumps({
+        "a": a.tolist(),
+        "b": b.tolist(),
+        "c": c.tolist()
+    })
+
+    # Default radii
+    atom_radii_real = {
+        'H': 0.46, 'He': 1.22, 'Li': 1.57, 'Be': 1.12, 'B': 0.81, 'C': 0.77, 'N': 0.74, 'O': 0.74, 'F': 0.72, 'Ne': 1.60,
+        'Na': 1.91, 'Mg': 1.60, 'Al': 1.43, 'Si': 1.18, 'P': 1.10, 'S': 1.04, 'Cl': 0.99, 'Ar': 1.92, 'K': 2.35, 'Ca': 1.97,
+        'Sc': 1.64, 'Ti': 1.47, 'V': 1.35, 'Cr': 1.29, 'Mn': 1.37, 'Fe': 1.26, 'Co': 1.25, 'Ni': 1.25, 'Cu': 1.28, 'Zn': 1.37,
+        'Ga': 1.53, 'Ge': 1.22, 'As': 1.21, 'Se': 1.04, 'Br': 1.14, 'Kr': 1.98, 'Rb': 2.50, 'Sr': 2.15, 'Y': 1.82, 'Zr': 1.60,
+        'Nb': 1.47, 'Mo': 1.40, 'Tc': 1.35, 'Ru': 1.34, 'Rh': 1.34, 'Pd': 1.37, 'Ag': 1.44, 'Cd': 1.52, 'In': 1.67, 'Sn': 1.58,
+        'Sb': 1.41, 'Te': 1.37, 'I': 1.33, 'Xe': 2.18, 'Cs': 2.71, 'Ba': 2.24, 'La': 1.88, 'Ce': 1.82, 'Pr': 1.82, 'Nd': 1.82,
+        'Pm': 1.81, 'Sm': 1.81, 'Eu': 2.06, 'Gd': 1.79, 'Tb': 1.77, 'Dy': 1.77, 'Ho': 1.76, 'Er': 1.75, 'Tm': 1.00, 'Yb': 1.94,
+        'Lu': 1.72, 'Hf': 1.59, 'Ta': 1.47, 'W': 1.41, 'Re': 1.37, 'Os': 1.35, 'Ir': 1.36, 'Pt': 1.39, 'Au': 1.44, 'Hg': 1.55,
+        'Tl': 1.71, 'Pb': 1.75, 'Bi': 1.82, 'Po': 1.77, 'At': 0.62, 'Rn': 0.80, 'Fr': 1.00, 'Ra': 2.35, 'Ac': 2.03, 'Th': 1.80,
+        'Pa': 1.63, 'U': 1.56, 'Np': 1.56, 'Pu': 1.64, 'Am': 1.73, 'Cm': 0.80, 'Bk': 0.80, 'Cf': 0.80, 'Es': 0.80, 'Fm': 0.80,
+        'Md': 0.80, 'No': 0.80, 'Lr': 0.80, 'Rf': 0.80, 'Db': 0.80, 'Sg': 0.80, 'Bh': 0.80, 'Hs': 0.80, 'Mt': 0.80, 'Ds': 0.80,
+        'Rg': 0.80, 'Cn': 0.80, 'Nh': 0.80, 'Fl': 0.80, 'Mc': 0.80, 'Lv': 0.80, 'Ts': 0.80, 'Og': 0.80,
+    }
+    # Scale radii for better visualization
+    atom_radii_scaled = {elem: radius * 0.3 for elem, radius in atom_radii_real.items()}
+    atom_radii_js = json.dumps(atom_radii_scaled)
 
     # Create HTML content
     html = f'''
@@ -40,14 +72,14 @@ def visualize_structure(poscar_path, save_dir):
 
         #title {{ 
             top: 10px; 
-            right: 10px;
+            left: 10px;
             font-weight: bold;
             font-size: 20px;
         }}
 
         #legend {{ 
             top: 10px; 
-            left: 10px; 
+            right: 10px; 
         }}
 
         #instructions {{ 
@@ -68,11 +100,40 @@ def visualize_structure(poscar_path, save_dir):
             border: 1px solid #444;
             border-radius: 10px;
         }}
+
+        #controls {{
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            display: flex;
+            gap: 8px;
+        }}
+
+        .control-btn {{
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }}
+
+        .control-btn:hover {{
+            background: #f0f0f0;
+        }}
     </style>
     </head>
 
     <body>
     <div id='viewer'></div>
+
+    <div id="controls">
+        <button class="control-btn" onclick="rotateX()">Rotate X</button>
+        <button class="control-btn" onclick="rotateY()">Rotate Y</button>
+        <button class="control-btn" onclick="rotateZ()">Rotate Z</button>
+        <button class="control-btn" onclick="resetView()">Reset</button>
+    </div>
 
     <div id='title' class='overlay'>
         Masgent Structure Viewer (Powered by 3Dmol.js)
@@ -86,23 +147,55 @@ def visualize_structure(poscar_path, save_dir):
     <div id='instructions' class='overlay'>
         <strong>Instructions:</strong><br>
         * Drag to rotate<br>
-        * Scroll to zoom<br>
-        * Refresh to reset
+        * Scroll to zoom
     </div>
 
     <script>
         let viewer = $3Dmol.createViewer('viewer', {{ backgroundColor: 'white' }});
+        viewer.setProjection('orthographic');
         viewer.addModel(`{cif_str}`, 'cif');
 
-        viewer.setStyle({{}}, {{
-            sphere: {{ scale: 0.4, colorscheme: 'Jmol' }}
+        const atomRadii = {atom_radii_js};
+
+        const lattice = {lattice_js};
+
+        // Apply custom radii
+        Object.entries(atomRadii).forEach(([elem, radius]) => {{
+            viewer.setStyle(
+                {{ elem: elem }},
+                {{ sphere: {{ scale: radius, colorscheme: 'Jmol' }} }}
+            );
         }});
 
         viewer.addUnitCell();
         viewer.zoomTo();
         viewer.render();
 
-        // ---- Build legend from Jmol colors ----
+        const baseView = viewer.getView();
+
+        // View control functions
+        function rotateX() {{
+            viewer.rotate(15, 'x');
+            viewer.render();
+        }}
+
+        function rotateY() {{
+            viewer.rotate(15, 'y');
+            viewer.render();
+        }}
+
+        function rotateZ() {{
+            viewer.rotate(15, 'z');
+            viewer.render();
+        }}
+
+        function resetView() {{
+            viewer.setView(baseView);
+            viewer.zoomTo();
+            viewer.render();
+        }}
+
+        // Build legend from Jmol colors of displayed elements
         const atoms = viewer.getModel().selectedAtoms();
         const elements = [...new Set(atoms.map(a => a.elem))].sort();
 
@@ -131,7 +224,7 @@ def visualize_structure(poscar_path, save_dir):
     '''
 
     # Save HTML file
-    with open(f'{save_dir}/OPEN_IN_BROWSER.html', "w") as f:
+    with open(save_path, 'w') as f:
         f.write(html)
 
 def create_deformation_matrices():
