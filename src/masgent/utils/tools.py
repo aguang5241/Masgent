@@ -180,7 +180,7 @@ def generate_vasp_poscar(formula: str) -> dict:
         sorted_mids = sorted(mid_energy.items(), key=lambda x: x[1])
         # Get the most stable structure
         mid_0 = sorted_mids[0][0]
-        structure_0 = mpr.get_structure_by_material_id(mid_0)
+        structure_0 = mpr.get_structure_by_material_id(mid_0, conventional_unit_cell=True)
         poscar_0 = Poscar(structure_0)
         # Save as POSCAR_{formula} and rewrite POSCAR
         poscar_0.write_file(os.path.join(runs_dir, 'POSCAR'), direct=True)
@@ -1354,7 +1354,7 @@ def generate_vasp_workflow_of_elastic_constants(
         os.makedirs(elastic_dir, exist_ok=True)
         
         structure = Structure.from_file(poscar_path)
-        vis = MPStaticSet(structure)
+        vis = MPStaticSet(structure, reciprocal_density=500)
         vis.incar.write_file(os.path.join(elastic_dir, 'INCAR_temp'))
         vis.kpoints.write_file(os.path.join(elastic_dir, 'KPOINTS_temp'))
         vis.potcar.write_file(os.path.join(elastic_dir, 'POTCAR_temp'))
