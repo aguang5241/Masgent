@@ -1,5 +1,6 @@
 # Custom Python.gitignore file
 masgent_projects/
+private_memo.md
 test*
 venv*
 manuscript*
