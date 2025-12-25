@@ -1638,8 +1638,8 @@ def analyze_vasp_workflow_of_convergence_tests(
             encut_values = sorted(encut_tests_dict.keys())
             encut_energies = [encut_tests_dict[encut] * 1000 for encut in encut_values]
             encut_energy_diffs = [encut_energies[i - 1] - encut_energies[i] for i in range(1, len(encut_energies))]
-            sns.lineplot(x=encut_values[1:], y=encut_energy_diffs, marker='o', ax=ax, linestyle='--', linewidth=2.0, markersize=12, color='C0', markerfacecolor='C2')
-            ax.axhline(y=1, color='r', linestyle='--', linewidth=3.0)
+            sns.lineplot(x=encut_values[1:], y=encut_energy_diffs, marker='o', ax=ax, linestyle='-', linewidth=3.0, markersize=12, color='C0', markerfacecolor='C2')
+            ax.axhline(y=1, color='r', linestyle='-', linewidth=1.0)
             ax.text(encut_values[-1], 1, 'Threshold < 1 meV/atom', color='r', ha='right', va='center', fontdict={'fontweight': 'bold'}, fontsize='small', bbox=dict(facecolor='white', edgecolor='none', pad=0.5))
             ax.set_xlabel('ENCUT (eV)')
             ax.set_ylabel('Energy Difference (meV/atom)')
@@ -1654,8 +1654,8 @@ def analyze_vasp_workflow_of_convergence_tests(
             kpoint_values = sorted(kpoint_tests_dict.keys())
             kpoint_energies = [kpoint_tests_dict[kp] * 1000 for kp in kpoint_values]
             kpoint_energy_diffs = [kpoint_energies[i - 1] - kpoint_energies[i] for i in range(1, len(kpoint_energies))]
-            sns.lineplot(x=kpoint_values[1:], y=kpoint_energy_diffs, marker='o', ax=ax, linestyle='--', linewidth=2.0, markersize=12, color='C0', markerfacecolor='C2')
-            ax.axhline(y=1, color='r', linestyle='--', linewidth=3.0)
+            sns.lineplot(x=kpoint_values[1:], y=kpoint_energy_diffs, marker='o', ax=ax, linestyle='-', linewidth=3.0, markersize=12, color='C0', markerfacecolor='C2')
+            ax.axhline(y=1, color='r', linestyle='-', linewidth=1.0)
             ax.text(kpoint_values[-1], 1, 'Threshold < 1 meV/atom', color='r', ha='right', va='center', fontdict={'fontweight': 'bold'}, fontsize='small', bbox=dict(facecolor='white', edgecolor='none', pad=0.5))
             ax.set_xlabel('Kpoints Per Atom (kppa)')
             ax.set_ylabel('Energy Difference (meV/atom)')
@@ -1738,10 +1738,10 @@ def analyze_vasp_workflow_of_eos(
         scale_temp = scales[0]
         volume_temp = volumes[0]
         structure_temp = structures[0]
-        volume_at_scale_1 = volume_temp / (scale_temp ** 3)
+        volume_at_scale_1 = volume_temp / scale_temp
         structure_at_scale_1 = structure_temp.copy()
         structure_at_scale_1.scale_lattice(structure_temp.volume / scale_temp)
-        equilibrium_scale = (equilibrium_volume / volume_at_scale_1) ** (1/3)
+        equilibrium_scale = equilibrium_volume / volume_at_scale_1
         structure_equilibrium = structure_at_scale_1.copy()
         structure_equilibrium.scale_lattice(equilibrium_volume)
         structure_equilibrium.to(filename=f'{runs_dir}/POSCAR_equilibrium')
@@ -1754,9 +1754,9 @@ def analyze_vasp_workflow_of_eos(
         matplotlib.rcParams['ytick.direction'] = 'in'
         fig = plt.figure(figsize=(8, 6), constrained_layout=True)
         ax = plt.subplot()
-        ax.scatter(volumes, energies, color='C2', s=100, label='Calculated', zorder=5)
-        ax.scatter(equilibrium_volume, energies_fit.min(), color='C3', marker='*', s=150, label='Equilibrium', zorder=5)
-        ax.plot(volumes_fit, energies_fit, color='C0', linestyle='--', linewidth=2.0, label='Fitted')
+        ax.scatter(volumes, energies, color='C2', label='Calculated', s=100, edgecolors='white', linewidths=1, zorder=5)
+        ax.scatter(equilibrium_volume, energies_fit.min(), color='C3', marker='*', s=300, label='Equilibrium', edgecolors='white', linewidths=1, zorder=5)
+        ax.plot(volumes_fit, energies_fit, color='C0', linestyle='-', linewidth=3.0, label='Fitted')
         ax.set_xlabel('Volume (Å³)')
         ax.set_ylabel('Energy (eV/atom)')
         ax.set_title('Masgent EOS')
@@ -2031,6 +2031,91 @@ def analyze_vasp_workflow_of_aimd(
         }
 
 @with_metadata(schemas.ToolMetadata(
+    name='Analyze VASP workflow of nudged elastic band (NEB) calculations',
+    description='Analyze VASP workflow of nudged elastic band (NEB) calculations',
+    requires=['neb_dir'],
+    optional=[],
+    defaults={},
+    prereqs=[],
+))
+def analyze_vasp_workflow_of_neb(
+    neb_dir: str,
+) -> dict:
+    '''
+    Analyze VASP workflow of nudged elastic band (NEB) calculations
+    '''
+    try:
+        os.path.exists(neb_dir)
+    except Exception as e:
+        return {
+            'status': 'error',
+            'message': f'Invalid input parameters: {str(e)}'
+        }
+    
+    try:
+        import matplotlib
+        matplotlib.use('Agg')  # Use non-interactive backend for plotting
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+        from pymatgen.analysis.transition_state import NEBAnalysis
+        
+        runs_dir = neb_dir
+
+        neb = NEBAnalysis.from_dir(runs_dir)
+        scale = 1 / neb.r[-1]
+        xs = np.arange(0, np.max(neb.r), 0.01) * scale
+        ys = neb.spline(xs / scale) * 1000
+        data = pd.DataFrame({'Reaction Coordinate': xs, 'Energy (meV)': ys})
+        data.to_csv(f'{runs_dir}/neb_data_spline.csv', index=False, float_format='%.8f')
+
+        x = neb.r * scale
+        relative_energies = neb.energies - neb.energies[0]
+        y = relative_energies * 1000
+        data_points = pd.DataFrame({'Reaction Coordinate': x, 'Relative Energy (meV)': y})
+        data_points.to_csv(f'{runs_dir}/neb_data_points.csv', index=False, float_format='%.8f')
+
+        energy_barrier = np.max(ys) - np.min(ys)
+        with open(f'{runs_dir}/energy_barrier.txt', 'w') as f:
+            f.write('# Masgent NEB Analysis\n\n')
+            f.write(f'Energy Barrier: {energy_barrier:.8f} meV\n')
+
+        # Plot NEB energy profile
+        sns.set_theme(font_scale=1.2, style='whitegrid')
+        matplotlib.rcParams['xtick.direction'] = 'in'
+        matplotlib.rcParams['ytick.direction'] = 'in'
+        fig = plt.figure(figsize=(8, 6), constrained_layout=True)
+        ax = plt.subplot()
+        # Scatter and line plot
+        ax.plot(xs, ys, color='C0', linewidth=3.0, zorder=5)
+        ax.scatter(x, y, color='C2', s=100, edgecolors='white', linewidths=1, zorder=6)
+        # Plot the energy barrier
+        x_mid = (xs[np.argmax(ys)] + xs[np.argmin(ys)]) / 2
+        ax.hlines(np.max(ys), xmin=x_mid-0.2, xmax=x_mid+0.2, colors='C3', linestyles='-', linewidth=1.0)
+        ax.hlines(np.min(ys), xmin=x_mid-0.2, xmax=x_mid+0.2, colors='C3', linestyles='-', linewidth=1.0)
+        ax.vlines(x_mid, ymin=0, ymax=np.min(ys), colors='C3', linestyles='-', linewidth=1.0)
+        ax.text(x_mid, np.max(ys), f'{energy_barrier:.2f} meV', color='C3', ha='center', va='center', fontdict={'weight': 'bold'}, fontsize='small', bbox=dict(facecolor='white', edgecolor='none', pad=0.5))
+        ax.set_xlabel('Reaction Coordinate')
+        ax.set_ylabel('Energy (meV)')
+        ax.set_title('Masgent NEB Analysis')
+        plt.savefig(f'{runs_dir}/neb_energy_profile.png', dpi=330)
+        plt.close()
+
+        return {
+            'status': 'success',
+            'message': f'Analyzed VASP workflow of NEB calculations in {runs_dir}.',
+            'neb_data_spline_csv': f'{runs_dir}/neb_data_spline.csv',
+            'neb_data_points_csv': f'{runs_dir}/neb_data_points.csv',
+            'energy_barrier_txt': f'{runs_dir}/energy_barrier.txt',
+            'neb_energy_profile_plot': f'{runs_dir}/neb_energy_profile.png',
+        }
+    
+    except Exception as e:
+        return {
+            'status': 'error',
+            'message': f'Error analyzing VASP NEB workflow: {str(e)}'
+        }
+
+@with_metadata(schemas.ToolMetadata(
     name='Run simulation using machine learning potentials (MLPs)',
     description='Run simulation using machine learning potentials (MLPs) based on given POSCAR. Supported tasks include: single point calculation, equation of state (EOS), elastic constants, and molecular dynamics (MD) simulations.',
     requires=[],
@@ -2061,7 +2146,7 @@ def run_simulation_using_mlps(
     Run simulation using machine learning potentials (MLPs) based on given POSCAR.
     Supported tasks include: single point calculation, equation of state (EOS), elastic constants, and molecular dynamics (MD) simulations.
     '''
-    def fit_and_plot_eos(volumes, energies, mlps_type, task_dir):
+    def fit_and_plot_eos(scales, structures, volumes, energies, mlps_type, task_dir):
         import matplotlib
         matplotlib.use('Agg')  # Use non-interactive backend for plotting
         import matplotlib.pyplot as plt
@@ -2070,18 +2155,35 @@ def run_simulation_using_mlps(
         volumes_fit, energies_fit = fit_eos(volumes, energies)
         eos_fit_df = pd.DataFrame({'Volume[Å³]': volumes_fit, 'Energy[eV/atom]': energies_fit})
         eos_fit_df.to_csv(f'{task_dir}/eos_fit.csv', index=False, float_format='%.8f')
+        equilibrium_volume = volumes_fit[energies_fit.argmin()]
+        scale_temp = scales[0]
+        volume_temp = volumes[0]
+        structure_temp = structures[0]
+        volume_at_scale_1 = volume_temp / scale_temp
+        structure_at_scale_1 = structure_temp.copy()
+        structure_at_scale_1.scale_lattice(structure_temp.volume / scale_temp)
+        equilibrium_scale = equilibrium_volume / volume_at_scale_1
+        structure_equilibrium = structure_at_scale_1.copy()
+        structure_equilibrium.scale_lattice(equilibrium_volume)
+        structure_equilibrium.to(filename=f'{task_dir}/POSCAR_equilibrium')
+        poscar_comments = f'# Generated by Masgent for EOS calculation with scale factor = {equilibrium_scale:.6f}.'
+        write_comments(f'{task_dir}/POSCAR_equilibrium', 'poscar', poscar_comments)
+        
+        # Plot the EOS curve
         sns.set_theme(font_scale=1.2, style='whitegrid')
         matplotlib.rcParams['xtick.direction'] = 'in'
         matplotlib.rcParams['ytick.direction'] = 'in'
         fig = plt.figure(figsize=(8, 6), constrained_layout=True)
         ax = plt.subplot()
-        ax.scatter(volumes, energies, color='C3', label='Calculated')
-        ax.plot(volumes_fit, energies_fit, color='C0', label='Fitted')
-        ax.set_xlabel('Volume (Å³)', fontsize=14)
-        ax.set_ylabel('Energy (eV/atom)', fontsize=14)
+        ax.scatter(volumes, energies, color='C2', label='Calculated', s=100, edgecolors='white', linewidths=1, zorder=5)
+        ax.scatter(equilibrium_volume, energies_fit.min(), color='C3', marker='*', s=300, label='Equilibrium', edgecolors='white', linewidths=1, zorder=5)
+        ax.plot(volumes_fit, energies_fit, color='C0', linestyle='-', linewidth=3.0, label='Fitted')
+        ax.set_xlabel('Volume (Å³)')
+        ax.set_ylabel('Energy (eV/atom)')
         ax.set_title(f'Masgent EOS using {mlps_type}')
         ax.legend(frameon=True, loc='upper right')
         plt.savefig(f'{task_dir}/eos_curve.png', dpi=330)
+        plt.close()
 
     def parse_and_plot_md_log(logfile, mlps_type, task_dir):
         import matplotlib
@@ -2198,8 +2300,9 @@ def run_simulation_using_mlps(
             task_dir = os.path.join(mlps_simulation_dir, 'eos')
             os.makedirs(task_dir, exist_ok=True)
             structure = Structure.from_file(poscar_path)
-            volumes, energies = [], []
+            scales, structures, volumes, energies = [], [], [], []
             for scale in scale_factors:
+                scales.append(scale)
                 # Create scaled structure
                 scaled_structure = structure.copy()
                 scaled_structure.scale_lattice(structure.volume * scale)
@@ -2207,6 +2310,7 @@ def run_simulation_using_mlps(
                 scaled_structure.to(fmt='poscar', filename=scaled_structure_path)
                 comments = f'# Generated by Masgent for EOS calculation with scale factor = {scale:.3f} using {mlps_type}.'
                 write_comments(scaled_structure_path, 'poscar', comments)
+                structures.append(scaled_structure)
                 # Load scaled structure and perform optimization
                 atoms = read(scaled_structure_path, format='vasp')
                 atoms.calc = calc
@@ -2222,7 +2326,7 @@ def run_simulation_using_mlps(
             # Save EOS results to CSV
             pd.DataFrame({'Scale Factor': scale_factors, 'Volume (Å³)': volumes, 'Energy (eV/atom)': energies}).to_csv(f'{task_dir}/eos_cal.csv', index=False, float_format='%.8f')
             # Fit and plot EOS
-            fit_and_plot_eos(volumes, energies, mlps_type, task_dir)
+            fit_and_plot_eos(scales, structures, volumes, energies, mlps_type, task_dir)
             return {
                 'status': 'success',
                 'message': f'Completed EOS simulation using {mlps_type} in {mlps_simulation_dir}.',

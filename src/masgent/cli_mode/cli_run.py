@@ -1574,6 +1574,32 @@ def command_1_4_4():
     color_print(result['message'], 'green')
     time.sleep(3)
 
+@register('1.4.5', 'Nudged Elastic Band (NEB) analysis')
+def command_1_4_5():
+    try:
+        while True:
+            neb_dir = color_input('\nEnter the NEB calculations directory path that contains image subdirectories: ', 'yellow').strip()
+
+            if not neb_dir:
+                continue
+
+            try:
+                os.path.exists(neb_dir)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid directory: {neb_dir}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
+        return
+    
+    print('')
+    with yaspin(Spinners.dots, text='Analyzing VASP NEB calculations...', color='cyan') as sp:
+        result = tools.analyze_vasp_workflow_of_neb(neb_dir=neb_dir)
+    color_print(result['message'], 'green')
+    time.sleep(3)
+
 def call_mlps(mlps_type: str):
     try:
         while True:

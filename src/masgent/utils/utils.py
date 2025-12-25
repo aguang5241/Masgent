@@ -587,45 +587,62 @@ def print_help():
 Masgent - Available Commands and Functions: 
 -------------------------------------------
 1. Density Functional Theory (DFT) Simulations
-  1.1 Structure Preparation & Manipulation
-    1.1.1 Generate POSCAR from chemical formula
-    1.1.2 Convert POSCAR coordinates (Direct <-> Cartesian)
-    1.1.3 Convert structure file formats (CIF, POSCAR, XYZ)
-    1.1.4 Generate structures with defects (Vacancies, Interstitials, Substitutions)
-    1.1.5 Generate supercells
-    1.1.6 Generate Special Quasirandom Structures (SQS)
-    1.1.7 Generate surface slabs
-    1.1.8 Generate interface structures
-  1.2 VASP Input File Preparation
-    1.2.1 Prepare full VASP input files (INCAR, KPOINTS, POTCAR, POSCAR)
-    1.2.2 Generate INCAR templates (relaxation, static, MD, etc.)
-    1.2.3 Generate KPOINTS with specified accuracy
-    1.2.4 Generate HPC job submission script
-  1.3 Standard VASP Workflows Preparation
-    1.3.1 Convergence testing (ENCUT, KPOINTS)
-    1.3.2 Equation of State (EOS)
-    1.3.3 Elastic constants calculations
-    1.3.4 Ab-initio Molecular Dynamics (AIMD)
-    1.3.5 Nudged Elastic Band (NEB) calculations
-  1.4 (Planned) Workflow Output Analysis
+  - 1.1 Structure Preparation & Manipulation
+    - 1.1.1 Generate POSCAR from chemical formula
+    - 1.1.2 Convert POSCAR coordinates (Direct <-> Cartesian)
+    - 1.1.3 Convert structure file formats (CIF, POSCAR, XYZ)
+    - 1.1.4 Generate structures with defects (Vacancies, Substitutions, Interstitials)
+    - 1.1.5 Generate supercells
+    - 1.1.6 Generate Special Quasirandom Structures (SQS)
+    - 1.1.7 Generate surface slabs
+    - 1.1.8 Generate interface structures
+    - 1.1.9 Visualize structures
+  
+  - 1.2 VASP Input File Preparation
+    - 1.2.1 Prepare full VASP input files (INCAR, KPOINTS, POTCAR, POSCAR)
+    - 1.2.2 Generate INCAR templates
+      - MPMetalRelaxSet: suggested for metallic structure relaxation
+      - MPRelaxSet: suggested for structure relaxation
+      - MPStaticSet: suggested for static calculations
+      - MPNonSCFBandSet: suggested for non-self-consistent field calculations (Band structure)
+      - MPNonSCFDOSSet: suggested for non-self-consistent field calculations (Density of States)
+      - MPMDSet: suggested for molecular dynamics simulations
+    - 1.2.3 Generate KPOINTS with specified accuracy
+    - 1.2.4 Generate HPC job submission script
+  
+  - 1.3 Standard VASP Workflow Preparation
+    - 1.3.1 Convergence test (ENCUT, KPOINTS)
+    - 1.3.2 Equation of State (EOS)
+    - 1.3.3 Elastic constants calculations
+    - 1.3.4 Ab-initio Molecular Dynamics (AIMD)
+    - 1.3.5 Nudged Elastic Band (NEB) calculations
+  
+  - 1.4 Standard VASP Workflow Output Analysis
+    - 1.4.1 Convergence test analysis
+    - 1.4.2 Equation of State (EOS) analysis
+    - 1.4.3 Elastic constants analysis 
+    - 1.4.4 Ab-initio Molecular Dynamics (AIMD) analysis
+    - 1.4.5 Nudged Elastic Band (NEB) analysis
+
 2. Fast Simulations Using Machine Learning Potentials (MLPs)
-  * Supported MLPs:
-    2.1 SevenNet
-    2.2 CHGNet
-    2.3 Orb-v3
-    2.4 MatSim
-  * Implemented Simulations for all MLPs:
+  - Supported MLPs:
+    - 2.1 SevenNet
+    - 2.2 CHGNet
+    - 2.3 Orb-v3
+    - 2.4 MatSim
+  - Implemented Simulations for all MLPs:
     - Single Point Energy Calculation
     - Equation of State (EOS) Calculation
     - Elastic Constants Calculation
     - Molecular Dynamics Simulation (NVT)
+
 3. Simple Machine Learning for Materials Science
-  3.1 (Planned) Data Preparation & Feature Engineering
-    3.1.1 Feature analysis and visualization
-    3.1.2 Dimensionality reduction (if too many features)
-    3.1.3 Data augmentation (if limited data)
-  3.2 (Planned) Model Design & Hyperparameter Tuning
-  3.3 (Planned) Model Training & Evaluation
+  - 3.1 Data Preparation & Feature Analysis
+    - 3.1.1 Feature analysis and visualization
+    - 3.1.2 Dimensionality reduction (if too many features)
+    - 3.1.3 Data augmentation (if limited data)
+  - 3.2 Model Design & Hyperparameter Tuning
+  - 3.3 Model Training & Evaluation
 '''
     color_print(content, "green")
 

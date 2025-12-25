@@ -84,7 +84,7 @@ Masgent removes that barrier by providing a unified, AI-driven interface for str
     - 1.4.2 Equation of State (EOS) analysis
     - 1.4.3 Elastic constants analysis 
     - 1.4.4 Ab-initio Molecular Dynamics (AIMD) analysis
-    - 1.4.5 (Planned) Nudged Elastic Band (NEB) analysis
+    - 1.4.5 Nudged Elastic Band (NEB) analysis
 
 2. Fast Simulations Using Machine Learning Potentials (MLPs)
   - Supported MLPs:
