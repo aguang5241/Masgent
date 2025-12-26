@@ -1753,10 +1753,30 @@ def call_mlps(mlps_type: str):
             color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
             time.sleep(1)
             return
+        
+        if task_type == 'eos':
+            try:
+                while True:
+                    scale_factors_str = color_input('\nEnter the volume scale factors for EOS calculations (e.g., 0.94 0.96 0.98 1.00 1.02 1.04 1.06): ', 'yellow').strip()
+
+                    if not scale_factors_str:
+                        continue
+
+                    try:
+                        scale_factors = [float(x) for x in scale_factors_str.split()]
+                        schemas.RunSimulationUsingMlps(poscar_path=poscar_path, fmax=fmax, max_steps=max_steps, scale_factors=scale_factors)
+                        break
+                    except Exception:
+                        color_print(f'[Error] Invalid scale factors: {scale_factors_str}, please double check and try again.\n', 'red')
+
+            except (KeyboardInterrupt, EOFError):
+                color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+                time.sleep(1)
+                return
 
         print('')
         with yaspin(Spinners.dots, text=f'Running simulation using {mlps_type}... See details in the log file. ', color='cyan') as sp:
-            result = tools.run_simulation_using_mlps(poscar_path=poscar_path, mlps_type=mlps_type, task_type=task_type, fmax=fmax, max_steps=max_steps)
+            result = tools.run_simulation_using_mlps(poscar_path=poscar_path, mlps_type=mlps_type, task_type=task_type, fmax=fmax, max_steps=max_steps, scale_factors=scale_factors if task_type=='eos' else [0.94, 0.96, 0.98, 1.00, 1.02, 1.04, 1.06])
         color_print(result['message'], 'green')
         time.sleep(3)
     

@@ -1,0 +1,17 @@
+# Elastic constants and moduli calculated using CHGNet by Masgent
+
+Elastic Constants (GPa):
+195.74	172.07	172.07	0.00	-0.00	-0.00
+172.07	195.74	172.07	-0.00	0.00	-0.00
+172.07	172.07	195.74	-0.00	-0.00	-0.00
+-0.00	0.00	0.00	60.06	-0.00	0.00
+-0.00	-0.00	-0.00	-0.00	60.06	0.00
+0.00	0.00	0.00	0.00	-0.00	60.06
+
+Mechanical Properties (GPa):
+Bulk Modulus (Voigt):		179.96
+Bulk Modulus (Reuss):		179.96
+Bulk Modulus (Hill):		179.96
+Shear Modulus (Voigt):		40.77
+Shear Modulus (Reuss):		22.84
+Shear Modulus (Hill):		31.80

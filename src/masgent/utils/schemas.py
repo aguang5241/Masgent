@@ -1107,6 +1107,11 @@ class RunSimulationUsingMlps(BaseModel):
         description='Maximum number of simulation steps. Defaults to 500 if not provided.'
     )
 
+    scale_factors: List[float] = Field(
+        [0.94, 0.96, 0.98, 1.00, 1.02, 1.04, 1.06],
+        description='List of scale factors to apply to the lattice vectors for EOS calculations. Defaults to [0.94, 0.96, 0.98, 1.00, 1.02, 1.04, 1.06] if not provided.'
+    )
+
     temperature: int = Field(
         1000,
         description='Temperature in Kelvin for molecular dynamics simulations. Defaults to 1000 K if not provided.'
@@ -1141,6 +1146,11 @@ class RunSimulationUsingMlps(BaseModel):
         # validate max_steps
         if self.max_steps < 1:
             raise ValueError('Maximum number of simulation steps (max_steps) must be at least 1.')
+        
+        # validate scale_factors for eos task
+        if self.task_type == 'eos':
+            if not all(isinstance(sf, float) and sf > 0 for sf in self.scale_factors):
+                raise ValueError('All scale factors must be positive floats.')
         
         # validate temperature
         if self.temperature < 0:

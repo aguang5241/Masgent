@@ -2126,13 +2126,14 @@ def analyze_vasp_workflow_of_neb(
     name='Run simulation using machine learning potentials (MLPs)',
     description='Run simulation using machine learning potentials (MLPs) based on given POSCAR. Supported tasks include: single point calculation, equation of state (EOS), elastic constants, and molecular dynamics (MD) simulations.',
     requires=[],
-    optional=['poscar_path', 'mlps_type', 'task_type', 'fmax', 'max_steps', 'temperature', 'md_steps', 'md_timestep'],
+    optional=['poscar_path', 'mlps_type', 'task_type', 'fmax', 'max_steps', 'scale_factors', 'temperature', 'md_steps', 'md_timestep'],
     defaults={
         'poscar_path': f'{os.environ.get("MASGENT_SESSION_RUNS_DIR")}/POSCAR',
         'mlps_type': 'CHGNet',
         'task_type': 'single',
         'fmax': 0.1,
         'max_steps': 500,
+        'scale_factors': [0.94, 0.96, 0.98, 1.00, 1.02, 1.04, 1.06],
         'temperature': 1000,
         'md_steps': 1000,
         'md_timestep': 5.0,
@@ -2145,6 +2146,7 @@ def run_simulation_using_mlps(
     task_type: Literal['single', 'eos', 'elastic', 'md'] = 'single',
     fmax: float = 0.1,
     max_steps: int = 500,
+    scale_factors: list = [0.94, 0.96, 0.98, 1.00, 1.02, 1.04, 1.06],
     temperature: int = 1000,
     md_steps: int = 1000,
     md_timestep: float = 5.0,
@@ -2253,8 +2255,6 @@ def run_simulation_using_mlps(
         
         mlps_simulation_dir = os.path.join(runs_dir, f'mlps_simulation/{mlps_type}')
         os.makedirs(mlps_simulation_dir, exist_ok=True)
-
-        scale_factors = [0.94, 0.96, 0.98, 1.00, 1.02, 1.04, 1.06]
 
         if mlps_type == 'SevenNet':
             from sevenn.calculator import SevenNetCalculator

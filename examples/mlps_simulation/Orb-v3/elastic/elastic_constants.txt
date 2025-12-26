@@ -1,0 +1,17 @@
+# Elastic constants and moduli calculated using Orb-v3 by Masgent
+
+Elastic Constants (GPa):
+183.13	145.07	145.04	0.02	-0.01	-0.02
+145.07	183.23	145.05	-0.04	0.01	-0.02
+145.04	145.05	183.15	-0.05	-0.01	0.02
+0.02	-0.04	-0.05	79.46	-0.01	0.00
+-0.01	0.01	-0.01	-0.01	79.48	-0.00
+-0.02	-0.02	0.02	0.00	-0.00	79.47
+
+Mechanical Properties (GPa):
+Bulk Modulus (Voigt):		157.76
+Bulk Modulus (Reuss):		157.76
+Bulk Modulus (Hill):		157.76
+Shear Modulus (Voigt):		55.30
+Shear Modulus (Reuss):		35.04
+Shear Modulus (Hill):		45.17

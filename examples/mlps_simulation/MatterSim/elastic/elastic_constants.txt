@@ -1,0 +1,17 @@
+# Elastic constants and moduli calculated using MatterSim by Masgent
+
+Elastic Constants (GPa):
+224.19	159.05	159.05	0.00	0.00	-0.00
+159.05	224.19	159.05	0.00	0.00	0.00
+159.05	159.05	224.19	-0.00	-0.00	0.00
+-0.00	-0.00	-0.00	100.09	0.00	-0.00
+0.00	0.00	-0.00	0.00	100.09	-0.00
+0.00	0.00	-0.00	0.00	0.00	100.09
+
+Mechanical Properties (GPa):
+Bulk Modulus (Voigt):		180.76
+Bulk Modulus (Reuss):		180.76
+Bulk Modulus (Hill):		180.76
+Shear Modulus (Voigt):		73.08
+Shear Modulus (Reuss):		54.72
+Shear Modulus (Hill):		63.90
