@@ -1,0 +1,94 @@
+ running on   48 total cores
+ distrk:  each k-point on   48 cores,    1 groups
+ distr:  one band on    1 cores,   48 groups
+ vasp.6.2.1 16May21 (build Aug 15 2022 14:47:30) complex                         
+ POSCAR found type information on POSCAR LaNiO 
+ POSCAR found :  3 types and       7 ions
+ scaLAPACK will be used
+ -----------------------------------------------------------------------------
+|                                                                             |
+|           W    W    AA    RRRRR   N    N  II  N    N   GGGG   !!!           |
+|           W    W   A  A   R    R  NN   N  II  NN   N  G    G  !!!           |
+|           W    W  A    A  R    R  N N  N  II  N N  N  G       !!!           |
+|           W WW W  AAAAAA  RRRRR   N  N N  II  N  N N  G  GGG   !            |
+|           WW  WW  A    A  R   R   N   NN  II  N   NN  G    G                |
+|           W    W  A    A  R    R  N    N  II  N    N   GGGG   !!!           |
+|                                                                             |
+|     For optimal performance we recommend to set                             |
+|       NCORE = 2 up to number-of-cores-per-socket                            |
+|     NCORE specifies how many cores store one orbital (NPAR=cpu/NCORE).      |
+|     This setting can greatly improve the performance of VASP for DFT.       |
+|     The default, NCORE=1 might be grossly inefficient on modern             |
+|     multi-core architectures or massively parallel machines. Do your        |
+|     own testing! More info at https://www.vasp.at/wiki/index.php/NCORE      |
+|     Unfortunately you need to use the default for GW and RPA                |
+|     calculations (for HF NCORE is supported but not extensively tested      |
+|     yet).                                                                   |
+|                                                                             |
+ -----------------------------------------------------------------------------
+
+ LDA part: xc-table for Pade appr. of Perdew
+ POSCAR found type information on POSCAR LaNiO 
+ POSCAR found :  3 types and       7 ions
+ -----------------------------------------------------------------------------
+|                                                                             |
+|           W    W    AA    RRRRR   N    N  II  N    N   GGGG   !!!           |
+|           W    W   A  A   R    R  NN   N  II  NN   N  G    G  !!!           |
+|           W    W  A    A  R    R  N N  N  II  N N  N  G       !!!           |
+|           W WW W  AAAAAA  RRRRR   N  N N  II  N  N N  G  GGG   !            |
+|           WW  WW  A    A  R   R   N   NN  II  N   NN  G    G                |
+|           W    W  A    A  R    R  N    N  II  N    N   GGGG   !!!           |
+|                                                                             |
+|     Your reciprocal lattice and k-lattice belong to different lattice       |
+|     classes:                                                                |
+|                                                                             |
+|        The reciprocal lattice is body-centered tetragonal,                  |
+|        whereas your k-lattice is base-centered monoclinic.                  |
+|                                                                             |
+|     Results are often still useful ...                                      |
+|                                                                             |
+ -----------------------------------------------------------------------------
+
+ POSCAR, INCAR and KPOINTS ok, starting setup
+ FFT: planning ...
+ WAVECAR not read
+ entering main loop
+       N       E                     dE             d eps       ncg     rms          rms(c)
+DAV:   1     0.358433272443E+03    0.35843E+03   -0.33711E+04 11520   0.209E+03
+DAV:   2    -0.491959294296E+02   -0.40763E+03   -0.40729E+03 17184   0.231E+02
+DAV:   3    -0.569832331097E+02   -0.77873E+01   -0.77800E+01 11664   0.501E+01
+DAV:   4    -0.572559643176E+02   -0.27273E+00   -0.27171E+00 22752   0.845E+00
+DAV:   5    -0.572571213430E+02   -0.11570E-02   -0.11576E-02 11712   0.369E-01    0.359E+01
+RMM:   6    -0.620119354603E+02   -0.47548E+01   -0.24718E+02 18259   0.982E+01    0.122E+02
+RMM:   7    -0.607408156841E+02    0.12711E+01   -0.44451E+01 20020   0.301E+01    0.674E+01
+RMM:   8    -0.503908878344E+02    0.10350E+02   -0.29958E+01 16161   0.321E+01    0.244E+01
+RMM:   9    -0.498468277427E+02    0.54406E+00   -0.82162E+00 18269   0.123E+01    0.100E+01
+RMM:  10    -0.502329484257E+02   -0.38612E+00   -0.48492E+00 18249   0.982E+00    0.518E+00
+RMM:  11    -0.504654935390E+02   -0.23255E+00   -0.93456E-01 20104   0.412E+00    0.428E+00
+RMM:  12    -0.506041459359E+02   -0.13865E+00   -0.35493E-01 20549   0.261E+00    0.295E+00
+RMM:  13    -0.506340107975E+02   -0.29865E-01   -0.13079E-01 20432   0.147E+00    0.193E+00
+RMM:  14    -0.506363113058E+02   -0.23005E-02   -0.70268E-02 19263   0.929E-01    0.112E+00
+RMM:  15    -0.506400192709E+02   -0.37080E-02   -0.25686E-02 18223   0.681E-01    0.776E-01
+RMM:  16    -0.506419738491E+02   -0.19546E-02   -0.17404E-02 16370   0.457E-01    0.519E-01
+RMM:  17    -0.506430823121E+02   -0.11085E-02   -0.81380E-03 15626   0.394E-01    0.269E-01
+RMM:  18    -0.506437515527E+02   -0.66924E-03   -0.78984E-03 14713   0.344E-01    0.170E-01
+RMM:  19    -0.506441958639E+02   -0.44431E-03   -0.49893E-03 14131   0.277E-01    0.118E-01
+RMM:  20    -0.506445862688E+02   -0.39040E-03   -0.43385E-03 13805   0.241E-01    0.910E-02
+RMM:  21    -0.506448496565E+02   -0.26339E-03   -0.30360E-03 13376   0.212E-01
+   1 F= -.50644850E+02 E0= -.50644850E+02  d E =0.000000E+00  mag=     2.0506
+ -----------------------------------------------------------------------------
+|                                                                             |
+|           W    W    AA    RRRRR   N    N  II  N    N   GGGG   !!!           |
+|           W    W   A  A   R    R  NN   N  II  NN   N  G    G  !!!           |
+|           W    W  A    A  R    R  N N  N  II  N N  N  G       !!!           |
+|           W WW W  AAAAAA  RRRRR   N  N N  II  N  N N  G  GGG   !            |
+|           WW  WW  A    A  R   R   N   NN  II  N   NN  G    G                |
+|           W    W  A    A  R    R  N    N  II  N    N   GGGG   !!!           |
+|                                                                             |
+|     Tetrahedron method does not include variations of the Fermi             |
+|     occupations, so forces and stress will be inaccurate. We suggest        |
+|     using a different smearing scheme ISMEAR = 1 or 2 for metals in         |
+|     relaxations.                                                            |
+|                                                                             |
+ -----------------------------------------------------------------------------
+
