@@ -1,0 +1,273 @@
+
+    <html>
+    <head>
+    <script src='https://3Dmol.org/build/3Dmol.js'></script>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+        }
+
+        #viewer {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .overlay {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        #title { 
+            top: 10px; 
+            left: 10px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        #legend { 
+            top: 10px; 
+            right: 10px; 
+        }
+
+        #instructions { 
+            bottom: 10px; 
+            right: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .color-box {
+            width: 20px;
+            height: 20px;
+            margin-right: 6px;
+            border: 1px solid #444;
+            border-radius: 10px;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .control-btn {
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .control-btn:hover {
+            background: #f0f0f0;
+        }
+    </style>
+    </head>
+
+    <body>
+    <div id='viewer'></div>
+
+    <div id="controls">
+        <button class="control-btn" onclick="rotateX()">Rotate X</button>
+        <button class="control-btn" onclick="rotateY()">Rotate Y</button>
+        <button class="control-btn" onclick="rotateZ()">Rotate Z</button>
+        <button class="control-btn" onclick="resetView()">Reset</button>
+        <button class="control-btn" onclick="save()">Save</button>
+    </div>
+
+    <div id='title' class='overlay'>
+        Masgent Structure Viewer (Powered by 3Dmol.js)
+    </div>
+
+    <div id='legend' class='overlay'>
+        <strong>Elements</strong>
+        <div id='legend-items'></div>
+    </div>
+
+    <div id='instructions' class='overlay'>
+        <strong>Instructions:</strong><br>
+        * Drag to rotate<br>
+        * Scroll to zoom
+    </div>
+
+    <script>
+        let viewer = $3Dmol.createViewer('viewer', { backgroundColor: 'white' });
+        viewer.setProjection('orthographic');
+        viewer.addModel(`# generated using pymatgen
+data_LaCoO3
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   5.44102680
+_cell_length_b   5.46835579
+_cell_length_c   47.30639583
+_cell_angle_alpha   90.00000000
+_cell_angle_beta   90.00000000
+_cell_angle_gamma   61.18310058
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   LaCoO3
+_chemical_formula_sum   'La8 Co8 O24'
+_cell_volume   1233.22740329
+_cell_formula_units_Z   8
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  Co  Co0  1  0.49152263  0.99124600  0.46069646  1
+  Co  Co1  1  0.81920438  0.31874333  0.55643953  1
+  Co  Co2  1  0.16384088  0.66374867  0.36495340  1
+  Co  Co3  1  0.50000000  0.00000000  0.31708186  1
+  Co  Co4  1  0.48304526  0.98249199  0.60431107  1
+  Co  Co5  1  0.14688614  0.64624066  0.65218260  1
+  Co  Co6  1  0.82768175  0.32749733  0.41282493  1
+  Co  Co7  1  0.15536351  0.65499466  0.50856800  1
+  La  La8  1  0.15228078  0.65038596  0.58019530  1
+  La  La9  1  0.48612799  0.98710069  0.53268376  1
+  La  La10  1  0.81380974  0.31459802  0.62842683  1
+  La  La11  1  0.47996253  0.97788329  0.67593837  1
+  La  La12  1  0.83076448  0.33210603  0.34119762  1
+  La  La13  1  0.15844623  0.65960336  0.43694069  1
+  La  La14  1  0.49691727  0.99539130  0.38870917  1
+  La  La15  1  0.82459903  0.32288863  0.48445224  1
+  O  O16  1  0.91333822  0.53707796  0.67646889  1
+  O  O17  1  0.38043405  0.75540336  0.62789632  1
+  O  O18  1  0.61979037  0.70139853  0.57501273  1
+  O  O19  1  0.01861840  0.93608812  0.53786634  1
+  O  O20  1  0.11665111  0.16564885  0.58717507  1
+  O  O21  1  0.52175766  0.47183781  0.52570400  1
+  O  O22  1  0.84943941  0.79933514  0.62144707  1
+  O  O23  1  0.44433286  0.49314618  0.68291814  1
+  O  O24  1  0.05275230  0.42790603  0.53215325  1
+  O  O25  1  0.29210861  0.37390120  0.47926966  1
+  O  O26  1  0.34630015  0.26358545  0.63360941  1
+  O  O27  1  0.69093665  0.60859079  0.44212327  1
+  O  O28  1  0.78896935  0.83815152  0.49143200  1
+  O  O29  1  0.19407591  0.14434048  0.42996093  1
+  O  O30  1  0.72507055  0.10040870  0.43641018  1
+  O  O31  1  0.25797471  0.88208330  0.48498275  1
+  O  O32  1  0.96442686  0.04640387  0.38352659  1
+  O  O33  1  0.36325489  0.28109346  0.34638020  1
+  O  O34  1  0.46128760  0.51065419  0.39568893  1
+  O  O35  1  0.86639415  0.81684314  0.33421786  1
+  O  O36  1  0.39738880  0.77291136  0.34066711  1
+  O  O37  1  0.93029296  0.55458597  0.38923968  1
+  O  O38  1  0.58565646  0.20958063  0.58072582  1
+  O  O39  1  0.94747212  0.02889586  0.67075580  1
+`, 'cif');
+
+        const atomRadii = {"H": 0.138, "He": 0.366, "Li": 0.471, "Be": 0.336, "B": 0.243, "C": 0.23099999999999998, "N": 0.222, "O": 0.222, "F": 0.216, "Ne": 0.48, "Na": 0.573, "Mg": 0.48, "Al": 0.429, "Si": 0.354, "P": 0.33, "S": 0.312, "Cl": 0.297, "Ar": 0.576, "K": 0.705, "Ca": 0.591, "Sc": 0.49199999999999994, "Ti": 0.441, "V": 0.405, "Cr": 0.387, "Mn": 0.41100000000000003, "Fe": 0.378, "Co": 0.375, "Ni": 0.375, "Cu": 0.384, "Zn": 0.41100000000000003, "Ga": 0.45899999999999996, "Ge": 0.366, "As": 0.363, "Se": 0.312, "Br": 0.34199999999999997, "Kr": 0.594, "Rb": 0.75, "Sr": 0.6449999999999999, "Y": 0.546, "Zr": 0.48, "Nb": 0.441, "Mo": 0.42, "Tc": 0.405, "Ru": 0.402, "Rh": 0.402, "Pd": 0.41100000000000003, "Ag": 0.432, "Cd": 0.45599999999999996, "In": 0.501, "Sn": 0.474, "Sb": 0.423, "Te": 0.41100000000000003, "I": 0.399, "Xe": 0.654, "Cs": 0.813, "Ba": 0.672, "La": 0.564, "Ce": 0.546, "Pr": 0.546, "Nd": 0.546, "Pm": 0.543, "Sm": 0.543, "Eu": 0.618, "Gd": 0.537, "Tb": 0.531, "Dy": 0.531, "Ho": 0.528, "Er": 0.525, "Tm": 0.3, "Yb": 0.582, "Lu": 0.516, "Hf": 0.477, "Ta": 0.441, "W": 0.423, "Re": 0.41100000000000003, "Os": 0.405, "Ir": 0.40800000000000003, "Pt": 0.417, "Au": 0.432, "Hg": 0.46499999999999997, "Tl": 0.513, "Pb": 0.525, "Bi": 0.546, "Po": 0.531, "At": 0.186, "Rn": 0.24, "Fr": 0.3, "Ra": 0.705, "Ac": 0.6089999999999999, "Th": 0.54, "Pa": 0.48899999999999993, "U": 0.46799999999999997, "Np": 0.46799999999999997, "Pu": 0.49199999999999994, "Am": 0.519, "Cm": 0.24, "Bk": 0.24, "Cf": 0.24, "Es": 0.24, "Fm": 0.24, "Md": 0.24, "No": 0.24, "Lr": 0.24, "Rf": 0.24, "Db": 0.24, "Sg": 0.24, "Bh": 0.24, "Hs": 0.24, "Mt": 0.24, "Ds": 0.24, "Rg": 0.24, "Cn": 0.24, "Nh": 0.24, "Fl": 0.24, "Mc": 0.24, "Lv": 0.24, "Ts": 0.24, "Og": 0.24};
+
+        // Apply custom radii
+        Object.entries(atomRadii).forEach(([elem, radius]) => {
+            viewer.setStyle(
+                { elem: elem },
+                { sphere: { scale: radius, colorscheme: 'Jmol' } }
+            );
+        });
+
+        viewer.addUnitCell();
+        viewer.zoomTo();
+        viewer.render();
+
+        const baseView = viewer.getView();
+
+        // View control functions
+        function rotateX() {
+            viewer.rotate(15, 'x');
+            viewer.render();
+        }
+
+        function rotateY() {
+            viewer.rotate(15, 'y');
+            viewer.render();
+        }
+
+        function rotateZ() {
+            viewer.rotate(15, 'z');
+            viewer.render();
+        }
+
+        function resetView() {
+            viewer.setView(baseView);
+            viewer.zoomTo();
+            viewer.render();
+        }
+
+        // Save function
+        function save() {
+            const canvas = viewer.getCanvas();
+
+            // Save original size
+            const originalWidth = canvas.width;
+            const originalHeight = canvas.height;
+
+            // Increase resolution (2x for publication quality)
+            const scale = window.devicePixelRatio || 2;
+            canvas.width = originalWidth * scale;
+            canvas.height = originalHeight * scale;
+
+            viewer.render();
+
+            // Export image
+            const dataURL = canvas.toDataURL("image/png");
+            const link = document.createElement('a');
+            link.href = dataURL;
+            link.download = 'structure.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Restore original size
+            canvas.width = originalWidth;
+            canvas.height = originalHeight;
+            viewer.render();
+        }
+
+        // Build legend from Jmol colors of displayed elements
+        const atoms = viewer.getModel().selectedAtoms();
+        const elements = [...new Set(atoms.map(a => a.elem))].sort();
+
+        const legend = document.getElementById('legend-items');
+        elements.forEach(el => {
+            const color = $3Dmol.elementColors.Jmol[el] || 0xAAAAAA;
+            const hex = '#' + color.toString(16).padStart(6, '0');
+
+            const item = document.createElement('div');
+            item.className = 'legend-item';
+
+            const box = document.createElement('div');
+            box.className = 'color-box';
+            box.style.background = hex;
+
+            const label = document.createElement('span');
+            label.textContent = el;
+
+            item.appendChild(box);
+            item.appendChild(label);
+            legend.appendChild(item);
+        });
+    </script>
+    </body>
+    </html>
+    

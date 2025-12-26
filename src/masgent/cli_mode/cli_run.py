@@ -998,9 +998,45 @@ def command_1_2_3():
         while True:
             clear_and_print_entry_message()
             choices = [
+                'Gamma-centered  ->  Construct an automatic Gamma-centered Kpoint grid.',
+                'Monkhorst-Pack  ->  Construct an automatic Monkhorst-Pack Kpoint grid.',
+            ] + global_commands()
+            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+            user_input = cli.launch()
+
+            if user_input.startswith('AI'):
+                from masgent.ai_mode import ai_backend
+                ai_backend.main()
+            elif user_input.startswith('New'):
+                start_new_session()
+            elif user_input.startswith('Back'):
+                return
+            elif user_input.startswith('Main'):
+                run_command('0')
+            elif user_input.startswith('Help'):
+                print_help()
+            elif user_input.startswith('Exit'):
+                exit_and_cleanup()
+            elif user_input.startswith('Gamma-centered'):
+                gamma_centered = True
+                break
+            elif user_input.startswith('Monkhorst-Pack'):
+                gamma_centered = False
+                break
+            else:
+                continue
+            
+    except (KeyboardInterrupt, EOFError):
+        exit_and_cleanup()
+
+    try:
+        while True:
+            clear_and_print_entry_message()
+            choices = [
                 'Low     ->  Suitable for preliminary calculations, grid density = 1000 / number of atoms',
                 'Medium  ->  Balanced accuracy and computational cost, grid density = 3000 / number of atoms',
                 'High    ->  High accuracy for production runs, grid density = 5000 / number of atoms',
+                'Custom  ->  Specify custom grid density',
             ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
@@ -1027,6 +1063,33 @@ def command_1_2_3():
             elif user_input.startswith('High'):
                 accuracy_level = 'High'
                 break
+            elif user_input.startswith('Custom'):
+                try:
+                    while True:
+                        custom_kppa_str = color_input('\nEnter custom k-points per atom (kppa) as a positive integer (e.g., 2000): ', 'yellow').strip()
+                        
+                        if not custom_kppa_str:
+                            continue
+
+                        try:
+                            custom_kppa = int(custom_kppa_str)
+                            if custom_kppa <= 0:
+                                color_print(f'\n[Error] K-points per atom must be a positive integer. You entered: {custom_kppa_str}\n', 'red')
+                                continue
+                            break
+
+                        except Exception:
+                            color_print(f'\n[Error] Invalid k-points per atom: {custom_kppa_str}, please enter a positive integer and try again.\n', 'red')
+                            continue
+
+                
+                except (KeyboardInterrupt, EOFError):
+                    color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+                    time.sleep(1)
+                    return
+                
+                accuracy_level = 'Custom'
+                break
             else:
                 continue
     
@@ -1040,7 +1103,7 @@ def command_1_2_3():
         time.sleep(1)
         return
 
-    result = tools.customize_vasp_kpoints_with_accuracy(poscar_path=poscar_path, accuracy_level=accuracy_level)
+    result = tools.customize_vasp_kpoints_with_accuracy(poscar_path=poscar_path, accuracy_level=accuracy_level, gamma_centered=gamma_centered, custom_kppa=custom_kppa if accuracy_level=='Custom' else None)
     color_print(result['message'], 'green')
     time.sleep(3)
 

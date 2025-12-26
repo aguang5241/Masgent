@@ -368,11 +368,21 @@ class CustomizeVaspKpointsWithAccuracy(BaseModel):
     )
 
     accuracy_level: Literal[
-        'Low', 'Medium', 'High'
+        'Low', 'Medium', 'High', 'Custom'
         ] = Field(
             ...,
-            description='Type of accuracy level for KPOINTS generation. Must be one of Low, Medium, or High.'
+            description='Type of accuracy level for KPOINTS generation. Must be one of Low, Medium, High, or Custom.'
         )
+    
+    gamma_centered: bool = Field(
+        True,
+        description='Whether to use gamma-centered k-points. Defaults to True.'
+    )
+
+    custom_kppa: Optional[int] = Field(
+        None,
+        description='Custom k-points per atom (kppa) value. If provided, overrides the accuracy level setting.'
+    )
 
     @model_validator(mode='after')
     def validator(self):
@@ -385,6 +395,11 @@ class CustomizeVaspKpointsWithAccuracy(BaseModel):
             _ = Structure.from_file(self.poscar_path)
         except Exception as e:
             raise ValueError(f'Invalid POSCAR file: {self.poscar_path}')
+        
+        # validate custom_kppa if provided
+        if self.custom_kppa is not None:
+            if self.custom_kppa < 1:
+                raise ValueError('Custom k-points per atom (kppa) must be positive integer.')
 
         return self
 

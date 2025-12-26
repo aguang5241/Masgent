@@ -1,0 +1,63 @@
+ running on   48 total cores
+ distrk:  each k-point on   48 cores,    1 groups
+ distr:  one band on    1 cores,   48 groups
+ vasp.6.2.1 16May21 (build Aug 15 2022 14:47:30) complex                         
+ POSCAR found type information on POSCAR Al
+ POSCAR found :  1 types and       1 ions
+ scaLAPACK will be used
+ -----------------------------------------------------------------------------
+|                                                                             |
+|           W    W    AA    RRRRR   N    N  II  N    N   GGGG   !!!           |
+|           W    W   A  A   R    R  NN   N  II  NN   N  G    G  !!!           |
+|           W    W  A    A  R    R  N N  N  II  N N  N  G       !!!           |
+|           W WW W  AAAAAA  RRRRR   N  N N  II  N  N N  G  GGG   !            |
+|           WW  WW  A    A  R   R   N   NN  II  N   NN  G    G                |
+|           W    W  A    A  R    R  N    N  II  N    N   GGGG   !!!           |
+|                                                                             |
+|     For optimal performance we recommend to set                             |
+|       NCORE = 2 up to number-of-cores-per-socket                            |
+|     NCORE specifies how many cores store one orbital (NPAR=cpu/NCORE).      |
+|     This setting can greatly improve the performance of VASP for DFT.       |
+|     The default, NCORE=1 might be grossly inefficient on modern             |
+|     multi-core architectures or massively parallel machines. Do your        |
+|     own testing! More info at https://www.vasp.at/wiki/index.php/NCORE      |
+|     Unfortunately you need to use the default for GW and RPA                |
+|     calculations (for HF NCORE is supported but not extensively tested      |
+|     yet).                                                                   |
+|                                                                             |
+ -----------------------------------------------------------------------------
+
+ LDA part: xc-table for Pade appr. of Perdew
+ POSCAR found type information on POSCAR Al
+ POSCAR found :  1 types and       1 ions
+ POSCAR, INCAR and KPOINTS ok, starting setup
+ FFT: planning ...
+ WAVECAR not read
+ entering main loop
+       N       E                     dE             d eps       ncg     rms          rms(c)
+DAV:   1    -0.346877498856E+01   -0.34688E+01   -0.10775E+03 12864   0.464E+01
+DAV:   2    -0.368284626513E+01   -0.21407E+00   -0.21345E+00 15888   0.209E+00
+DAV:   3    -0.368286523582E+01   -0.18971E-04   -0.18777E-04 11664   0.231E-02
+DAV:   4    -0.368286523616E+01   -0.33170E-09   -0.21163E-09 19344   0.723E-05
+DAV:   5    -0.368286523577E+01    0.38189E-09   -0.79029E-13 11664   0.891E-09    0.176E+00
+RMM:   6    -0.375449402660E+01   -0.71629E-01   -0.26179E-03 10756   0.839E-02    0.832E-01
+RMM:   7    -0.374609819093E+01    0.83958E-02   -0.10422E-03 11172   0.511E-02    0.674E-01
+RMM:   8    -0.374602517861E+01    0.73012E-04   -0.21531E-04 11114   0.261E-02    0.218E-01
+RMM:   9    -0.374602738740E+01   -0.22088E-05   -0.31082E-05 11603   0.898E-03
+   1 F= -.37460274E+01 E0= -.37460274E+01  d E =0.000000E+00  mag=     0.0016
+ -----------------------------------------------------------------------------
+|                                                                             |
+|           W    W    AA    RRRRR   N    N  II  N    N   GGGG   !!!           |
+|           W    W   A  A   R    R  NN   N  II  NN   N  G    G  !!!           |
+|           W    W  A    A  R    R  N N  N  II  N N  N  G       !!!           |
+|           W WW W  AAAAAA  RRRRR   N  N N  II  N  N N  G  GGG   !            |
+|           WW  WW  A    A  R   R   N   NN  II  N   NN  G    G                |
+|           W    W  A    A  R    R  N    N  II  N    N   GGGG   !!!           |
+|                                                                             |
+|     Tetrahedron method does not include variations of the Fermi             |
+|     occupations, so forces and stress will be inaccurate. We suggest        |
+|     using a different smearing scheme ISMEAR = 1 or 2 for metals in         |
+|     relaxations.                                                            |
+|                                                                             |
+ -----------------------------------------------------------------------------
+

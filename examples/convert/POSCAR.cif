@@ -1,0 +1,35 @@
+data_image0
+_chemical_formula_structural       La2Co2O6
+_chemical_formula_sum              "La2 Co2 O6"
+_cell_length_a       5.441026799686343
+_cell_length_b       5.468355789189654
+_cell_length_c       5.475249487066228
+_cell_angle_alpha    61.05012141581742
+_cell_angle_beta     61.09933598154562
+_cell_angle_gamma    61.18310058383902
+
+_space_group_name_H-M_alt    "P 1"
+_space_group_IT_number       1
+
+loop_
+  _space_group_symop_operation_xyz
+  'x, y, z'
+
+loop_
+  _atom_site_type_symbol
+  _atom_site_label
+  _atom_site_symmetry_multiplicity
+  _atom_site_fract_x
+  _atom_site_fract_y
+  _atom_site_fract_z
+  _atom_site_occupancy
+  La  La1       1.0  0.7482279999999998  0.2496160000000009  0.25188  1.0000
+  La  La2       1.0  0.25177200000000005  0.7503839999999989  0.74812  1.0000
+  Co  Co1       1.0  0.0  0.5  0.5  1.0000
+  Co  Co2       1.0  0.5  0.0  0.0  1.0000
+  O   O1        1.0  0.6833319999999999  0.307764  0.7536609999999999  1.0000
+  O   O2        1.0  0.3166680000000001  0.692236  0.246339  1.0000
+  O   O3        1.0  0.807746000000001  0.758228  0.17897899999999997  1.0000
+  O   O4        1.0  0.192253999999999  0.24177200000000001  0.8210209999999999  1.0000
+  O   O5        1.0  0.262981  0.18087599999999998  0.3060099999999999  1.0000
+  O   O6        1.0  0.7370189999999999  0.819124  0.6939900000000001  1.0000

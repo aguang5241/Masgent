@@ -1,0 +1,243 @@
+
+    <html>
+    <head>
+    <script src='https://3Dmol.org/build/3Dmol.js'></script>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+        }
+
+        #viewer {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .overlay {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        #title { 
+            top: 10px; 
+            left: 10px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        #legend { 
+            top: 10px; 
+            right: 10px; 
+        }
+
+        #instructions { 
+            bottom: 10px; 
+            right: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .color-box {
+            width: 20px;
+            height: 20px;
+            margin-right: 6px;
+            border: 1px solid #444;
+            border-radius: 10px;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .control-btn {
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .control-btn:hover {
+            background: #f0f0f0;
+        }
+    </style>
+    </head>
+
+    <body>
+    <div id='viewer'></div>
+
+    <div id="controls">
+        <button class="control-btn" onclick="rotateX()">Rotate X</button>
+        <button class="control-btn" onclick="rotateY()">Rotate Y</button>
+        <button class="control-btn" onclick="rotateZ()">Rotate Z</button>
+        <button class="control-btn" onclick="resetView()">Reset</button>
+        <button class="control-btn" onclick="save()">Save</button>
+    </div>
+
+    <div id='title' class='overlay'>
+        Masgent Structure Viewer (Powered by 3Dmol.js)
+    </div>
+
+    <div id='legend' class='overlay'>
+        <strong>Elements</strong>
+        <div id='legend-items'></div>
+    </div>
+
+    <div id='instructions' class='overlay'>
+        <strong>Instructions:</strong><br>
+        * Drag to rotate<br>
+        * Scroll to zoom
+    </div>
+
+    <script>
+        let viewer = $3Dmol.createViewer('viewer', { backgroundColor: 'white' });
+        viewer.setProjection('orthographic');
+        viewer.addModel(`# generated using pymatgen
+data_LaCoO3
+_symmetry_space_group_name_H-M   'P 1'
+_cell_length_a   5.44102680
+_cell_length_b   5.46835579
+_cell_length_c   5.47524949
+_cell_angle_alpha   61.05012142
+_cell_angle_beta   61.09933598
+_cell_angle_gamma   61.18310058
+_symmetry_Int_Tables_number   1
+_chemical_formula_structural   LaCoO3
+_chemical_formula_sum   'La2 Co2 O6'
+_cell_volume   118.07297698
+_cell_formula_units_Z   2
+loop_
+ _symmetry_equiv_pos_site_id
+ _symmetry_equiv_pos_as_xyz
+  1  'x, y, z'
+loop_
+ _atom_site_type_symbol
+ _atom_site_label
+ _atom_site_symmetry_multiplicity
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+  La  La0  1  0.74822800  0.24961600  0.25188000  1
+  La  La1  1  0.25177200  0.75038400  0.74812000  1
+  Co  Co2  1  0.00000000  0.50000000  0.50000000  1
+  Co  Co3  1  0.50000000  0.00000000  0.00000000  1
+  O  O4  1  0.68333200  0.30776400  0.75366100  1
+  O  O5  1  0.31666800  0.69223600  0.24633900  1
+  O  O6  1  0.80774600  0.75822800  0.17897900  1
+  O  O7  1  0.19225400  0.24177200  0.82102100  1
+  O  O8  1  0.26298100  0.18087600  0.30601000  1
+  O  O9  1  0.73701900  0.81912400  0.69399000  1
+`, 'cif');
+
+        const atomRadii = {"H": 0.138, "He": 0.366, "Li": 0.471, "Be": 0.336, "B": 0.243, "C": 0.23099999999999998, "N": 0.222, "O": 0.222, "F": 0.216, "Ne": 0.48, "Na": 0.573, "Mg": 0.48, "Al": 0.429, "Si": 0.354, "P": 0.33, "S": 0.312, "Cl": 0.297, "Ar": 0.576, "K": 0.705, "Ca": 0.591, "Sc": 0.49199999999999994, "Ti": 0.441, "V": 0.405, "Cr": 0.387, "Mn": 0.41100000000000003, "Fe": 0.378, "Co": 0.375, "Ni": 0.375, "Cu": 0.384, "Zn": 0.41100000000000003, "Ga": 0.45899999999999996, "Ge": 0.366, "As": 0.363, "Se": 0.312, "Br": 0.34199999999999997, "Kr": 0.594, "Rb": 0.75, "Sr": 0.6449999999999999, "Y": 0.546, "Zr": 0.48, "Nb": 0.441, "Mo": 0.42, "Tc": 0.405, "Ru": 0.402, "Rh": 0.402, "Pd": 0.41100000000000003, "Ag": 0.432, "Cd": 0.45599999999999996, "In": 0.501, "Sn": 0.474, "Sb": 0.423, "Te": 0.41100000000000003, "I": 0.399, "Xe": 0.654, "Cs": 0.813, "Ba": 0.672, "La": 0.564, "Ce": 0.546, "Pr": 0.546, "Nd": 0.546, "Pm": 0.543, "Sm": 0.543, "Eu": 0.618, "Gd": 0.537, "Tb": 0.531, "Dy": 0.531, "Ho": 0.528, "Er": 0.525, "Tm": 0.3, "Yb": 0.582, "Lu": 0.516, "Hf": 0.477, "Ta": 0.441, "W": 0.423, "Re": 0.41100000000000003, "Os": 0.405, "Ir": 0.40800000000000003, "Pt": 0.417, "Au": 0.432, "Hg": 0.46499999999999997, "Tl": 0.513, "Pb": 0.525, "Bi": 0.546, "Po": 0.531, "At": 0.186, "Rn": 0.24, "Fr": 0.3, "Ra": 0.705, "Ac": 0.6089999999999999, "Th": 0.54, "Pa": 0.48899999999999993, "U": 0.46799999999999997, "Np": 0.46799999999999997, "Pu": 0.49199999999999994, "Am": 0.519, "Cm": 0.24, "Bk": 0.24, "Cf": 0.24, "Es": 0.24, "Fm": 0.24, "Md": 0.24, "No": 0.24, "Lr": 0.24, "Rf": 0.24, "Db": 0.24, "Sg": 0.24, "Bh": 0.24, "Hs": 0.24, "Mt": 0.24, "Ds": 0.24, "Rg": 0.24, "Cn": 0.24, "Nh": 0.24, "Fl": 0.24, "Mc": 0.24, "Lv": 0.24, "Ts": 0.24, "Og": 0.24};
+
+        // Apply custom radii
+        Object.entries(atomRadii).forEach(([elem, radius]) => {
+            viewer.setStyle(
+                { elem: elem },
+                { sphere: { scale: radius, colorscheme: 'Jmol' } }
+            );
+        });
+
+        viewer.addUnitCell();
+        viewer.zoomTo();
+        viewer.render();
+
+        const baseView = viewer.getView();
+
+        // View control functions
+        function rotateX() {
+            viewer.rotate(15, 'x');
+            viewer.render();
+        }
+
+        function rotateY() {
+            viewer.rotate(15, 'y');
+            viewer.render();
+        }
+
+        function rotateZ() {
+            viewer.rotate(15, 'z');
+            viewer.render();
+        }
+
+        function resetView() {
+            viewer.setView(baseView);
+            viewer.zoomTo();
+            viewer.render();
+        }
+
+        // Save function
+        function save() {
+            const canvas = viewer.getCanvas();
+
+            // Save original size
+            const originalWidth = canvas.width;
+            const originalHeight = canvas.height;
+
+            // Increase resolution (2x for publication quality)
+            const scale = window.devicePixelRatio || 2;
+            canvas.width = originalWidth * scale;
+            canvas.height = originalHeight * scale;
+
+            viewer.render();
+
+            // Export image
+            const dataURL = canvas.toDataURL("image/png");
+            const link = document.createElement('a');
+            link.href = dataURL;
+            link.download = 'structure.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Restore original size
+            canvas.width = originalWidth;
+            canvas.height = originalHeight;
+            viewer.render();
+        }
+
+        // Build legend from Jmol colors of displayed elements
+        const atoms = viewer.getModel().selectedAtoms();
+        const elements = [...new Set(atoms.map(a => a.elem))].sort();
+
+        const legend = document.getElementById('legend-items');
+        elements.forEach(el => {
+            const color = $3Dmol.elementColors.Jmol[el] || 0xAAAAAA;
+            const hex = '#' + color.toString(16).padStart(6, '0');
+
+            const item = document.createElement('div');
+            item.className = 'legend-item';
+
+            const box = document.createElement('div');
+            box.className = 'color-box';
+            box.style.background = hex;
+
+            const label = document.createElement('span');
+            label.textContent = el;
+
+            item.appendChild(box);
+            item.appendChild(label);
+            legend.appendChild(item);
+        });
+    </script>
+    </body>
+    </html>
+    
