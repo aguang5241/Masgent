@@ -2235,6 +2235,7 @@ def run_simulation_using_mlps(
         ax[3].set_xlabel('Time (ps)')
         ax[0].set_title(f'Masgent MD using {mlps_type}')
         plt.savefig(f'{task_dir}/md_log.png', dpi=330)
+        plt.close()
     
     try:
         schemas.RunSimulationUsingMlps(
@@ -2524,6 +2525,7 @@ def analyze_features_for_machine_learning(
             )
         ax.set_title('Masgent Feature Correlation Matrix')
         plt.savefig(os.path.join(ml_feature_analysis_dir, 'correlation_matrix.png'), dpi=330)
+        plt.close()
 
         return {
             'status': 'success',
