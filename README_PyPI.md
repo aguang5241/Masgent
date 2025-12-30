@@ -1,4 +1,7 @@
 # Masgent
+
+[![DOI](https://img.shields.io/badge/DOI-10.48550/arXiv.2512.23010-blue)](https://doi.org/10.48550/arXiv.2512.23010)
+
 Masgent: Materials Simulation Agent
 
 ```bash
