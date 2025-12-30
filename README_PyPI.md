@@ -16,7 +16,7 @@ Masgent: Materials Simulation Agent
 ║                                                                         ║
 ║  Licensed:        MIT License                                           ║
 ║  Repository:      https://github.com/aguang5241/masgent                 ║
-║  Citation:        Liu, G. et al. (2025), DOI:XX.XXXX/XXXXX              ║
+║  Citation:        Liu, G. et al. (2025), DOI:10.48550/arXiv.2512.23010  ║
 ║  Contact:         gliu4@wpi.edu                                         ║
 ║                                                                         ║
 ╚═════════════════════════════════════════════════════════════════════════╝
@@ -130,14 +130,14 @@ Please open an issue here: [https://github.com/aguang5241/masgent/issues](https:
 ## 📚 Cite Us
 If you use Masgent in your research, please cite the following reference:
   ```
-  @article{
-    title={Masgent: A Materials Simulation Agent},
-    journal={},
-    volume={},
-    pages={},
-    year={},
-    issn={},
-    doi={},
+  @misc{liu2025masgentaiassistedmaterialssimulation,
+    title={Masgent: An AI-assisted Materials Simulation Agent}, 
+    author={Guanghen Liu and Songge Yang and Yu Zhong},
+    year={2025},
+    eprint={2512.23010},
+    archivePrefix={arXiv},
+    primaryClass={physics.comp-ph},
+    url={https://arxiv.org/abs/2512.23010}, 
   }
   ```
 
