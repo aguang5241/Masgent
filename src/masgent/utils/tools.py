@@ -1531,8 +1531,15 @@ def generate_vasp_workflow_of_neb(
 
         initial_atoms = read(initial_poscar_path, format='vasp')
         final_atoms = read(final_poscar_path, format='vasp')
+
+        # Set the averaged cell to both structures
+        initial_cell = initial_atoms.get_cell()
+        final_cell = final_atoms.get_cell()
+        average_cell = (initial_cell + final_cell) / 2
+        initial_atoms.set_cell(average_cell, scale_atoms=True)
+        final_atoms.set_cell(average_cell, scale_atoms=True)
         images = [initial_atoms] + [initial_atoms.copy() for i in range(num_images)] + [final_atoms]
-        neb = NEB(images)
+        neb = NEB(images, remove_rotation_and_translation=True)
         neb.interpolate()
 
         pmg_images = [Structure.from_ase_atoms(img) for img in images]
@@ -2097,9 +2104,10 @@ def analyze_vasp_workflow_of_neb(
         ax.scatter(x, y, color='C2', s=100, edgecolors='white', linewidths=1, zorder=6)
         # Plot the energy barrier
         x_mid = (xs[np.argmax(ys)] + xs[np.argmin(ys)]) / 2
+        y_top = np.max(ys) if np.argmax(ys) > np.argmin(ys) else np.min(ys)
         ax.hlines(np.max(ys), xmin=x_mid-0.2, xmax=x_mid+0.2, colors='C3', linestyles='-', linewidth=1.0)
         ax.hlines(np.min(ys), xmin=x_mid-0.2, xmax=x_mid+0.2, colors='C3', linestyles='-', linewidth=1.0)
-        ax.vlines(x_mid, ymin=0, ymax=np.min(ys), colors='C3', linestyles='-', linewidth=1.0)
+        ax.vlines(x_mid, ymin=0, ymax=y_top, colors='C3', linestyles='-', linewidth=1.0)
         ax.text(x_mid, np.max(ys), f'{energy_barrier:.2f} meV', color='C3', ha='center', va='center', fontdict={'weight': 'bold'}, fontsize='small', bbox=dict(facecolor='white', edgecolor='none', pad=0.5))
         ax.set_xlabel('Reaction Coordinate')
         ax.set_ylabel('Energy (meV)')
