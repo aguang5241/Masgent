@@ -1,4 +1,5 @@
 # Custom Python.gitignore file
+*.DS_Store
 masgent_projects/
 private_memo.md
 test*
