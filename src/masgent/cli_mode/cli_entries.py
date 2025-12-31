@@ -335,7 +335,7 @@ def command_3():
                 '3.1 Dataset Preparation & Visualization',
                 '3.2 Model Design & Hyperparameter Tuning',
                 '3.3 Model Training & Evaluation',
-                '3.4 Pre-trained Models Prediction',
+                '3.4 Pre-trained Model Applications',
             ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
@@ -405,7 +405,7 @@ def command_3_1():
     except (KeyboardInterrupt, EOFError):
         exit_and_cleanup()
 
-@register('3.4', 'Pre-trained Models Prediction')
+@register('3.4', 'Pre-trained Model Applications')
 def command_3_4():
     try:
         while True:

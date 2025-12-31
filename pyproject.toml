@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "masgent"
-version = "1.1.5"
+version = "1.1.8"
 description = "Masgent: Materials Simulation Agent"
 readme = "README_PyPI.md"
 authors = [{name = "Guangchen Liu", email = "gliu4@wpi.edu"}]
@@ -39,13 +39,13 @@ dependencies = [
 [tool.setuptools.package-data]
 "masgent" = [
     "ai_mode/system_prompt.txt", 
-    "utils/ml_db_AlMgSiSc.pkl",
-    "utils/ml_nn_AlMgSiSc.pkl",
-    "utils/ml_nn_AlCoCrFeNi.pkl",
-    "utils/ml_xs_AlMgSiSc.pkl",
-    "utils/ml_xs_AlCoCrFeNi.pkl",
-    "utils/ml_ys_AlMgSiSc.pkl",
-    "utils/ml_ys_AlCoCrFeNi.pkl",
+    "res/ml_db_AlMgSiSc.pkl",
+    "res/ml_nn_AlMgSiSc.pkl",
+    "res/ml_nn_AlCoCrFeNi.pkl",
+    "res/ml_xs_AlMgSiSc.pkl",
+    "res/ml_xs_AlCoCrFeNi.pkl",
+    "res/ml_ys_AlMgSiSc.pkl",
+    "res/ml_ys_AlCoCrFeNi.pkl",
 ]
 
 [project.optional-dependencies]

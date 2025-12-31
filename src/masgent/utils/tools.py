@@ -2840,10 +2840,10 @@ def model_prediction_for_AlMgSiSc(
         import torch
 
         # Pre-trained model and scaler paths
-        model_path = Path(__file__).parent / 'ml_nn_AlMgSiSc.pkl'
-        x_scaler_path = Path(__file__).parent / 'ml_xs_AlMgSiSc.pkl'
-        y_scaler_path = Path(__file__).parent / 'ml_ys_AlMgSiSc.pkl'
-        predict_df_path = Path(__file__).parent / 'ml_db_AlMgSiSc.pkl'
+        model_path = Path(__file__).resolve().parent.parent / 'res' / 'ml_nn_AlMgSiSc.pkl'
+        x_scaler_path = Path(__file__).resolve().parent.parent / 'res' / 'ml_xs_AlMgSiSc.pkl'
+        y_scaler_path = Path(__file__).resolve().parent.parent / 'res' / 'ml_ys_AlMgSiSc.pkl'
+        predict_df_path = Path(__file__).resolve().parent.parent / 'res' / 'ml_db_AlMgSiSc.pkl'
         
         # Load the prediction dataframe
         with open(predict_df_path, 'rb') as f:
@@ -2949,9 +2949,9 @@ def model_prediction_for_AlCoCrFeNi(
         import torch
 
         # Pre-trained model and scaler paths
-        model_path = Path(__file__).parent / 'ml_nn_AlCoCrFeNi.pkl'
-        x_scaler_path = Path(__file__).parent / 'ml_xs_AlCoCrFeNi.pkl'
-        y_scaler_path = Path(__file__).parent / 'ml_ys_AlCoCrFeNi.pkl'
+        model_path = Path(__file__).resolve().parent.parent / 'res' / 'ml_nn_AlCoCrFeNi.pkl'
+        x_scaler_path = Path(__file__).resolve().parent.parent / 'res' / 'ml_xs_AlCoCrFeNi.pkl'
+        y_scaler_path = Path(__file__).resolve().parent.parent / 'res' / 'ml_ys_AlCoCrFeNi.pkl'
         
         # Load the model and scalers
         model = torch.load(model_path, weights_only=False)

@@ -644,6 +644,9 @@ Masgent - Available Commands and Functions:
     - 3.1.3 Data augmentation (if limited data)
   - 3.2 Model Design & Hyperparameter Tuning
   - 3.3 Model Training & Evaluation
+  - 3.4 Pre-trained Model Applications
+    - 3.4.1 Mechanical Properties Prediction in Sc-modified Al-Mg-Si Alloys
+    - 3.4.2 Phase Stability & Elastic Properties Prediction in Al-Co-Cr-Fe-Ni High-Entropy Alloys
 '''
     color_print(content, "green")
 
