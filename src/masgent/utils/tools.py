@@ -1969,7 +1969,7 @@ def analyze_vasp_workflow_of_aimd(
                     # Parse MSD, diffusion coefficient, and conductivity from XDATCAR
                     xdatcar_path = os.path.join(folder_path, 'XDATCAR')
                     traj = read(xdatcar_path, index=':')
-                    indices = [i for i, a in enumerate(traj[0]) if a.symbol == 'Li']
+                    indices = [i for i, a in enumerate(traj[0]) if a.symbol == specie]
                     positions_all = np.array([traj[i].get_positions() for i in range(len(traj))])
                     cell = traj[0].cell.array
                     unwrapped = positions_all.copy()
