@@ -1,0 +1,16 @@
+Study statistics:
+  Number of finished trials: 50
+  Number of pruned trials: 19
+  Number of complete trials: 31
+Best trial:
+  Number: 24
+  Value: 0.5519035637378693
+  Params:
+    n_layers: 2
+    n_units_l0: 192
+    dropout_l0: 0.4185475530936699
+    n_units_l1: 64
+    dropout_l1: 0.09260462378747512
+    optimizer: RMSprop
+    lr: 0.003451929477596119
+    weight_decay: 3.9901676649416744e-05

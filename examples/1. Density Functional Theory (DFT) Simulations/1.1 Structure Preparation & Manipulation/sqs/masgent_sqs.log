@@ -1,0 +1,55 @@
+icet.orbit_list: INFO  Done getting matrix_of_equivalent_positions.
+icet.orbit_list: INFO  Done getting neighbor lists.
+icet.orbit_list: INFO  Transformation of matrix of equivalent positions to lattice neighbor format completed.
+icet.orbit_list: INFO  Finished construction of orbit list.
+icet.target_cluster_vector_annealing: INFO  Initializing target cluster vector annealing with 288 supercells
+icet.target_cluster_vector_annealing: INFO  MC step 0/50000 (0 accepted trials, temperature 5.000), best score: 57.000
+icet.target_cluster_vector_annealing: INFO  MC step 1000/50000 (196 accepted trials, temperature 1.808), best score: 15.432
+icet.target_cluster_vector_annealing: INFO  MC step 2000/50000 (287 accepted trials, temperature 1.488), best score: 15.432
+icet.target_cluster_vector_annealing: INFO  MC step 3000/50000 (303 accepted trials, temperature 1.301), best score: 13.807
+icet.target_cluster_vector_annealing: INFO  MC step 4000/50000 (325 accepted trials, temperature 1.168), best score: 13.807
+icet.target_cluster_vector_annealing: INFO  MC step 5000/50000 (335 accepted trials, temperature 1.065), best score: 13.557
+icet.target_cluster_vector_annealing: INFO  MC step 6000/50000 (336 accepted trials, temperature 0.981), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 7000/50000 (336 accepted trials, temperature 0.909), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 8000/50000 (337 accepted trials, temperature 0.848), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 9000/50000 (339 accepted trials, temperature 0.793), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 10000/50000 (339 accepted trials, temperature 0.745), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 11000/50000 (339 accepted trials, temperature 0.701), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 12000/50000 (339 accepted trials, temperature 0.660), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 13000/50000 (341 accepted trials, temperature 0.623), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 14000/50000 (341 accepted trials, temperature 0.589), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 15000/50000 (341 accepted trials, temperature 0.557), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 16000/50000 (341 accepted trials, temperature 0.527), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 17000/50000 (342 accepted trials, temperature 0.499), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 18000/50000 (345 accepted trials, temperature 0.473), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 19000/50000 (346 accepted trials, temperature 0.448), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 20000/50000 (346 accepted trials, temperature 0.424), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 21000/50000 (347 accepted trials, temperature 0.402), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 22000/50000 (348 accepted trials, temperature 0.380), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 23000/50000 (348 accepted trials, temperature 0.360), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 24000/50000 (348 accepted trials, temperature 0.340), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 25000/50000 (349 accepted trials, temperature 0.321), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 26000/50000 (349 accepted trials, temperature 0.303), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 27000/50000 (349 accepted trials, temperature 0.286), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 28000/50000 (349 accepted trials, temperature 0.269), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 29000/50000 (349 accepted trials, temperature 0.253), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 30000/50000 (349 accepted trials, temperature 0.237), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 31000/50000 (349 accepted trials, temperature 0.222), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 32000/50000 (349 accepted trials, temperature 0.207), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 33000/50000 (349 accepted trials, temperature 0.193), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 34000/50000 (349 accepted trials, temperature 0.179), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 35000/50000 (349 accepted trials, temperature 0.166), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 36000/50000 (349 accepted trials, temperature 0.153), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 37000/50000 (349 accepted trials, temperature 0.140), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 38000/50000 (349 accepted trials, temperature 0.128), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 39000/50000 (349 accepted trials, temperature 0.116), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 40000/50000 (349 accepted trials, temperature 0.104), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 41000/50000 (350 accepted trials, temperature 0.093), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 42000/50000 (350 accepted trials, temperature 0.082), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 43000/50000 (350 accepted trials, temperature 0.071), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 44000/50000 (350 accepted trials, temperature 0.060), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 45000/50000 (350 accepted trials, temperature 0.050), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 46000/50000 (350 accepted trials, temperature 0.040), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 47000/50000 (350 accepted trials, temperature 0.030), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 48000/50000 (350 accepted trials, temperature 0.020), best score: 10.182
+icet.target_cluster_vector_annealing: INFO  MC step 49000/50000 (350 accepted trials, temperature 0.010), best score: 10.182

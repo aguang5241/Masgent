@@ -1,0 +1,7 @@
+Model Performance on Training Set:
+RMSE: 11.5508
+R2: 0.8159
+
+Model Performance on Validation Set:
+RMSE: 42.2095
+R2: 0.2134
