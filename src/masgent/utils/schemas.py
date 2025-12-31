@@ -1415,3 +1415,58 @@ class TrainModelForMachineLearning(BaseModel):
             raise ValueError('Patience must be at least 1.')
 
         return self
+    
+class ModelPredictionForAlMgSiSc(BaseModel):
+    '''
+    Schema for performing model prediction of mechanical properties for Al-Mg-Si-Sc alloy using pre-trained machine learning model based on given Mg and Si contents
+    '''
+    Mg: float = Field(
+        ...,
+        description='Magnesium (Mg) content in weight percent (wt.%).'
+    )
+
+    Si: float = Field(
+        ...,
+        description='Silicon (Si) content in weight percent (wt.%).'
+    )
+
+    @model_validator(mode='after')
+    def validator(self):
+        # Mg: 0-0.7, Si: 4-13, step 0.0001 for both
+        if not (0.0 <= self.Mg <= 0.7):
+            raise ValueError('Magnesium (Mg) content must be between 0 and 0.7 wt.%')
+        if not (4.0 <= self.Si <= 13.0):
+            raise ValueError('Silicon (Si) content must be between 4.0 and 13.0 wt.%')
+        return self
+    
+class ModelPredictionForAlCoCrFeNi(BaseModel):
+    '''
+    Schema for performing model predictions of phase stability & elastic properties for Al-Co-Cr-Fe-Ni high-entropy alloy using pre-trained machine learning model based on given Al, Co, Cr, and Fe contents
+    '''
+    Al: float = Field(
+        ...,
+        description='Aluminum (Al) content in atomic percent (at.%).'
+    )
+
+    Co: float = Field(
+        ...,
+        description='Cobalt (Co) content in atomic percent (at.%).'
+    )
+
+    Cr: float = Field(
+        ...,
+        description='Chromium (Cr) content in atomic percent (at.%).'
+    )
+
+    Fe: float = Field(
+        ...,
+        description='Iron (Fe) content in atomic percent (at.%).'
+    )
+
+    @model_validator(mode='after')
+    def validator(self):
+        # ensure the sum of all elements not exceed 100 at.%
+        total = self.Al + self.Co + self.Cr + self.Fe
+        if total > 100.0:
+            raise ValueError('The sum of Al, Co, Cr, Fe, and Ni contents must not exceed 100 at.%')
+        return self

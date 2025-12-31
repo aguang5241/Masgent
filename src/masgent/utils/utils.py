@@ -544,14 +544,15 @@ def print_banner():
 ║  ██║ ╚═╝ ██║ ██║  ██║ ███████║ ╚██████╔╝ ███████╗ ██║ ╚████║    ██║     ║
 ║  ╚═╝     ╚═╝ ╚═╝  ╚═╝ ╚══════╝  ╚═════╝  ╚══════╝ ╚═╝  ╚═══╝    ╚═╝     ║
 ║                                                                         ║
-║                                   MASGENT: Materials Simulation Agent   ║
+║                                   Masgent: Materials Simulation Agent   ║
 ║                                      Copyright (c) 2025 Guangchen Liu   ║
 ║                                                                         ║
-║  Version:         {pkg_version:<52}  ║
-║  Licensed:        MIT License                                           ║
-║  Repository:      https://github.com/aguang5241/masgent                 ║
-║  Citation:        Liu, G. et al. (2025), DOI:10.48550/arXiv.2512.23010  ║
-║  Contact:         gliu4@wpi.edu                                         ║
+║  Version:       {pkg_version:<54}  ║
+║  License:       MIT License                                             ║
+║  Citation:      Liu, G. et al. (2025). arXiv: 2512.23010                ║
+║  DOI:           https://doi.org/10.48550/arXiv.2512.23010               ║
+║  Repository:    https://github.com/aguang5241/Masgent                   ║
+║  Contact:       gliu4@wpi.edu                                           ║
 ║                                                                         ║
 ╚═════════════════════════════════════════════════════════════════════════╝
     '''

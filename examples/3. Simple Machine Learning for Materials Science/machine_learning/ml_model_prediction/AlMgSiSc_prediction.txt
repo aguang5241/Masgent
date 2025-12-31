@@ -1,0 +1,17 @@
+# Mechanical properties prediction for Al-Mg-Si-Sc alloy using pre-trained machine learning model by Masgent
+
+Input Compositions:
+Al: 93.82 wt.%
+Mg: 0.50 wt.%
+Si: 5.00 wt.%
+Sc: 0.34 wt.%
+
+CALPHAD Phase Fractions:
+PH_Al: 68.75 %
+PH_Eut: 30.36 %
+PH_AlSc2Si2: 0.50 %
+
+Predicted Mechanical Properties:
+Ultimate Tensile Strength (UTS): 214.22 MPa
+Yield Strength (YS): 124.99 MPa
+Elongation (EL): 8.60 %

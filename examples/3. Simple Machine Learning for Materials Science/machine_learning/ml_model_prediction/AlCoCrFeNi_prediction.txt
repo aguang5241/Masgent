@@ -1,0 +1,52 @@
+# Phase stability & elastic properties prediction for Al-Co-Cr-Fe-Ni high-entropy alloy using pre-trained machine learning model by Masgent
+
+Input Compositions:
+Al: 20.00 at.%
+Co: 20.00 at.%
+Cr: 20.00 at.%
+Fe: 20.00 at.%
+Ni: 20.00 at.%
+
+------------------------------------------------------------
+
+Predicted Phase Stability & Elastic Properties of FCC:
+
+Formation Energy: -5.78 kJ/mol
+
+Elastic Constants (GPa):
+223.58	146.26	146.26	0.00	0.00	0.00
+146.26	223.58	146.26	0.00	0.00	0.00
+146.26	146.26	223.58	0.00	0.00	0.00
+0.00	0.00	0.00	131.05	0.00	0.00
+0.00	0.00	0.00	0.00	131.05	0.00
+0.00	0.00	0.00	0.00	0.00	131.05
+
+Bulk Modulus (Voigt): 172.03 GPa
+Bulk Modulus (Reuss): 172.03 GPa
+Bulk Modulus (Hill): 172.03 GPa
+
+Shear Modulus (Voigt): 94.10 GPa
+Shear Modulus (Reuss): 67.00 GPa
+Shear Modulus (Hill): 80.55 GPa
+
+------------------------------------------------------------
+
+Predicted Phase Stability & Elastic Properties of BCC:
+
+Formation Energy: -3.50 kJ/mol
+
+Elastic Constants (GPa):
+216.39	164.14	164.14	0.00	0.00	0.00
+164.14	216.39	164.14	0.00	0.00	0.00
+164.14	164.14	216.39	0.00	0.00	0.00
+0.00	0.00	0.00	137.17	0.00	0.00
+0.00	0.00	0.00	0.00	137.17	0.00
+0.00	0.00	0.00	0.00	0.00	137.17
+
+Bulk Modulus (Voigt): 181.56 GPa
+Bulk Modulus (Reuss): 181.56 GPa
+Bulk Modulus (Hill): 181.56 GPa
+
+Shear Modulus (Voigt): 92.75 GPa
+Shear Modulus (Reuss): 50.80 GPa
+Shear Modulus (Hill): 71.77 GPa

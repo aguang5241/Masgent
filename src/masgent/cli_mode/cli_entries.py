@@ -335,6 +335,7 @@ def command_3():
                 '3.1 Dataset Preparation & Visualization',
                 '3.2 Model Design & Hyperparameter Tuning',
                 '3.3 Model Training & Evaluation',
+                '3.4 Pre-trained Models Prediction',
             ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
@@ -358,6 +359,8 @@ def command_3():
                 run_command('3.2')
             elif user_input.startswith('3.3'):
                 run_command('3.3')
+            elif user_input.startswith('3.4'):
+                run_command('3.4')
             else:
                 continue
 
@@ -396,6 +399,41 @@ def command_3_1():
                 run_command('3.1.2')
             elif user_input.startswith('3.1.3'):
                 run_command('3.1.3')
+            else:
+                continue
+
+    except (KeyboardInterrupt, EOFError):
+        exit_and_cleanup()
+
+@register('3.4', 'Pre-trained Models Prediction')
+def command_3_4():
+    try:
+        while True:
+            clear_and_print_entry_message()
+            choices = [
+                '3.4.1 Mechanical Properties Prediction in Sc-modified Al-Mg-Si Alloys',
+                '3.4.2 Phase Stability & Elastic Properties Prediction in Al-Co-Cr-Fe-Ni High-Entropy Alloys',
+            ] + global_commands()
+            cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+            user_input = cli.launch()
+
+            if user_input.startswith('AI'):
+                from masgent.ai_mode import ai_backend
+                ai_backend.main()
+            elif user_input.startswith('New'):
+                start_new_session()
+            elif user_input.startswith('Back'):
+                return
+            elif user_input.startswith('Main'):
+                run_command('0')
+            elif user_input.startswith('Help'):
+                print_help()
+            elif user_input.startswith('Exit'):
+                exit_and_cleanup()
+            elif user_input.startswith('3.4.1'):
+                run_command('3.4.1')
+            elif user_input.startswith('3.4.2'):
+                run_command('3.4.2')
             else:
                 continue
 

@@ -17,10 +17,11 @@ Masgent: Materials Simulation Agent
 ║                                   MASGENT: Materials Simulation Agent   ║
 ║                                      Copyright (c) 2025 Guangchen Liu   ║
 ║                                                                         ║
-║  Licensed:        MIT License                                           ║
-║  Repository:      https://github.com/aguang5241/masgent                 ║
-║  Citation:        Liu, G. et al. (2025), DOI:10.48550/arXiv.2512.23010  ║
-║  Contact:         gliu4@wpi.edu                                         ║
+║  License:       MIT License                                             ║
+║  Citation:      Liu, G. et al. (2025). arXiv: 2512.23010                ║
+║  DOI:           https://doi.org/10.48550/arXiv.2512.23010               ║
+║  Repository:    https://github.com/aguang5241/Masgent                   ║
+║  Contact:       gliu4@wpi.edu                                           ║
 ║                                                                         ║
 ╚═════════════════════════════════════════════════════════════════════════╝
 ```
@@ -108,6 +109,9 @@ Masgent removes that barrier by providing a unified, AI-driven interface for str
     - 3.1.3 Data augmentation (if limited data)
   - 3.2 Model Design & Hyperparameter Tuning
   - 3.3 Model Training & Evaluation
+  - 3.4 Pre-trained Models Prediction
+    - 3.4.1 Mechanical Properties Prediction in Sc-modified Al-Mg-Si Alloys
+    - 3.4.2 Phase Stability & Elastic Properties Prediction in Al-Co-Cr-Fe-Ni High-Entropy Alloys
 
 ## 🔧 Installation
 1. Requirements:

@@ -2205,3 +2205,53 @@ def command_3_3():
         )
     color_print(result['message'], 'green')
     time.sleep(3)
+
+@register('3.4.1', 'Mechanical Properties Prediction in Sc-modified Al-Mg-Si Alloys')
+def command_3_4_1():
+    try:
+        while True:
+            Mg_Si_str = color_input('\nEnter the Mg (0.00-0.70 wt.%) and Si (4.00-13.00 wt.%) content (e.g., 0.50 5.00): ', 'yellow').strip()
+
+            if not Mg_Si_str:
+                continue
+
+            try:
+                Mg, Si = [float(x) for x in Mg_Si_str.split()]
+                schemas.ModelPredictionForAlMgSiSc(Mg=Mg, Si=Si)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid Mg and Si content: {Mg_Si_str}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
+        return
+    
+    result = tools.model_prediction_for_AlMgSiSc(Mg=Mg, Si=Si)
+    color_print(result['message'], 'green')
+    time.sleep(3)
+
+@register('3.4.2', 'Phase Stability & Elastic Properties Prediction in Al-Co-Cr-Fe-Ni High-Entropy Alloys')
+def command_3_4_2():
+    try:
+        while True:
+            elements_str = color_input('\nEnter the atomic percentages of Al, Co, Cr, and Fe (e.g., 20.0 20.0 20.0 20.0): ', 'yellow').strip()
+
+            if not elements_str:
+                continue
+
+            try:
+                Al, Co, Cr, Fe = [float(x) for x in elements_str.split()]
+                schemas.ModelPredictionForAlCoCrFeNi(Al=Al, Co=Co, Cr=Cr, Fe=Fe)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid atomic percentages: {elements_str}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
+        return
+    
+    result = tools.model_prediction_for_AlCoCrFeNi(Al=Al, Co=Co, Cr=Cr, Fe=Fe)
+    color_print(result['message'], 'green')
+    time.sleep(3)

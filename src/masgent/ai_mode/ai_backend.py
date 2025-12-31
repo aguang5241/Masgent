@@ -258,6 +258,8 @@ def main():
             tools.augment_data_for_machine_learning,
             tools.design_model_for_machine_learning,
             tools.train_model_for_machine_learning,
+            tools.model_prediction_for_AlMgSiSc,
+            tools.model_prediction_for_AlCoCrFeNi,
         ],
         history_processors=[keep_recent_messages],
         )
