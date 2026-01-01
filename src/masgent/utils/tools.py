@@ -2027,7 +2027,7 @@ def analyze_vasp_workflow_of_aimd(
         slope, intercept = np.polyfit(inv_T, logD, 1)
         ax.plot(inv_T, slope * inv_T + intercept, '-', color='C3', label='Fit', linewidth=1.0)
         ax.set_xlabel('1 / T $(K^{-1})$')
-        ax.set_ylabel('logD $(cm^2/s)$')
+        ax.set_ylabel('$log_{10}D$ $(cm^2/s)$')
         ax.set_title('Masgent AIMD Arrhenius Plot of Diffusion Coefficient')
         ax.legend(frameon=True, loc='upper right')
         plt.savefig(f'{runs_dir}/aimd_arrhenius_plot.png', dpi=330)
@@ -2106,10 +2106,9 @@ def analyze_vasp_workflow_of_neb(
         ax.scatter(x, y, color='C2', s=150, edgecolors='white', linewidths=1, zorder=6)
         # Plot the energy barrier
         x_mid = (xs[np.argmax(ys)] + xs[np.argmin(ys)]) / 2
-        y_top = np.max(ys) if np.argmax(ys) > np.argmin(ys) else np.min(ys)
         ax.hlines(np.max(ys), xmin=x_mid-0.2, xmax=x_mid+0.2, colors='C3', linestyles='-', linewidth=1.0)
         ax.hlines(np.min(ys), xmin=x_mid-0.2, xmax=x_mid+0.2, colors='C3', linestyles='-', linewidth=1.0)
-        ax.vlines(x_mid, ymin=0, ymax=y_top, colors='C3', linestyles='-', linewidth=1.0)
+        ax.vlines(x_mid, ymin=np.min(ys), ymax=np.max(ys), colors='C3', linestyles='-', linewidth=1.0)
         ax.text(x_mid, np.max(ys), f'{energy_barrier:.2f} meV', color='C3', ha='center', va='center', fontdict={'weight': 'bold'}, fontsize='small', bbox=dict(facecolor='white', edgecolor='none', pad=0.5))
         ax.set_xlabel('Reaction Coordinate')
         ax.set_ylabel('Energy (meV)')
