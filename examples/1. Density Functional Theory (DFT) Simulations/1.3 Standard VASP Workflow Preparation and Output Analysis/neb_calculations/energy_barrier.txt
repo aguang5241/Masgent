@@ -1,0 +1,3 @@
+# Masgent NEB Analysis
+
+Energy Barrier: 1143.37411781 meV
