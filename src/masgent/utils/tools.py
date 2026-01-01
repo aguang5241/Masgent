@@ -2081,13 +2081,13 @@ def analyze_vasp_workflow_of_neb(
         scale = 1 / neb.r[-1]
         xs = np.arange(0, np.max(neb.r), 0.01) * scale
         ys = neb.spline(xs / scale) * 1000
-        data = pd.DataFrame({'Reaction Coordinate': xs, 'Energy (meV)': ys})
+        data = pd.DataFrame({'Normalized Reaction Coordinate': xs, 'Energy (meV)': ys})
         data.to_csv(f'{runs_dir}/neb_data_spline.csv', index=False, float_format='%.8f')
 
         x = neb.r * scale
         relative_energies = neb.energies - neb.energies[0]
         y = relative_energies * 1000
-        data_points = pd.DataFrame({'Reaction Coordinate': x, 'Relative Energy (meV)': y})
+        data_points = pd.DataFrame({'Normalized Reaction Coordinate': x, 'Relative Energy (meV)': y})
         data_points.to_csv(f'{runs_dir}/neb_data_points.csv', index=False, float_format='%.8f')
 
         energy_barrier = np.max(ys) - np.min(ys)
@@ -2110,7 +2110,7 @@ def analyze_vasp_workflow_of_neb(
         ax.hlines(np.min(ys), xmin=x_mid-0.2, xmax=x_mid+0.2, colors='C3', linestyles='-', linewidth=1.0)
         ax.vlines(x_mid, ymin=np.min(ys), ymax=np.max(ys), colors='C3', linestyles='-', linewidth=1.0)
         ax.text(x_mid, np.max(ys), f'{energy_barrier:.2f} meV', color='C3', ha='center', va='center', fontdict={'weight': 'bold'}, fontsize='small', bbox=dict(facecolor='white', edgecolor='none', pad=0.5))
-        ax.set_xlabel('Reaction Coordinate')
+        ax.set_xlabel('Normalized Reaction Coordinate')
         ax.set_ylabel('Energy (meV)')
         ax.set_title('Masgent NEB Analysis')
         plt.savefig(f'{runs_dir}/neb_energy_profile.png', dpi=330)
