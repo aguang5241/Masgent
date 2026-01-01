@@ -1,0 +1,3 @@
+# Masgent AIMD Analysis
+
+Activation Energy: 273.76 meV

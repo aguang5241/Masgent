@@ -2005,7 +2005,7 @@ def analyze_vasp_workflow_of_aimd(
                     ax.set_xlabel('Time (ps)')
                     ax.set_ylabel('Mean Squared Displacement (Å²)')
                     ax.set_title(f'Masgent AIMD Mean Squared Displacement at {temperature} K')
-                    ax.legend(frameon=True, loc='upper right')
+                    ax.legend(frameon=True, loc='upper left')
                     plt.savefig(f'{folder_path}/aimd_msd.png', dpi=330)
                     plt.close()
                     
@@ -2017,21 +2017,35 @@ def analyze_vasp_workflow_of_aimd(
         D_df = pd.DataFrame(D_data, columns=['Temperature (K)', 'Diffusion Coefficient (cm²/s)']).sort_values(by='Temperature (K)')
         D_df.to_csv(f'{runs_dir}/aimd_diffusion_coefficients.csv', index=False, float_format='%.6e')
 
+        # Fit Arrhenius plot
+        D_df['Diffusion Coefficient (cm²/s)'] = D_df['Diffusion Coefficient (cm²/s)'].apply(lambda x: x if x > 0 else 1e-20)
+        logD = np.log10(D_df['Diffusion Coefficient (cm²/s)'])
+        inv_T = 1000 / D_df['Temperature (K)']
+        slope, intercept = np.polyfit(inv_T, logD, 1)
+        
+        # Calculate activation energy from slope
+        from ase.units import J, mol
+        R = 8.31446261815324  # J/(mol·K)
+        activation_energy = -slope * R * np.log(10) * 1000 * 1000 * (J / mol)  # in meV
+        with open(f'{runs_dir}/aimd_activation_energy.txt', 'w') as f:
+            f.write(f'# Masgent AIMD Analysis\n\n')
+            f.write(f'Activation Energy: {activation_energy:.2f} meV\n')
+        
         # Plot Arrhenius plot
         fig = plt.figure(figsize=(8, 6), constrained_layout=True)
         ax = plt.subplot()
-        D_df['Diffusion Coefficient (cm²/s)'] = D_df['Diffusion Coefficient (cm²/s)'].apply(lambda x: x if x > 0 else 1e-20)
-        logD = np.log10(D_df['Diffusion Coefficient (cm²/s)'])
-        inv_T = 1 / D_df['Temperature (K)']
-        ax.plot(inv_T, logD, 'o', color='C0', label='Data')
-        slope, intercept = np.polyfit(inv_T, logD, 1)
-        ax.plot(inv_T, slope * inv_T + intercept, '-', color='C3', label='Fit', linewidth=1.0)
-        ax.set_xlabel('1 / T $(K^{-1})$')
+        x_fit = np.linspace(min(inv_T), max(inv_T), 100)
+        y_fit = slope * x_fit + intercept
+        ax.scatter(inv_T, logD, color='C2', s=150, edgecolors='white', linewidths=1, label='Data', zorder=5)
+        ax.plot(x_fit, y_fit, color='C0', linestyle='--', linewidth=3.0, label='Fit')
+        ax.text(0.05, 0.1, f'Activation Energy: {activation_energy:.2f} meV', color='C3', transform=ax.transAxes, fontsize='small', verticalalignment='top', fontdict={'weight': 'bold'}, bbox=dict(facecolor='white', edgecolor='none', pad=0.5))
+        ax.set_xlabel('1000 / T $(K^{-1})$')
         ax.set_ylabel('$log_{10}D$ $(cm^2/s)$')
         ax.set_title('Masgent AIMD Arrhenius Plot of Diffusion Coefficient')
         ax.legend(frameon=True, loc='upper right')
         plt.savefig(f'{runs_dir}/aimd_arrhenius_plot.png', dpi=330)
         plt.close()
+
 
         return {
             'status': 'success',
