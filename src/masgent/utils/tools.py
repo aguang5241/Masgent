@@ -2036,8 +2036,8 @@ def analyze_vasp_workflow_of_aimd(
         ax = plt.subplot()
         x_fit = np.linspace(min(inv_T), max(inv_T), 100)
         y_fit = slope * x_fit + intercept
-        ax.scatter(inv_T, logD, color='C2', s=150, edgecolors='white', linewidths=1, label='Data', zorder=5)
-        ax.plot(x_fit, y_fit, color='C0', linestyle='--', linewidth=3.0, label='Fit')
+        ax.scatter(inv_T, logD, color='C2', s=150, edgecolors='white', linewidths=1, label='Calculated', zorder=5)
+        ax.plot(x_fit, y_fit, color='C0', linestyle='--', linewidth=3.0, label='Fitted')
         ax.text(0.05, 0.1, f'Activation Energy: {activation_energy:.2f} meV', color='C3', transform=ax.transAxes, fontsize='small', verticalalignment='top', fontdict={'weight': 'bold'}, bbox=dict(facecolor='white', edgecolor='none', pad=0.5))
         ax.set_xlabel('1000 / T $(K^{-1})$')
         ax.set_ylabel('$log_{10}D$ $(cm^2/s)$')
