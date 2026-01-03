@@ -2,6 +2,7 @@
 
 import os, datetime
 import asyncio
+from pathlib import Path
 from dotenv import load_dotenv
 from colorama import Fore, Style
 from yaspin import yaspin
@@ -57,8 +58,10 @@ def print_entry_message():
 Welcome to Masgent AI — Your Materials Simulations Agent.
 ---------------------------------------------------------
 Current Session Runs Directory: {os.environ["MASGENT_SESSION_RUNS_DIR"]}
+Started at: {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+OpenAI Model: gpt-5-nano
 
-Ask Masgent AI for help with any simulation tasks.
+Note: Initial response time may be up to one minute during cold start.
 '''
     msg_2 = '''
 Try asking:
@@ -166,6 +169,25 @@ async def chat_stream(agent, user_input: str, history: list):
         all_msgs = list(result.all_messages())
 
         return all_msgs
+    
+async def chat(agent, user_input: str, history: list):
+    print('')
+    with yaspin(Spinners.dots, text='Thinking...', color='cyan') as sp:
+        result = await agent.run(
+            user_prompt=user_input,
+            message_history=history
+        )
+        sp.stop()
+
+    text = result.output
+
+    color_print(text, 'green')
+
+    # Save AI response to conversation history
+    msg_path = os.path.join(os.environ['MASGENT_SESSION_RUNS_DIR'], 'conversation_history.txt')
+    save_msg(text, 'Masgent AI', filename=msg_path)
+
+    return list(result.all_messages())
 
 async def ai_mode(agent):
     history = []
@@ -193,8 +215,10 @@ async def ai_mode(agent):
                 try:
                     # Save user message to conversation history
                     save_msg(user_input, 'User', filename=msg_path)
-                    # Start chat stream
-                    history = await chat_stream(agent, user_input, history)
+                    # # Start chat stream
+                    # history = await chat_stream(agent, user_input, history)
+                    # Start regular chat
+                    history = await chat(agent, user_input, history)
                     # color_print(f'[Debug] Message history updated. Total messages: {len(history)}.\n', 'green')
                 except Exception as e:
                     color_print(f'[Error]: {e}', 'red')
@@ -206,17 +230,21 @@ def main():
     os.system('cls' if os.name == 'nt' else 'clear')
     print_entry_message()
 
-    # Ensure OpenAI API key exists and validate it only once per process
-    load_dotenv(dotenv_path='.env')
+    # # Ensure OpenAI API key exists and validate it only once per process
+    # load_dotenv(dotenv_path='.env')
 
-    global _openai_key_checked
-    if not _openai_key_checked:
-        if 'OPENAI_API_KEY' not in os.environ:
-            ask_for_openai_api_key()
-        else:
-            # color_print('[Info] OpenAI API key found in environment.\n', 'green')
-            validate_openai_api_key(os.environ['OPENAI_API_KEY'])
-        _openai_key_checked = True
+    # global _openai_key_checked
+    # if not _openai_key_checked:
+    #     if 'OPENAI_API_KEY' not in os.environ:
+    #         ask_for_openai_api_key()
+    #     else:
+    #         # color_print('[Info] OpenAI API key found in environment.\n', 'green')
+    #         validate_openai_api_key(os.environ['OPENAI_API_KEY'])
+    #     _openai_key_checked = True
+
+    # Load environment variables from Render
+    env_path = Path(__file__).resolve().parent / 'render_env'
+    load_dotenv(dotenv_path=env_path)
 
     model = OpenAIChatModel(model_name='gpt-5-nano')
 

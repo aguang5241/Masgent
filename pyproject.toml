@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "masgent"
-version = "1.1.11"
+version = "1.1.12"
 description = "Masgent: Materials Simulation Agent"
 readme = "README_PyPI.md"
 authors = [{name = "Guangchen Liu", email = "gliu4@wpi.edu"}]
@@ -39,6 +39,7 @@ dependencies = [
 [tool.setuptools.package-data]
 "masgent" = [
     "ai_mode/system_prompt.txt", 
+    "ai_mode/render_env",
     "res/ml_db_AlMgSiSc.pkl",
     "res/ml_nn_AlMgSiSc.pkl",
     "res/ml_nn_AlCoCrFeNi.pkl",
