@@ -242,7 +242,7 @@ def main():
                 clear_and_print_banner_and_entry_message()
                 choices = [
                     'Masgent AI  ->  No API key needed, response time may be longer during cold start',
-                    'OpenAI      ->  GPT-5 nano (requires OpenAI API key)',
+                    'OpenAI      ->  GPT-5 Nano (requires OpenAI API key)',
                     'Anthropic   ->  Claude Sonnet 4.5 (requires Anthropic API key)',
                     'Google      ->  Gemini 2.5 Pro (requires Google API key)',
                     'xAI         ->  Grok 4.1 Fast (requires Grok API key)',
