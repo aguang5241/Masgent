@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 from colorama import Fore, Style
 from yaspin import yaspin
 from yaspin.spinners import Spinners
+from bullet import Bullet, colors
 
-from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai import Agent
 from pydantic_ai.messages import (
     ModelMessage,
@@ -21,6 +21,7 @@ from pydantic_ai.messages import (
 
 from masgent.utils import tools
 from masgent.utils.utils import (
+    ask_for_api_key,
     ask_for_openai_api_key,
     validate_openai_api_key,
     load_system_prompts, 
@@ -28,10 +29,12 @@ from masgent.utils.utils import (
     color_input,
     start_new_session,
     exit_and_cleanup,
+    clear_and_print_banner_and_entry_message,
     )
 
 # Track whether OpenAI key has been checked during this process
 _openai_key_checked = False
+_provider = None
 
 def print_help():
     msg = '''
@@ -59,11 +62,14 @@ Welcome to Masgent AI — Your Materials Simulations Agent.
 ---------------------------------------------------------
 Current Session Runs Directory: {os.environ["MASGENT_SESSION_RUNS_DIR"]}
 Started at: {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-OpenAI Model: gpt-5-nano
-
-Note: Initial response time may be up to one minute during cold start.
 '''
-    msg_2 = '''
+    
+    if _provider == 'Masgent AI':
+        msg_2 = f'Provider: {_provider}\nNote: Initial response time may be up to one minute during cold start.'
+    else:
+        msg_2 = f'Provider: {_provider}'
+    
+    msg_3 = '''
 Try asking:
   • "Generate a POSCAR file for NaCl."
   • "Prepare full VASP input files for LaCoO3."
@@ -71,7 +77,8 @@ Try asking:
   • ...
 '''
     color_print(msg_1, 'white')
-    color_print(msg_2, 'green')
+    color_print(msg_2, 'white')
+    color_print(msg_3, 'green')
 
 def save_msg(msg, role, filename):
     '''
@@ -215,10 +222,11 @@ async def ai_mode(agent):
                 try:
                     # Save user message to conversation history
                     save_msg(user_input, 'User', filename=msg_path)
-                    # # Start chat stream
-                    # history = await chat_stream(agent, user_input, history)
-                    # Start regular chat
-                    history = await chat(agent, user_input, history)
+                    # Start regular chat or chat stream based on provider
+                    if _provider == 'Masgent AI':
+                        history = await chat(agent, user_input, history)
+                    else:
+                        history = await chat_stream(agent, user_input, history)
                     # color_print(f'[Debug] Message history updated. Total messages: {len(history)}.\n', 'green')
                 except Exception as e:
                     color_print(f'[Error]: {e}', 'red')
@@ -227,26 +235,89 @@ async def ai_mode(agent):
         exit_and_cleanup()
 
 def main():
+    global _provider
+    if not _provider:
+        try:
+            while True:
+                clear_and_print_banner_and_entry_message()
+                choices = [
+                    'Masgent AI  ->  No API key needed, response time may be longer during cold start',
+                    'OpenAI      ->  GPT-5 nano (requires OpenAI API key)',
+                    'Anthropic   ->  Claude Sonnet 4.5 (requires Anthropic API key)',
+                    'Google      ->  Gemini 2.5 Pro (requires Google API key)',
+                    'xAI         ->  Grok 4.1 Fast (requires Grok API key)',
+                    'Deepseek    ->  Deepseek Chat (requires Deepseek API key)',
+                ]
+                cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
+                user_input = cli.launch()
+                
+                if user_input.startswith('Masgent AI'):
+                    _provider = 'Masgent AI'
+                    break
+                elif user_input.startswith('OpenAI'):
+                    _provider = 'OpenAI - GPT-5 Nano'
+                    break
+                elif user_input.startswith('Anthropic'):
+                    _provider = 'Anthropic - Claude Sonnet 4.5'
+                    break
+                elif user_input.startswith('Google'):
+                    _provider = 'Google - Gemini 2.5 Pro'
+                    break
+                elif user_input.startswith('xAI'):
+                    _provider = 'xAI - Grok 4.1 Fast'
+                    break
+                elif user_input.startswith('Deepseek'):
+                    _provider = 'Deepseek - Deepseek Chat'
+                    break
+                else:
+                    continue
+        
+        except (KeyboardInterrupt, EOFError):
+            exit_and_cleanup()
+
     os.system('cls' if os.name == 'nt' else 'clear')
     print_entry_message()
 
-    # # Ensure OpenAI API key exists and validate it only once per process
-    # load_dotenv(dotenv_path='.env')
-
-    # global _openai_key_checked
-    # if not _openai_key_checked:
-    #     if 'OPENAI_API_KEY' not in os.environ:
-    #         ask_for_openai_api_key()
-    #     else:
-    #         # color_print('[Info] OpenAI API key found in environment.\n', 'green')
-    #         validate_openai_api_key(os.environ['OPENAI_API_KEY'])
-    #     _openai_key_checked = True
-
-    # Load environment variables from Render
-    env_path = Path(__file__).resolve().parent / 'render_env'
-    load_dotenv(dotenv_path=env_path)
-
-    model = OpenAIChatModel(model_name='gpt-5-nano')
+    if _provider == 'Masgent AI':
+        from pydantic_ai.models.openai import OpenAIChatModel
+        # Load environment variables from Render
+        env_path = Path(__file__).resolve().parent / 'render_env'
+        load_dotenv(dotenv_path=env_path)
+        model = OpenAIChatModel(model_name='gpt-5-nano')
+    elif _provider == 'OpenAI - GPT-5 Nano':
+        from pydantic_ai.models.openai import OpenAIChatModel
+        # Ensure OpenAI API key exists and validate it only once per process
+        load_dotenv(dotenv_path='.env')
+        global _openai_key_checked
+        if not _openai_key_checked:
+            if 'OPENAI_API_KEY' not in os.environ or os.environ['OPENAI_API_KEY'] == 'IGNORED':
+                ask_for_openai_api_key()
+            else:
+                validate_openai_api_key(os.environ['OPENAI_API_KEY'])
+            _openai_key_checked = True
+        model = OpenAIChatModel(model_name='gpt-5-nano')
+    elif _provider == 'Anthropic - Claude Sonnet 4.5':
+        from pydantic_ai.models.anthropic import AnthropicModel
+        ask_for_api_key('ANTHROPIC_API_KEY')
+        model = AnthropicModel(model_name='claude-sonnet-4-5')
+    elif _provider == 'Google - Gemini 2.5 Pro':
+        from pydantic_ai.models.google import GoogleModel
+        from pydantic_ai.providers.google import GoogleProvider
+        ask_for_api_key('GOOGLE_API_KEY')
+        provider = GoogleProvider(api_key=os.environ['GOOGLE_API_KEY'])
+        model = GoogleModel('gemini-2.5-pro', provider=provider)
+    elif _provider == 'xAI - Grok 4.1 Fast':
+        from pydantic_ai.models.openai import OpenAIChatModel
+        from pydantic_ai.providers.grok import GrokProvider
+        ask_for_api_key('GROK_API_KEY')
+        provider = GrokProvider(api_key=os.environ['GROK_API_KEY'])
+        model = OpenAIChatModel(model_name='grok-4-1-fast-non-reasoning', provider=provider)
+    elif _provider == 'Deepseek - Deepseek Chat':
+        from pydantic_ai.models.openai import OpenAIChatModel
+        from pydantic_ai.providers.deepseek import DeepSeekProvider
+        ask_for_api_key('DEEPSEEK_API_KEY')
+        provider = DeepSeekProvider(api_key=os.environ['DEEPSEEK_API_KEY'])
+        model = OpenAIChatModel(model_name='deepseek-chat', provider=provider)
 
     system_prompt = load_system_prompts()
 

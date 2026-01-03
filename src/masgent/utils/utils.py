@@ -493,9 +493,25 @@ def ask_for_openai_api_key():
     base_dir = os.getcwd()
     env_path = os.path.join(base_dir, '.env')
     if save == 'y':
-        with open(env_path, 'w') as f:
+        with open(env_path, 'a') as f:
             f.write(f'OPENAI_API_KEY={key}\n')
         color_print(f'[Info] OpenAI API key saved to {env_path} file.\n', 'green')
+
+def ask_for_api_key(key_name):
+    key = color_input(f'Enter your API key: ', 'yellow').strip()
+    if not key:
+        color_print(f'[Error] API key cannot be empty. Exiting...\n', 'green')
+        sys.exit(1)
+
+    os.environ[key_name] = key
+
+    save = color_input('Save this key to .env file for future? (y/n): ', 'yellow').strip().lower()
+    base_dir = os.getcwd()
+    env_path = os.path.join(base_dir, '.env')
+    if save == 'y':
+        with open(env_path, 'a') as f:
+            f.write(f'{key_name}={key}\n')
+        color_print(f'[Info] {key_name} saved to {env_path} file.\n', 'green')
     
 def validate_mp_api_key(key):
     try:

@@ -42,6 +42,17 @@ Masgent removes that barrier by providing a unified, AI-driven interface for str
 - Fast machine-learning-potential simulations using SevenNet, CHGNet, Orb-v3, and MatSim for rapid EOS, elasticity, and MD.
 - Lightweight ML utilities for feature preparation, dimensionality reduction, data augmentation, hyperparameter tuning, and model training.
 
+## 🤖 Supported AI Models
+| Provider     | Model             | API Key Required | Notes                                                   |
+|--------------|-------------------|------------------|---------------------------------------------------------|
+| Masgent AI   | Built-in Agent    | ❌ No            | No API key needed, response may be slower on cold start |
+| OpenAI       | GPT-5 nano        | ✅ Yes           | Requires OpenAI API key                                 |
+| Anthropic    | Claude Sonnet 4.5 | ✅ Yes           | Requires Anthropic API key                              |
+| Google       | Gemini 2.5 Pro    | ✅ Yes           | Requires Google API key                                 |
+| xAI          | Grok 4.1 Fast     | ✅ Yes           | Requires Grok (xAI) API key                             |
+| DeepSeek     | DeepSeek Chat     | ✅ Yes           | Requires DeepSeek API key                               |
+
+
 ## 🧩 Features
 1. Density Functional Theory (DFT) Simulations
   - 1.1 Structure Preparation & Manipulation
