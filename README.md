@@ -54,7 +54,7 @@ Masgent removes that barrier by providing a unified, AI-driven interface for str
 ## 🤖 Supported AI Models
 | Provider     | Model             | API Key Required | Notes                                                   |
 |:-------------|:------------------|:-----------------|:--------------------------------------------------------|
-| Masgent AI   | Built-in Agent    | ❌ No            | No API key needed, response may be slower on cold start |
+| Masgent      | Masgent AI        | ❌ No            | No API key needed, response may be slower on cold start |
 | OpenAI       | GPT-5 Nano        | ✅ Yes           | Requires OpenAI API key                                 |
 | Anthropic    | Claude Sonnet 4.5 | ✅ Yes           | Requires Anthropic API key                              |
 | Google       | Gemini 2.5 Pro    | ✅ Yes           | Requires Google API key                                 |
