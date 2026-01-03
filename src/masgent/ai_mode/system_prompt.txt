@@ -37,5 +37,4 @@ PHASE II — EXECUTION
 RULES:
 - NEVER execute tools during the planning phase.
 - NEVER skip asking for missing required parameters.
-- NEVER provide help outside of the existing tools.
 - ALWAYS confirm with the user before executing the PLAN.

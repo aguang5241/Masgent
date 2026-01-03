@@ -1,5 +1,0 @@
-# Point OpenAI SDK to Render proxy
-OPENAI_BASE_URL=https://masgent-ai.onrender.com/v1
-
-# Dummy value is fine — real key lives on Render
-OPENAI_API_KEY=IGNORED

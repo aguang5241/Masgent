@@ -469,34 +469,6 @@ def load_system_prompts():
     except Exception as e:
         return f'Error loading system prompts: {str(e)}'
 
-def validate_openai_api_key(key):
-    try:
-        from openai import OpenAI
-        client = OpenAI(api_key=key)
-        client.models.list()
-        # color_print('[Info] OpenAI API key validated successfully.\n', 'green')
-    except Exception as e:
-        color_print('[Error] Invalid OpenAI API key. Exiting...\n', 'green')
-        sys.exit(1)
-
-def ask_for_openai_api_key():
-    key = color_input('Enter your OpenAI API key: ', 'yellow').strip()
-    if not key:
-        color_print('[Error] OpenAI API key cannot be empty. Exiting...\n', 'green')
-        sys.exit(1)
-    
-    validate_openai_api_key(key)
-
-    os.environ['OPENAI_API_KEY'] = key
-
-    save = color_input('Save this key to .env file for future? (y/n): ', 'yellow').strip().lower()
-    base_dir = os.getcwd()
-    env_path = os.path.join(base_dir, '.env')
-    if save == 'y':
-        with open(env_path, 'a') as f:
-            f.write(f'OPENAI_API_KEY={key}\n')
-        color_print(f'[Info] OpenAI API key saved to {env_path} file.\n', 'green')
-
 def ask_for_api_key(key_name):
     key = color_input(f'Enter your API key: ', 'yellow').strip()
     if not key:
@@ -577,7 +549,7 @@ def print_banner():
 def clear_and_print_entry_message():
     os.system('cls' if os.name == 'nt' else 'clear')
     msg = f'''
-Welcome to Masgent AI — Your Materials Simulations Agent.
+Welcome to Masgent — Your Materials Simulations Agent.
 ---------------------------------------------------------
 Current Session Runs Directory: {os.environ["MASGENT_SESSION_RUNS_DIR"]}
 

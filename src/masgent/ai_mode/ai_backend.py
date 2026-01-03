@@ -2,7 +2,6 @@
 
 import os, datetime
 import asyncio
-from pathlib import Path
 from dotenv import load_dotenv
 from colorama import Fore, Style
 from yaspin import yaspin
@@ -19,53 +18,30 @@ from pydantic_ai.messages import (
     ToolReturnPart,
     )
 
+from masgent.cli_mode.cli_run import run_command
 from masgent.utils import tools
 from masgent.utils.utils import (
     ask_for_api_key,
-    ask_for_openai_api_key,
-    validate_openai_api_key,
     load_system_prompts, 
     color_print,
     color_input,
     start_new_session,
+    print_help,
     exit_and_cleanup,
-    clear_and_print_banner_and_entry_message,
+    clear_and_print_entry_message,
     )
 
-# Track whether OpenAI key has been checked during this process
-_openai_key_checked = False
 _provider = None
-
-def print_help():
-    msg = '''
-In AI mode, you can interact naturally with the assistant to help with a wide
-range of materials simulation tasks. Ask questions, generate input files, diagnose
-errors, or get guidance on using different tools.
-
-Try asking:
-  • "Generate a POSCAR file for NaCl."
-  • "Prepare VASP input files for a graphene structure."
-  • "Add defects to a silicon crystal POSCAR."
-  • ...
-
-Global Commands:
-  ai    —>  Chat with the AI assistant
-  back  —>  Switch back to main menu
-  help  —>  List all available functions
-  exit  —>  Quit the program
-    '''
-    color_print(msg, 'green')
 
 def print_entry_message():
     msg_1 = f'''
 Welcome to Masgent AI — Your Materials Simulations Agent.
 ---------------------------------------------------------
 Current Session Runs Directory: {os.environ["MASGENT_SESSION_RUNS_DIR"]}
-Started at: {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 '''
     
-    if _provider == 'Masgent AI':
-        msg_2 = f'Provider: {_provider}\nNote: Initial response time may be up to one minute during cold start.'
+    if _provider == 'Masgent - Masgent AI':
+        msg_2 = f'Provider: {_provider}\n\nNote: Initial response time may be up to one minute during cold start.'
     else:
         msg_2 = f'Provider: {_provider}'
     
@@ -223,7 +199,7 @@ async def ai_mode(agent):
                     # Save user message to conversation history
                     save_msg(user_input, 'User', filename=msg_path)
                     # Start regular chat or chat stream based on provider
-                    if _provider == 'Masgent AI':
+                    if _provider == 'Masgent - Masgent AI':
                         history = await chat(agent, user_input, history)
                     else:
                         history = await chat_stream(agent, user_input, history)
@@ -239,20 +215,37 @@ def main():
     if not _provider:
         try:
             while True:
-                clear_and_print_banner_and_entry_message()
+                clear_and_print_entry_message()
                 choices = [
-                    'Masgent AI  ->  No API key needed, response time may be longer during cold start',
-                    'OpenAI      ->  GPT-5 Nano (requires OpenAI API key)',
-                    'Anthropic   ->  Claude Sonnet 4.5 (requires Anthropic API key)',
-                    'Google      ->  Gemini 2.5 Pro (requires Google API key)',
-                    'xAI         ->  Grok 4.1 Fast (requires Grok API key)',
-                    'Deepseek    ->  Deepseek Chat (requires Deepseek API key)',
+                    'Masgent    ->  Masgent AI (no API key needed, response time may be longer during cold start)',
+                    'OpenAI     ->  GPT-5 Nano (requires OpenAI API key)',
+                    'Anthropic  ->  Claude Sonnet 4.5 (requires Anthropic API key)',
+                    'Google     ->  Gemini 2.5 Flash (requires Google API key)',
+                    'xAI        ->  Grok 4.1 Fast (requires Grok API key)',
+                    'Deepseek   ->  Deepseek Chat (requires Deepseek API key)',
+                    'Alibaba    ->  Qwen Flash (requires Alibaba Cloud API key)',
+                    '',
+                    'New   ->  Start a new session',
+                    'Back  ->  Return to previous menu',
+                    'Main  ->  Return to main menu',
+                    'Help  ->  Show available functions',
+                    'Exit  ->  Quit the Masgent',
                 ]
                 cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
                 user_input = cli.launch()
                 
-                if user_input.startswith('Masgent AI'):
-                    _provider = 'Masgent AI'
+                if user_input.startswith('New'):
+                    start_new_session()
+                elif user_input.startswith('Back'):
+                    return
+                elif user_input.startswith('Main'):
+                    run_command('0')
+                elif user_input.startswith('Help'):
+                    print_help()
+                elif user_input.startswith('Exit'):
+                    exit_and_cleanup()
+                elif user_input.startswith('Masgent'):
+                    _provider = 'Masgent - Masgent AI'
                     break
                 elif user_input.startswith('OpenAI'):
                     _provider = 'OpenAI - GPT-5 Nano'
@@ -261,7 +254,7 @@ def main():
                     _provider = 'Anthropic - Claude Sonnet 4.5'
                     break
                 elif user_input.startswith('Google'):
-                    _provider = 'Google - Gemini 2.5 Pro'
+                    _provider = 'Google - Gemini 2.5 Flash'
                     break
                 elif user_input.startswith('xAI'):
                     _provider = 'xAI - Grok 4.1 Fast'
@@ -269,6 +262,8 @@ def main():
                 elif user_input.startswith('Deepseek'):
                     _provider = 'Deepseek - Deepseek Chat'
                     break
+                elif user_input.startswith('Alibaba'):
+                    _provider = 'Alibaba - Qwen Flash'
                 else:
                     continue
         
@@ -278,46 +273,60 @@ def main():
     os.system('cls' if os.name == 'nt' else 'clear')
     print_entry_message()
 
-    if _provider == 'Masgent AI':
+    if _provider == 'Masgent - Masgent AI':
         from pydantic_ai.models.openai import OpenAIChatModel
-        # Load environment variables from Render
-        env_path = Path(__file__).resolve().parent / 'render_env'
-        load_dotenv(dotenv_path=env_path)
-        model = OpenAIChatModel(model_name='gpt-5-nano')
+        from pydantic_ai.providers.openai import OpenAIProvider
+        provider = OpenAIProvider(base_url='https://masgent-ai.onrender.com/v1')
+        model = OpenAIChatModel(model_name='gpt-5-nano', provider=provider)
     elif _provider == 'OpenAI - GPT-5 Nano':
         from pydantic_ai.models.openai import OpenAIChatModel
-        # Ensure OpenAI API key exists and validate it only once per process
+        from pydantic_ai.providers.openai import OpenAIProvider
         load_dotenv(dotenv_path='.env')
-        global _openai_key_checked
-        if not _openai_key_checked:
-            if 'OPENAI_API_KEY' not in os.environ or os.environ['OPENAI_API_KEY'] == 'IGNORED':
-                ask_for_openai_api_key()
-            else:
-                validate_openai_api_key(os.environ['OPENAI_API_KEY'])
-            _openai_key_checked = True
-        model = OpenAIChatModel(model_name='gpt-5-nano')
+        if 'OPENAI_API_KEY' not in os.environ:
+            ask_for_api_key('OPENAI_API_KEY')
+        provider = OpenAIProvider(api_key=os.environ['OPENAI_API_KEY'])
+        model = OpenAIChatModel(model_name='gpt-5-nano', provider=provider)
     elif _provider == 'Anthropic - Claude Sonnet 4.5':
         from pydantic_ai.models.anthropic import AnthropicModel
-        ask_for_api_key('ANTHROPIC_API_KEY')
+        load_dotenv(dotenv_path='.env')
+        if 'ANTHROPIC_API_KEY' not in os.environ:
+            ask_for_api_key('ANTHROPIC_API_KEY')
         model = AnthropicModel(model_name='claude-sonnet-4-5')
-    elif _provider == 'Google - Gemini 2.5 Pro':
+    elif _provider == 'Google - Gemini 2.5 Flash':
         from pydantic_ai.models.google import GoogleModel
         from pydantic_ai.providers.google import GoogleProvider
-        ask_for_api_key('GOOGLE_API_KEY')
+        load_dotenv(dotenv_path='.env')
+        if 'GOOGLE_API_KEY' not in os.environ:
+            ask_for_api_key('GOOGLE_API_KEY')
         provider = GoogleProvider(api_key=os.environ['GOOGLE_API_KEY'])
-        model = GoogleModel('gemini-2.5-pro', provider=provider)
+        model = GoogleModel('gemini-2.5-flash', provider=provider)
     elif _provider == 'xAI - Grok 4.1 Fast':
         from pydantic_ai.models.openai import OpenAIChatModel
         from pydantic_ai.providers.grok import GrokProvider
-        ask_for_api_key('GROK_API_KEY')
+        load_dotenv(dotenv_path='.env')
+        if 'GROK_API_KEY' not in os.environ:
+            ask_for_api_key('GROK_API_KEY')
         provider = GrokProvider(api_key=os.environ['GROK_API_KEY'])
         model = OpenAIChatModel(model_name='grok-4-1-fast-non-reasoning', provider=provider)
     elif _provider == 'Deepseek - Deepseek Chat':
         from pydantic_ai.models.openai import OpenAIChatModel
         from pydantic_ai.providers.deepseek import DeepSeekProvider
-        ask_for_api_key('DEEPSEEK_API_KEY')
+        load_dotenv(dotenv_path='.env')
+        if 'DEEPSEEK_API_KEY' not in os.environ:
+            ask_for_api_key('DEEPSEEK_API_KEY')
         provider = DeepSeekProvider(api_key=os.environ['DEEPSEEK_API_KEY'])
         model = OpenAIChatModel(model_name='deepseek-chat', provider=provider)
+    elif _provider == 'Alibaba - Qwen Flash':
+        from pydantic_ai.models.openai import OpenAIChatModel
+        from pydantic_ai.providers.alibaba import AlibabaProvider
+        load_dotenv(dotenv_path='.env')
+        if 'DASHSCOPE_API_KEY' not in os.environ:
+            ask_for_api_key('DASHSCOPE_API_KEY')
+        provider = AlibabaProvider(api_key=os.environ['DASHSCOPE_API_KEY'])
+        model = OpenAIChatModel(model_name='qwen-flash', provider=provider)
+    else:
+        color_print('[Error]: Unsupported AI provider selected.', 'red')
+        exit_and_cleanup()
 
     system_prompt = load_system_prompts()
 
