@@ -1,7 +1,6 @@
 # !/usr/bin/env python3
 
-import os, datetime
-import asyncio
+import os, datetime, random, asyncio
 from dotenv import load_dotenv
 from colorama import Fore, Style
 from yaspin import yaspin
@@ -164,7 +163,22 @@ async def chat(agent, user_input: str, history: list):
 
     text = result.output
 
-    color_print(text, 'green')
+    # color_print(text, 'green')
+
+    # Random split to simulate streaming
+    chunks = []
+    split_points = sorted(random.sample(range(1, len(text)), k=min(10, len(text)//10)))
+    prev = 0
+    for point in split_points:
+        chunks.append(text[prev:point])
+        prev = point
+    chunks.append(text[prev:])
+    
+    # Fake streaming effect
+    for chunk in chunks:
+        print(Fore.GREEN + chunk + Style.RESET_ALL, end='', flush=True)
+        await asyncio.sleep(0.1)
+    print('')
 
     # Save AI response to conversation history
     msg_path = os.path.join(os.environ['MASGENT_SESSION_RUNS_DIR'], 'conversation_history.txt')

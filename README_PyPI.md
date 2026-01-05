@@ -119,13 +119,13 @@ Masgent removes that barrier by providing a unified, AI-driven interface for str
 ## 🔧 Installation
 1. Requirements:
    - Python >= 3.11, < 3.14
-2. Optional:
-   - Materials Project API key for MP structure access: [materialsproject.org](https://next-gen.materialsproject.org/api)
-3. Install Masgent:
+2. Install Masgent:
     ```bash
     pip install -U masgent
     ```
-4. Setup POTCAR path for Pymatgen, see instructions: [https://pymatgen.org/installation.html#potcar-setup](https://pymatgen.org/installation.html#potcar-setup)
+3. Optional:
+   - Materials Project API key for MP structure access: [materialsproject.org](https://next-gen.materialsproject.org/api)
+   - Setup POTCAR path for Pymatgen, see instructions: [pymatgen.org](https://pymatgen.org/installation.html#potcar-setup)
 
 ## ▶️ Usage
 - After installation, simply run:
