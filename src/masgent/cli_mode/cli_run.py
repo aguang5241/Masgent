@@ -2210,7 +2210,7 @@ def command_3_3():
 def command_3_4():
     try:
         while True:
-            input_data_path = color_input('\nEnter the path to the new input feature data file (CSV): ', 'yellow').strip()
+            input_data_path = color_input('\nEnter the path to the input feature data file with new data (CSV): ', 'yellow').strip()
 
             if not input_data_path:
                 continue
@@ -2228,7 +2228,7 @@ def command_3_4():
     
     try:
         while True:
-            output_data_path = color_input('\nEnter the path to the new output feature data file (CSV): ', 'yellow').strip()
+            output_data_path = color_input('\nEnter the path to the output feature data file with new data (CSV): ', 'yellow').strip()
 
             if not output_data_path:
                 continue

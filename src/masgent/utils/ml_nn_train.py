@@ -51,7 +51,7 @@ def train(input_data, output_data, best_model_pkl, best_model_params, epochs, pa
     y = output_data.to_numpy()
     x_scaler, x_std = get_std(x)
     y_scaler, y_std = get_std(y)
-    x_train, x_valid, y_train, y_valid = train_test_split(x_std, y_std, test_size=0.1, shuffle=False, random_state=42)
+    x_train, x_valid, y_train, y_valid = train_test_split(x_std, y_std, test_size=0.2, shuffle=True, random_state=42)
     data_train, data_valid = [x_train, y_train], [x_valid, y_valid]
 
     # Model reset
