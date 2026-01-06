@@ -143,7 +143,7 @@ def train(input_data, output_data, best_model_pkl, best_model_params, epochs, pa
     n_outputs = output_data.shape[1]
     headers = output_data.columns.tolist()
     for i in range(n_outputs):
-        # Callculate RMSE and R2 for this output
+        # Calculate RMSE and R2 for this output
         rmse_train_i = root_mean_squared_error(true_y_train_rescaled[:, i], pred_y_train_rescaled[:, i])
         r2_train_i = r2_score(true_y_train_rescaled[:, i], pred_y_train_rescaled[:, i])
         rmse_valid_i = root_mean_squared_error(true_y_valid_rescaled[:, i], pred_y_valid_rescaled[:, i])

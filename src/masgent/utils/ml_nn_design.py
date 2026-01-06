@@ -83,12 +83,12 @@ def objective(trial):
         train_x, train_y = torch.FloatTensor(data_train[0]).to(DEVICE), torch.FloatTensor(data_train[1]).to(DEVICE)
         valid_x, valid_y = torch.FloatTensor(data_valid[0]).to(DEVICE), torch.FloatTensor(data_valid[1]).to(DEVICE)
 
-        # Dynamically change the number of epochs based on the NN complexity
-        layers = (model.__len__() - 1) // 3
-        epochs = 100 + 10 * layers
-
-        # Training
+        # Training with early stopping
         model.train()
+        best_loss = np.inf
+        epochs = 500
+        wait = 0
+        PATIENCE = 50
         for epoch in tqdm(range(epochs), desc=f'Trial {trial.number} Fold {fold+1}', position=0, leave=False):
             optimizer.zero_grad()
             output_train = model(train_x)
@@ -99,6 +99,15 @@ def objective(trial):
             loss_valid_data.append([fold, epoch, loss_valid.item()])
             loss_train.backward()
             optimizer.step()
+
+            # Early stopping
+            if loss_valid.item() < best_loss:
+                best_loss = loss_valid.item()
+                wait = 0
+            else:
+                wait += 1
+                if wait >= PATIENCE:
+                    break
 
         # Validation
         with torch.no_grad():
@@ -181,11 +190,11 @@ def optimize(input_data, output_data, n_trials, save_path):
     SAVE_PATH = save_path
     FOUND_NEW = False
     CURRENT_ACCURACY = 1e10
-    LAYERS_MIN, LAYERS_MAX, LAYERS_STEP = 2, 10, 1
-    NODES_MIN, NODES_MAX, NODES_STEP = 8, 256, 8
+    LAYERS_MIN, LAYERS_MAX, LAYERS_STEP = 2, 8, 1
+    NODES_MIN, NODES_MAX, NODES_STEP = 8, 64, 2
     OPTIMIZERS= ['Adam', 'SGD', 'RMSprop']
     LR_MIN, LR_MAX = 1e-4, 1e-2
-    WD_MIN, WD_MAX = 1e-6, 1e-2
+    WD_MIN, WD_MAX = 1e-6, 1e-4
     DROPOUT_MIN, DROPOUT_MAX = 0.0, 0.5
     DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -211,7 +220,7 @@ def optimize(input_data, output_data, n_trials, save_path):
     best_trial = study.best_trial
 
     # Write log
-    with open(f'{SAVE_PATH}/best_model_params.log', 'a') as f:
+    with open(f'{SAVE_PATH}/best_model_params.log', 'w') as f:
         f.write(f'Study statistics:\n')
         f.write(f'  Number of finished trials: {len(study.trials)}\n')
         f.write(f'  Number of pruned trials: {len(pruned_trials)}\n')
