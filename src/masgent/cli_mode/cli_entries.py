@@ -335,7 +335,8 @@ def command_3():
                 '3.1 Dataset Preparation & Visualization',
                 '3.2 Model Design & Hyperparameter Tuning',
                 '3.3 Model Training & Evaluation',
-                '3.4 Pre-trained Model Applications',
+                '3.4 Model Retraining with New Data',
+                '3.5 Pre-trained Model Applications',
             ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()
@@ -361,6 +362,8 @@ def command_3():
                 run_command('3.3')
             elif user_input.startswith('3.4'):
                 run_command('3.4')
+            elif user_input.startswith('3.5'):
+                run_command('3.5')
             else:
                 continue
 
@@ -405,14 +408,14 @@ def command_3_1():
     except (KeyboardInterrupt, EOFError):
         exit_and_cleanup()
 
-@register('3.4', 'Pre-trained Model Applications')
-def command_3_4():
+@register('3.5', 'Pre-trained Model Applications')
+def command_3_5():
     try:
         while True:
             clear_and_print_entry_message()
             choices = [
-                '3.4.1 Mechanical Properties Prediction in Sc-modified Al-Mg-Si Alloys',
-                '3.4.2 Phase Stability & Elastic Properties Prediction in Al-Co-Cr-Fe-Ni High-Entropy Alloys',
+                '3.5.1 Mechanical Properties Prediction in Sc-modified Al-Mg-Si Alloys',
+                '3.5.2 Phase Stability & Elastic Properties Prediction in Al-Co-Cr-Fe-Ni High-Entropy Alloys',
             ] + global_commands()
             cli = Bullet(prompt='\n', choices=choices, margin=1, bullet=' ●', word_color=colors.foreground['green'])
             user_input = cli.launch()

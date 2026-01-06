@@ -2206,8 +2206,144 @@ def command_3_3():
     color_print(result['message'], 'green')
     time.sleep(3)
 
-@register('3.4.1', 'Mechanical Properties Prediction in Sc-modified Al-Mg-Si Alloys')
-def command_3_4_1():
+@register('3.4', 'Model Re-Training & Evaluation')
+def command_3_4():
+    try:
+        while True:
+            input_data_path = color_input('\nEnter the path to the new input feature data file (CSV): ', 'yellow').strip()
+
+            if not input_data_path:
+                continue
+
+            try:
+                schemas.CheckCSVFile(file_path=input_data_path)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid CSV file: {input_data_path}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
+        return
+    
+    try:
+        while True:
+            output_data_path = color_input('\nEnter the path to the new output feature data file (CSV): ', 'yellow').strip()
+
+            if not output_data_path:
+                continue
+
+            try:
+                schemas.CheckCSVFile(file_path=output_data_path)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid directory: {output_data_path}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
+        return
+    
+    try:
+        while True:
+            old_model_path = color_input('\nEnter the path to the old model file (PKL): ', 'yellow').strip()
+
+            if not old_model_path:
+                continue
+
+            try:
+                schemas.CheckPklFile(file_path=old_model_path)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid model file: {old_model_path}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
+        return
+    
+    try:
+        while True:
+            old_model_params_path = color_input('\nEnter the path to the old model hyperparameters file (LOG): ', 'yellow').strip()
+
+            if not old_model_params_path:
+                continue
+
+            try:
+                schemas.CheckLogFile(file_path=old_model_params_path)
+                break
+            except Exception:
+                color_print(f'[Error] Invalid hyperparameters file: {old_model_params_path}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
+        return
+    
+    try:
+        while True:
+            max_epochs_str = color_input('\nEnter the maximum number of training epochs (e.g., 1000): ', 'yellow').strip()
+
+            if not max_epochs_str:
+                continue
+
+            try:
+                max_epochs = int(max_epochs_str)
+                schemas.TrainModelForMachineLearning(
+                    input_data_path=input_data_path, 
+                    output_data_path=output_data_path, 
+                    best_model_path=old_model_path, 
+                    best_model_params_path=old_model_params_path, 
+                    max_epochs=max_epochs
+                    )
+                break
+            except Exception:
+                color_print(f'[Error] Invalid maximum epochs: {max_epochs_str}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
+        return
+    
+    try:
+        while True:
+            patience_str = color_input('\nEnter the early stopping patience (number of epochs with no improvement) (e.g., 50): ', 'yellow').strip()
+
+            if not patience_str:
+                continue
+
+            try:
+                patience = int(patience_str)
+                schemas.TrainModelForMachineLearning(
+                    input_data_path=input_data_path, 
+                    output_data_path=output_data_path, 
+                    best_model_path=old_model_path, 
+                    best_model_params_path=old_model_params_path, 
+                    max_epochs=max_epochs, 
+                    patience=patience
+                    )
+                break
+            except Exception:
+                color_print(f'[Error] Invalid patience: {patience_str}, please double check and try again.\n', 'red')
+
+    except (KeyboardInterrupt, EOFError):
+        color_print('\n[Error] Input cancelled. Returning to previous menu...\n', 'red')
+        time.sleep(1)
+        return
+    
+    result = tools.retrain_model_for_machine_learning(
+        input_data_path=input_data_path, 
+        output_data_path=output_data_path, 
+        old_model_path=old_model_path, 
+        old_model_params_path=old_model_params_path, 
+        max_epochs=max_epochs, 
+        patience=patience
+        )
+    color_print(result['message'], 'green')
+    time.sleep(3)
+
+@register('3.5.1', 'Mechanical Properties Prediction in Sc-modified Al-Mg-Si Alloys')
+def command_3_5_1():
     try:
         while True:
             Mg_Si_str = color_input('\nEnter the Mg (0.00-0.70 wt.%) and Si (4.00-13.00 wt.%) content (e.g., 0.50 5.00): ', 'yellow').strip()
@@ -2231,8 +2367,8 @@ def command_3_4_1():
     color_print(result['message'], 'green')
     time.sleep(3)
 
-@register('3.4.2', 'Phase Stability & Elastic Properties Prediction in Al-Co-Cr-Fe-Ni High-Entropy Alloys')
-def command_3_4_2():
+@register('3.5.2', 'Phase Stability & Elastic Properties Prediction in Al-Co-Cr-Fe-Ni High-Entropy Alloys')
+def command_3_5_2():
     try:
         while True:
             elements_str = color_input('\nEnter the atomic percentages of Al, Co, Cr, and Fe (e.g., 20.0 20.0 20.0 20.0): ', 'yellow').strip()

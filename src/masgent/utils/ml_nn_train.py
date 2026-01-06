@@ -25,8 +25,8 @@ def get_std(data):
     data_std = scaler.fit_transform(data)
     return scaler, data_std
 
-def train(input_data, output_data, best_model_pkl, best_model_params, epochs, patience, save_path):
-    global INPUT_DATA, OUTPUT_DATA, BEST_MODEL_PKL, BEST_MODEL_PARAMS, EPOCHS, PATIENCE, SAVE_PATH, DEVICE
+def train(input_data, output_data, best_model_pkl, best_model_params, epochs, patience, save_path, reset):
+    global INPUT_DATA, OUTPUT_DATA, BEST_MODEL_PKL, BEST_MODEL_PARAMS, EPOCHS, PATIENCE, SAVE_PATH, DEVICE, RESET
     
     INPUT_DATA = input_data
     OUTPUT_DATA = output_data
@@ -36,6 +36,7 @@ def train(input_data, output_data, best_model_pkl, best_model_params, epochs, pa
     PATIENCE = patience
     SAVE_PATH = save_path
     DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    RESET = reset
 
     # Create save path directory
     if not os.path.exists(SAVE_PATH):
@@ -50,13 +51,14 @@ def train(input_data, output_data, best_model_pkl, best_model_params, epochs, pa
     y = output_data.to_numpy()
     x_scaler, x_std = get_std(x)
     y_scaler, y_std = get_std(y)
-    x_train, x_valid, y_train, y_valid = train_test_split(x_std, y_std, test_size=0.2, shuffle=True, random_state=42)
+    x_train, x_valid, y_train, y_valid = train_test_split(x_std, y_std, test_size=0.1, shuffle=False, random_state=42)
     data_train, data_valid = [x_train, y_train], [x_valid, y_valid]
 
     # Model reset
     torch.manual_seed(42)
     model = torch.load(BEST_MODEL_PKL, weights_only=False)
-    model.apply(init_weights)
+    if RESET:
+        model.apply(init_weights)
 
     # Parse the lr and weight_decay from best_model_params.log
     with open(BEST_MODEL_PARAMS, 'r') as f:
@@ -194,4 +196,5 @@ if __name__ == '__main__':
         epochs=EPOCHS,
         patience=PATIENCE,
         save_path=SAVE_PATH,
+        reset=RESET
     )

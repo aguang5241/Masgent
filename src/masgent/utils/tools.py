@@ -2799,6 +2799,7 @@ def train_model_for_machine_learning(
             epochs=max_epochs,
             patience=patience,
             save_path=ml_model_training_dir,
+            reset=True,
         )
 
         ml_files = list_files_in_dir(ml_model_training_dir)
@@ -2807,6 +2808,77 @@ def train_model_for_machine_learning(
             'status': 'success',
             'message': f'Completed model training for machine learning in {ml_model_training_dir}.',
             'ml_model_training_files': ml_files,
+        }
+    
+    except Exception as e:
+        return {
+            'status': 'error',
+            'message': f'Model training for machine learning failed: {str(e)}'
+        }
+    
+@with_metadata(schemas.ToolMetadata(
+    name='Re-Train & evaluate model for machine learning',
+    description='Re-Train model for machine learning based on given input and output datasets as well as old model structure and parameters',
+    requires=['input_data_path', 'output_data_path', 'old_model_path', 'old_model_params_path'],
+    optional=['max_epochs', 'patience'],
+    defaults={'max_epochs': 1000, 'patience': 50},
+    prereqs=[],
+))
+def retrain_model_for_machine_learning(
+    input_data_path: str,
+    output_data_path: str,
+    old_model_path: str,
+    old_model_params_path: str,
+    max_epochs: int = 1000,
+    patience: int = 50,
+) -> dict:
+    '''
+    Re-Train & evaluate model for machine learning based on given input and output datasets as well as old model structure and parameters
+    '''
+    try:
+        schemas.TrainModelForMachineLearning(
+            input_data_path=input_data_path,
+            output_data_path=output_data_path,
+            best_model_path=old_model_path,
+            best_model_params_path=old_model_params_path,
+            max_epochs=max_epochs,
+            patience=patience,
+        )
+    except Exception as e:
+        return {
+            'status': 'error',
+            'message': f'Invalid input parameters: {str(e)}'
+        }
+    
+    try:
+        runs_dir = os.environ.get('MASGENT_SESSION_RUNS_DIR')
+
+        machine_learning_dir = os.path.join(runs_dir, 'machine_learning')
+        os.makedirs(machine_learning_dir, exist_ok=True)
+
+        ml_model_retraining_dir = os.path.join(machine_learning_dir, 'ml_model_retraining')
+        os.makedirs(ml_model_retraining_dir, exist_ok=True)
+
+        # Run model training
+        from masgent.utils.ml_nn_train import train
+        
+        train(
+            input_data=input_data_path,
+            output_data=output_data_path,
+            best_model_pkl=old_model_path,
+            best_model_params=old_model_params_path,
+            epochs=max_epochs,
+            patience=patience,
+            save_path=ml_model_retraining_dir,
+            reset=False,
+        )
+
+        ml_files = list_files_in_dir(ml_model_retraining_dir)
+
+        return {
+            'status': 'success',
+            'message': f'Completed model training for machine learning in {ml_model_retraining_dir}.',
+            'ml_model_retraining_files': ml_files,
         }
     
     except Exception as e:
