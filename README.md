@@ -1,6 +1,9 @@
 # Masgent
 
+<!-- [![DOI](https://zenodo.org/badge/1091168992.svg)](https://doi.org/10.5281/zenodo.19456831) -->
+[![DOI](https://img.shields.io/badge/DOI-10.1039/D6DD00043F-blue)](https://doi.org/10.1039/D6DD00043F)
 [![DOI](https://img.shields.io/badge/DOI-10.48550/arXiv.2512.23010-blue)](https://doi.org/10.48550/arXiv.2512.23010)
+[![DOI](https://img.shields.io/badge/DOI-10.5281/zenodo.19456831-blue)](https://doi.org/10.5281/zenodo.19456831)
 
 Masgent: Materials Simulation Agent
 
